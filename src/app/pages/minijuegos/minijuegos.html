@@ -20,12 +20,21 @@
     </div>
   } @else {
     <!-- Hero animado a pantalla completa. Desliza hacia abajo para los juegos. -->
-    <app-animated-hero />
+    <div class="hero-wrap">
+      <app-animated-hero />
+      <div class="scroll-hint" aria-hidden="true">
+        <span>Desliza para jugar</span>
+        <span class="chevron">⌄</span>
+      </div>
+    </div>
 
     <div class="content">
       <header class="list-bar">
-        <button type="button" class="link" routerLink="/">← Inicio</button>
+        <button type="button" class="link" routerLink="/">
+          <span aria-hidden="true">←</span> Inicio
+        </button>
         <h1>Nuestros minijuegos</h1>
+        <span class="count">{{ games.length }} juegos</span>
       </header>
 
       <ul class="grid">
@@ -33,6 +42,7 @@
           <li class="card">
             <div class="card-cover" [style.background]="game.cover">
               <span class="card-icon">{{ game.icon }}</span>
+              <span class="card-shine" aria-hidden="true"></span>
             </div>
             <div class="card-body">
               <div class="card-head">

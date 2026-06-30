@@ -1,4 +1,56 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   Arcadia — sistema de diseño global
+   Estética arcade/neón sobre un fondo oscuro profundo.
+   ============================================================ */
+
+:root {
+  /* --- Superficies --- */
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --surface: #16161f;
+  --surface-2: #1c1c28;
+  --border: #2a2a38;
+  --border-strong: #3a3a4d;
+
+  /* --- Texto --- */
+  --text: #f4f4f8;
+  --text-muted: #a8a8bd;
+  --text-dim: #6e6e85;
+
+  /* --- Acentos neón --- */
+  --pink: #ff62b4;
+  --pink-soft: #ff8fcb;
+  --cyan: #22d3ee;
+  --cyan-soft: #7ce8f7;
+  --violet: #a855f7;
+  --amber: #fbbf24;
+
+  /* --- Gradientes de marca --- */
+  --grad-brand: linear-gradient(135deg, #ff62b4 0%, #a855f7 50%, #22d3ee 100%);
+  --grad-pink: linear-gradient(135deg, #ff62b4 0%, #a855f7 100%);
+
+  /* --- Radios --- */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* --- Sombras / glow --- */
+  --shadow-card: 0 18px 40px -18px rgba(0, 0, 0, 0.85);
+  --glow-pink: 0 0 24px -2px rgba(255, 98, 180, 0.55);
+  --glow-cyan: 0 0 24px -2px rgba(34, 211, 238, 0.5);
+
+  /* --- Tipografía --- */
+  --font-display: "Press Start 2P", system-ui, sans-serif;
+  --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
   margin: 0;
@@ -7,6 +59,40 @@ body {
 
 body {
   overflow-x: hidden;
-  font-family: "Indie Flower", cursive;
-  background: #0a0a0a;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Capa de textura ambiental: nebulosa neón sutil sobre todo el fondo. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60vw 60vw at 15% 0%, rgba(168, 85, 247, 0.10), transparent 60%),
+    radial-gradient(55vw 55vw at 100% 20%, rgba(34, 211, 238, 0.08), transparent 60%),
+    radial-gradient(70vw 70vw at 50% 110%, rgba(255, 98, 180, 0.10), transparent 60%);
+}
+
+/* Foco accesible y consistente para todos los controles. */
+:where(button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+
+/* Respeta a quien prefiere menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

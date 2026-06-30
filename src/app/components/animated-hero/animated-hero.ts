@@ -5,10 +5,10 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 // los hooks de React (useEffect/useRef) por el ciclo de vida de Angular.
 
 const COLOR = '#FFFFFF';
-const HIT_COLOR = '#333333';
-const BACKGROUND_COLOR = '#000000';
-const BALL_COLOR = '#FFFFFF';
-const PADDLE_COLOR = '#FFFFFF';
+const HIT_COLOR = '#3a2a4d';
+const BACKGROUND_COLOR = '#0a0a0f';
+const BALL_COLOR = '#ff62b4';
+const PADDLE_COLOR = '#22d3ee';
 const LETTER_SPACING = 1;
 const WORD_SPACING = 3;
 
