@@ -1,0 +1,52 @@
+<section class="minijuegos" #sectionEl>
+  @if (selected(); as game) {
+    <!-- Reproductor: ejecuta el juego seleccionado dentro de un iframe. -->
+    <div class="player">
+      <header class="player-bar">
+        <button type="button" class="link" (click)="close()">← Volver</button>
+        <h2>{{ game.name }}</h2>
+      </header>
+
+      <iframe
+        class="game-frame"
+        [src]="safeUrl()"
+        [title]="game.name"
+        allow="autoplay; fullscreen; gamepad"
+      ></iframe>
+
+      @if (game.note) {
+        <p class="note">{{ game.note }}</p>
+      }
+    </div>
+  } @else {
+    <!-- Hero animado a pantalla completa. Desliza hacia abajo para los juegos. -->
+    <app-animated-hero />
+
+    <div class="content">
+      <header class="list-bar">
+        <button type="button" class="link" routerLink="/">← Inicio</button>
+        <h1>Nuestros minijuegos</h1>
+      </header>
+
+      <ul class="grid">
+        @for (game of games; track game.id) {
+          <li class="card">
+            <div class="card-cover" [style.background]="game.cover">
+              <span class="card-icon">{{ game.icon }}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-head">
+                <h3>{{ game.name }}</h3>
+                <span class="badge" [class.badge-server]="game.kind === 'server'">
+                  {{ game.kind === 'static' ? 'Navegador' : 'Servidor' }}
+                </span>
+              </div>
+              <p class="desc">{{ game.description }}</p>
+              <button type="button" class="play" (click)="open(game)">Jugar ▸</button>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</section>

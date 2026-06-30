@@ -1,0 +1,14 @@
+/* Hero a pantalla completa: ocupa el primer viewport. Las cards quedan debajo
+   y se llega a ellas deslizando hacia abajo (scroll normal de la página). */
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+}
+
+.hero-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
