@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>Panico Lacteo · Crunchy Munch</title>
+  <meta name="theme-color" content="#fdf6ef" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%AA%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="wrap">
+    <div id="stage">
+      <canvas id="game"></canvas>
+
+      <button id="mute" aria-label="Silenciar">🔊</button>
+      <button id="pauseBtn" class="hidden" aria-label="Pausa">⏸</button>
+
+      <!-- HUD -->
+      <div id="hud" class="hidden">
+        <div class="hud-card hud-left">
+          <span class="hud-label">PUNTAJE</span>
+          <span class="hud-num" id="hud-score">0</span>
+          <span class="hud-sub">RECORD <b id="hud-record">0</b></span>
+        </div>
+        <div class="hud-card hud-center">
+          <div class="croc-wrap" title="Crocancia">
+            <span class="croc-icon" id="croc-icon">🍪</span>
+            <div class="croc-bar"><div class="croc-fill" id="croc-fill"></div></div>
+          </div>
+          <span class="racha-badge hidden" id="hud-racha">RACHA x2</span>
+        </div>
+        <div class="hud-card hud-right">
+          <div class="hud-lives" id="hud-lives"></div>
+          <span class="hud-sub">NIVEL <b id="hud-level">1</b></span>
+        </div>
+      </div>
+
+      <!-- D-pad -->
+      <div id="dpad" class="hidden">
+        <button data-dir="arriba" class="dpad-btn dpad-up" aria-label="Arriba">▲</button>
+        <button data-dir="izq" class="dpad-btn dpad-left" aria-label="Izquierda">◀</button>
+        <button data-dir="der" class="dpad-btn dpad-right" aria-label="Derecha">▶</button>
+        <button data-dir="abajo" class="dpad-btn dpad-down" aria-label="Abajo">▼</button>
+      </div>
+
+      <!-- COUNTDOWN sobre canvas -->
+      <div id="ready" class="hidden">
+        <div class="ready-num" id="ready-num">3</div>
+      </div>
+
+      <!-- PORTADA -->
+      <section class="screen portada" id="start">
+        <div class="portada-inner">
+          <div class="bernie-scene">
+            <span class="vaso v1"></span>
+            <span class="vaso v2"></span>
+            <span class="vaso v3"></span>
+            <img src="assets/bernie/bernie-sorpresa.png" alt="Bernie" class="bernie-portada" />
+          </div>
+          <h1 class="titulo-juego">
+            <span class="t-panico">PANICO</span>
+            <span class="t-lacteo">LACTE<span class="letra-o">O<i class="gota"></i></span></span>
+          </h1>
+          <p class="subtitulo">La leche salió de la nevera. ¡Corre, galleta!</p>
+          <button id="btn-jugar" class="btn btn-primario">JUGAR</button>
+          <button id="btn-howto" class="btn btn-sec">CÓMO SE JUEGA</button>
+          <div class="pill-record" id="start-record">RECORD 0 · NIVEL 1</div>
+          <div class="credito">
+            <img src="assets/marca/logo-oficial-linea.png" alt="Crunchy Munch" class="logo-credito" />
+            <span class="credito-linea">UN JUEGO CREADO POR CRUNCHY MUNCH</span>
+          </div>
+          <a href="../launcher/" class="link-volver">← Más juegos</a>
+        </div>
+      </section>
+
+      <!-- CÓMO SE JUEGA -->
+      <section class="screen scrim hidden" id="howto">
+        <div class="modal modal-howto">
+          <h2 class="modal-titulo">COMO SE JUEGA</h2>
+          <div class="howto-viewport">
+            <div class="howto-cards" id="howto-cards">
+              <div class="howto-card">
+                <span class="card-emoji">🍪</span>
+                <h3>Migas y racha</h3>
+                <p>Eres una <b>galleta</b>. Cómete todas las migas para pasar de nivel. Encadénalas rápido y sube la <b>racha</b> a x2 y x3 para más puntos.</p>
+              </div>
+              <div class="howto-card">
+                <span class="card-emoji">💧</span>
+                <h3>Crocancia, charcos y horno</h3>
+                <p>Si la leche te salpica te <b>ablandas</b> (barra de crocancia). Los <b>charcos</b> te frenan y empapan. Párate en el <b>horno</b> para re-tostarte… ¡pero sin quemarte!</p>
+              </div>
+              <div class="howto-card">
+                <span class="card-emoji">✨</span>
+                <h3>Glaseado de oro y las leches</h3>
+                <p>Muerde una <b>galleta dorada</b> y las leches entran en pánico: ¡muérdelas! Cuídate de las 4:</p>
+                <div class="leches-galeria">
+                  <span class="lg" style="--c:#e5679b">Fresita<i>la cazadora</i></span>
+                  <span class="lg" style="--c:#c9d3e8;color:#1b2233">Lactea<i>la patrullera</i></span>
+                  <span class="lg" style="--c:#6b4226">Moka<i>la tramposa</i></span>
+                  <span class="lg" style="--c:#e0d3b8;color:#1b2233">Kumis<i>el caótico</i></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="howto-nav">
+            <button id="howto-prev" class="howto-arrow" aria-label="Anterior">◀</button>
+            <div class="howto-dots" id="howto-dots"><span class="on"></span><span></span><span></span></div>
+            <button id="howto-next" class="howto-arrow" aria-label="Siguiente">▶</button>
+          </div>
+          <button id="btn-howto-cerrar" class="btn btn-primario">¡A JUGAR!</button>
+        </div>
+      </section>
+
+      <!-- PAUSA -->
+      <section class="screen scrim hidden" id="pause">
+        <div class="modal">
+          <img src="assets/bernie/bernie-dormida.png" alt="Bernie dormida" class="modal-bernie" />
+          <h2 class="modal-titulo">PAUSA</h2>
+          <label class="vol-label">Volumen música
+            <input type="range" id="vol" min="0" max="100" value="35" />
+          </label>
+          <label class="vol-label toggle-label">Mostrar d-pad
+            <input type="checkbox" id="dpad-toggle" checked />
+          </label>
+          <div class="fila-btns col">
+            <button id="btn-reanudar" class="btn btn-primario">SEGUIR</button>
+            <button id="btn-reiniciar" class="btn btn-sec">REINICIAR</button>
+            <button id="btn-menu" class="btn btn-sec">SALIR AL MENÚ</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- NIVEL SUPERADO -->
+      <section class="screen hidden" id="level">
+        <div class="level-box">
+          <img src="assets/bernie/bernie-celebrando.png" alt="Bernie" class="level-bernie" />
+          <h2 class="level-title" id="level-title">NIVEL 1 LISTO!</h2>
+          <div class="level-bonus hidden" id="level-bonus"></div>
+        </div>
+      </section>
+
+      <!-- GAME OVER -->
+      <section class="screen scrim hidden" id="gameover">
+        <div class="modal">
+          <img src="assets/bernie/bernie-sorpresa.png" alt="Bernie" class="modal-bernie" id="go-bernie" />
+          <h2 class="modal-titulo go-titulo">TE REMOJARON!</h2>
+          <div class="go-newrecord hidden" id="go-newrecord">NUEVO RECORD!</div>
+          <div class="stats">
+            <div class="stat"><span>PUNTAJE</span><b id="go-score">0</b></div>
+            <div class="stat"><span>RECORD</span><b id="go-record">0</b></div>
+            <div class="stat"><span>NIVEL</span><b id="go-level">1</b></div>
+            <div class="stat"><span>LECHES 🥛</span><b id="go-leches">0</b></div>
+          </div>
+          <div class="fila-btns col">
+            <button id="btn-otra" class="btn btn-primario">OTRA VEZ</button>
+            <button id="btn-portada" class="btn btn-sec">MENÚ</button>
+          </div>
+          <div class="credito credito-go">
+            <img src="assets/marca/logo-oficial-linea.png" alt="Crunchy Munch" class="logo-credito" />
+            <span class="credito-linea">UN JUEGO CREADO POR CRUNCHY MUNCH</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="rotate"><span>🔄</span> Gira tu dispositivo</div>
+
+  <audio id="bgm" src="assets/musica/Glaseado_de_oro.mp3" loop preload="auto"></audio>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

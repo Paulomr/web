@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Bear Soccer - Crunchy Munch</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <!-- Phaser monta su canvas aqui (z-index 1). Las capas DOM van encima. -->
+  <audio id="bgm" src="assets/musica/La_felicidad_crujiente.mp3" loop preload="auto"></audio>
+  <button id="mute" aria-label="Silenciar musica">&#128266;</button>
+  <button id="pauseBtn" class="hidden" aria-label="Pausa">&#9208;</button>
+
+  <div id="hud" class="hidden">
+    <span class="score" id="sP">0</span><span id="timer">60</span><span class="score" id="sC">0</span>
+  </div>
+
+  <div id="pad" class="hidden">
+    <div class="cluster">
+      <button class="key" data-k="left">&#9664;</button>
+      <button class="key" data-k="right">&#9654;</button>
+    </div>
+    <div class="cluster">
+      <button class="key" data-k="up">&#9650;</button>
+      <button class="key" data-k="kick">&#9917;</button>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="pause">
+    <h1 class="title">PAUSA</h1>
+    <div class="opt"><span class="lbl">MUSICA</span><input type="range" id="volMusic" min="0" max="100" value="30"></div>
+    <div class="opt"><span class="lbl">EFECTOS</span><input type="range" id="volSfx" min="0" max="100" value="60"></div>
+    <div class="row">
+      <button class="btn" id="resume">REANUDAR</button>
+      <button class="btn alt" id="replay">REPETIR</button>
+      <button class="btn alt" id="toMenu">MENU</button>
+    </div>
+  </div>
+
+  <div class="screen" id="start">
+    <canvas id="maze"></canvas>
+    <h1 class="title">BEAR SOCCER</h1>
+    <p class="tag">CRUNCHY MUNCH &#9733; CABECEA, SALTA Y METE GOL</p>
+    <div class="panel">
+      <span class="lbl">ESCRIBE TU NOMBRE</span>
+      <input id="name" maxlength="14" placeholder="AAA" autocomplete="off">
+      <div class="row">
+        <button class="btn" id="goSelect">&#9654; JUGAR</button>
+        <button class="btn alt" id="seeLb">RANKING</button>
+      </div>
+    </div>
+    <p class="press">PRESS START</p>
+    <p class="small">1P: FLECHAS + [SPACE] o W A S D<br>2P: P1 = W A S D &nbsp;&middot;&nbsp; P2 = FLECHAS (&#8595; PATEA)</p>
+    <div class="credito-marca">
+      <img src="assets/marca/logo-oficial.png" alt="Crunchy Munch" width="1000" height="504" loading="lazy">
+      <p>UN JUEGO CREADO POR CRUNCHY MUNCH</p>
+    </div>
+  </div>
+
+  <div class="screen scrim hidden" id="select">
+    <h1 class="title">ESCOGE TU PERSONAJE</h1>
+    <div class="row">
+      <button class="btn mode sel" id="mode1">1 JUGADOR</button>
+      <button class="btn mode" id="mode2">2 JUGADORES</button>
+    </div>
+    <p class="tag" id="chooseWho"></p>
+    <div id="cards"></div>
+    <button class="btn" id="startMatch">A JUGAR</button>
+  </div>
+
+  <div class="screen hidden" id="load">
+    <img id="bike" alt=""><div class="bar"><i></i></div><p id="tip"></p>
+  </div>
+
+  <div class="screen hidden" id="over">
+    <canvas id="maze2"></canvas>
+    <h1 class="title" id="result">GOL</h1>
+    <p class="tag" id="finalScore"></p>
+    <div class="lb"><h3 class="title">RANKING</h3><ol id="lbList"></ol></div>
+    <div class="row">
+      <button class="btn" id="again">OTRA VEZ</button>
+      <button class="btn alt" id="menu">MENU</button>
+    </div>
+  </div>
+
+  <div class="screen scrim hidden" id="lbScreen">
+    <h1 class="title">RANKING</h1>
+    <div class="lb"><ol id="lbList2"></ol></div>
+    <button class="btn" id="lbBack">VOLVER</button>
+  </div>
+</div></div>
+
+<div id="rotate"><span>&#128260;</span>Gira tu dispositivo</div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

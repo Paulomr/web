@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Galleta al Vuelo - Crunchy Munch</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8D%AA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <!-- Phaser monta su canvas aqui (z-index 1). Capas DOM encima. -->
+  <button id="mute" aria-label="Silenciar sonido">&#128266;</button>
+  <button id="pauseBtn" class="hidden" aria-label="Pausa">&#9208;</button>
+  <button id="retryBtn" class="hidden" aria-label="Reintentar nivel">&#8635;</button>
+
+  <div id="hud" class="hidden">
+    <span id="hudLvl"></span>
+    <span id="hudChips" aria-label="Chispas recogidas"></span>
+  </div>
+
+  <div class="screen scrim soft" id="start">
+    <img class="bernie big" src="assets/bernie/bernie-saludando.png" alt="Bernie la osa saludando">
+    <h1 class="title glass">GALLETA<br>AL VUELO</h1>
+    <p class="tag">CRUNCHY MUNCH &#9733; CORTA LA CUERDA Y ALIMENTA A BERNIE</p>
+    <button class="btn" id="btnPlay">&#9654; JUGAR</button>
+    <p class="small">DESLIZA EL DEDO PARA CORTAR LAS CUERDAS<br>RECOGE LAS 3 CHISPAS DE CHOCOLATE &middot; &iexcl;&Ntilde;AM!</p>
+  </div>
+
+  <div class="screen scrim hidden" id="select">
+    <img class="bernie mid" src="assets/bernie/bernie-guino.png" alt="Bernie gui&ntilde;ando">
+    <h1 class="title glass">NIVELES</h1>
+    <div id="grid"></div>
+    <button class="btn alt" id="btnBack">VOLVER</button>
+  </div>
+
+  <div class="screen scrim hidden" id="pause">
+    <img class="bernie mid" src="assets/bernie/bernie-dormida.png" alt="Bernie dormida">
+    <h1 class="title glass">PAUSA</h1>
+    <div class="opt"><span class="lbl">EFECTOS</span>
+      <input type="range" id="volSfx" min="0" max="100" value="50" aria-label="Volumen de efectos"></div>
+    <div class="row">
+      <button class="btn" id="btnResume">REANUDAR</button>
+      <button class="btn alt" id="btnRestartP">REINTENTAR</button>
+      <button class="btn alt" id="btnMenuP">MEN&Uacute;</button>
+    </div>
+    <p class="small">TAMBI&Eacute;N PUEDES PULSAR [ESC] O [P]</p>
+  </div>
+
+  <div class="screen scrim hidden" id="win">
+    <img class="bernie mid" src="assets/bernie/bernie-celebrando.png" alt="Bernie celebrando">
+    <h1 class="title glass">&iexcl;&Ntilde;AM &Ntilde;AM!</h1>
+    <p class="tag" id="winTag">BERNIE DEVOR&Oacute; LA GALLETA</p>
+    <div id="winStars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+    <div class="row">
+      <button class="btn" id="btnNext">SIGUIENTE</button>
+      <button class="btn alt" id="btnRetryW">REINTENTAR</button>
+      <button class="btn alt" id="btnMenuW">MEN&Uacute;</button>
+    </div>
+  </div>
+
+  <div class="screen scrim hidden" id="lose">
+    <img class="bernie mid" src="assets/bernie/bernie-sorpresa.png" alt="Bernie sorprendida">
+    <h1 class="title glass red">&iexcl;OH NO!</h1>
+    <p class="tag">LA GALLETA CAY&Oacute; FUERA&hellip; BERNIE SIGUE CON HAMBRE</p>
+    <div class="row">
+      <button class="btn" id="btnRetryL">REINTENTAR</button>
+      <button class="btn alt" id="btnMenuL">MEN&Uacute;</button>
+    </div>
+  </div>
+</div></div>
+
+<div id="rotate"><span>&#128260;</span>GIRA TU DISPOSITIVO</div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

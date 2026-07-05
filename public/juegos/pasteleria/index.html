@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#fdf6ef">
+  <title>La Pastelería de Bernie · Crunchy Munch</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <audio id="bgm" src="assets/musica/Glaseado_de_oro.mp3" loop preload="auto"></audio>
+  <main id="marco">
+
+    <!-- ═══════ PORTADA ═══════ -->
+    <section id="pantalla-portada" class="pantalla activa">
+      <button class="btn-icono btn-mute" id="btn-mute-portada" aria-label="Sonido"></button>
+      <div class="portada-contenido">
+        <h1 class="logo">LA PASTELERIA<br>DE BERNIE</h1>
+        <div class="hero-bernie"><img id="img-bernie-portada" src="assets/bernie/bernie-chef.png" alt="Bernie la osa, chef de la pastelería" width="512" height="397"></div>
+        <div class="credito-marca">
+          <img src="assets/marca/logo-oficial.png" alt="Crunchy Munch" width="1000" height="504" loading="lazy">
+          <p>UN JUEGO CREADO POR CRUNCHY MUNCH</p>
+        </div>
+        <button class="btn btn-primario grande" id="btn-jugar">JUGAR</button>
+        <button class="btn btn-secundario" id="btn-como">CÓMO SE JUEGA</button>
+        <a class="link-mas-juegos" href="../launcher/">&larr; Más juegos</a>
+      </div>
+    </section>
+
+    <!-- ═══════ MENÚ DE DÍAS ═══════ -->
+    <section id="pantalla-dias" class="pantalla"></section>
+
+    <!-- ═══════ BRIEFING ═══════ -->
+    <section id="pantalla-briefing" class="pantalla"></section>
+
+    <!-- ═══════ JUEGO ═══════ -->
+    <section id="pantalla-juego" class="pantalla">
+      <header id="hud">
+        <div id="hud-monedas">
+          <span class="moneda-icono"></span>
+          <span id="hud-monedas-num">0</span>
+          <div id="hud-progreso"><div id="hud-progreso-fill"></div></div>
+        </div>
+        <div id="hud-vidas" class="oculto"></div>
+        <div id="hud-combo" class="oculto">x2</div>
+        <div id="hud-timer">1:30</div>
+        <button id="btn-pausa" aria-label="Pausa"></button>
+      </header>
+
+      <div id="area-juego">
+        <!-- 1) MOSTRADOR (tienda de la pastelería) -->
+        <div id="banda-mostrador">
+          <!-- Escena de fondo: ventana, menú, vitrina, planta. Decorativa, anclada abajo. -->
+          <svg id="tienda-fondo" viewBox="0 0 520 170" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+            <defs>
+              <linearGradient id="tfCielo" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#a9d7f2"/><stop offset="1" stop-color="#e7f4fc"/>
+              </linearGradient>
+            </defs>
+            <!-- ventana con cielo -->
+            <g transform="translate(24 14)">
+              <rect x="-2" y="6" width="124" height="88" rx="7" fill="#fdf6ef" stroke="#1b2233" stroke-width="2.5"/>
+              <rect x="5" y="13" width="110" height="74" rx="4" fill="url(#tfCielo)" stroke="#1b2233" stroke-width="2"/>
+              <circle cx="88" cy="32" r="9" fill="#f4c430" stroke="#1b2233" stroke-width="2"/>
+              <g stroke="#f4c430" stroke-width="2.4" stroke-linecap="round">
+                <path d="M88 19 v-3 M88 45 v3 M75 32 h-3 M101 32 h3 M79 23 l-2.5 -2.5 M97 23 l2.5 -2.5 M79 41 l-2.5 2.5 M97 41 l2.5 2.5"/>
+              </g>
+              <g fill="#ffffff" opacity=".92">
+                <circle cx="30" cy="42" r="6"/><circle cx="39" cy="38" r="8"/><circle cx="48" cy="43" r="6"/><rect x="25" y="41" width="28" height="7" rx="3.5"/>
+              </g>
+              <g fill="#ffffff" opacity=".85">
+                <circle cx="76" cy="66" r="4.5"/><circle cx="83" cy="63" r="6"/><circle cx="90" cy="67" r="4.5"/><rect x="72" y="65" width="22" height="6" rx="3"/>
+              </g>
+              <path d="M22 24 q3 -3 6 0 q3 -3 6 0" fill="none" stroke="#1b2233" stroke-width="1.8" stroke-linecap="round" opacity=".8"/>
+              <path d="M60 13 V87 M5 50 H115" stroke="#1b2233" stroke-width="2.5"/>
+              <rect x="-8" y="94" width="136" height="9" rx="3.5" fill="#e8c9a0" stroke="#1b2233" stroke-width="2.5"/>
+              <g>
+                <path d="M99 70 v8 M107 68 v10" stroke="#7fb894" stroke-width="2.2" stroke-linecap="round"/>
+                <circle cx="99" cy="67" r="4" fill="#f2a7c0" stroke="#1b2233" stroke-width="1.8"/>
+                <circle cx="107" cy="64" r="4" fill="#ce6969" stroke="#1b2233" stroke-width="1.8"/>
+                <path d="M94 78 h20 l-2.5 16 h-15 z" fill="#ce6969" stroke="#1b2233" stroke-width="2.2"/>
+              </g>
+              <path d="M-6 4 a11.3 11.3 0 0 0 22.6 0 a11.3 11.3 0 0 0 22.6 0 a11.3 11.3 0 0 0 22.6 0 a11.3 11.3 0 0 0 22.6 0 a11.3 11.3 0 0 0 22.6 0 a11.3 11.3 0 0 0 22.7 0" fill="#f2a7c0" stroke="#1b2233" stroke-width="2"/>
+              <rect x="-8" y="-3" width="136" height="8" rx="4" fill="#f2a7c0" stroke="#1b2233" stroke-width="2"/>
+            </g>
+            <!-- reloj de pared -->
+            <g transform="translate(166 26)">
+              <circle cx="11" cy="11" r="11.5" fill="#fdf6ef" stroke="#1b2233" stroke-width="2.5"/>
+              <path d="M11 11 V5.5 M11 11 l4.2 3" stroke="#1b2233" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="11" cy="11" r="1.4" fill="#ce6969"/>
+            </g>
+            <!-- menú de la pared -->
+            <g transform="translate(206 10)">
+              <path d="M18 14 L8 0 M86 14 L96 0" stroke="#1b2233" stroke-width="2"/>
+              <rect x="0" y="12" width="104" height="76" rx="8" fill="#8a5a33" stroke="#1b2233" stroke-width="2.5"/>
+              <rect x="7" y="19" width="90" height="62" rx="5" fill="#1b2233"/>
+              <g stroke-linecap="round">
+                <path d="M15 31 h34" stroke="#fdf6ef" stroke-width="3"/>
+                <path d="M15 43 h26" stroke="#fdf6ef" stroke-width="3" opacity=".8"/>
+                <path d="M15 55 h30" stroke="#fdf6ef" stroke-width="3" opacity=".8"/>
+                <path d="M15 67 h22" stroke="#fdf6ef" stroke-width="3" opacity=".8"/>
+                <path d="M80 31 h10" stroke="#f4c430" stroke-width="3"/>
+                <path d="M80 43 h10" stroke="#f4c430" stroke-width="3"/>
+                <path d="M80 55 h10" stroke="#f4c430" stroke-width="3"/>
+                <path d="M80 67 h10" stroke="#f4c430" stroke-width="3"/>
+              </g>
+              <circle cx="60" cy="68" r="6.5" fill="none" stroke="#f2a7c0" stroke-width="2"/>
+              <circle cx="58" cy="66" r="1" fill="#f2a7c0"/><circle cx="62" cy="69" r="1" fill="#f2a7c0"/><circle cx="59" cy="71" r="1" fill="#f2a7c0"/>
+            </g>
+            <!-- doodles de pared -->
+            <path d="M332 40 C326 34 322 30 325 26 C328 23 332 25 332 28 C332 25 336 23 339 26 C342 30 338 34 332 40Z" fill="#f2a7c0" stroke="#1b2233" stroke-width="1.6"/>
+            <path d="M347 68 C343 64 340 61 342 58 C344 56 347 57.5 347 59.5 C347 57.5 350 56 352 58 C354 61 351 64 347 68Z" fill="#bfe3d0" stroke="#1b2233" stroke-width="1.6"/>
+            <path d="M336 88 l1.8 3.8 4.2 .5 -3.1 2.9 .8 4.1 -3.7 -2 -3.7 2 .8 -4.1 -3.1 -2.9 4.2 -.5z" fill="#f4c430" stroke="#1b2233" stroke-width="1.4"/>
+            <!-- vitrina / repisas con dulces -->
+            <g transform="translate(368 12)">
+              <rect x="0" y="34" width="132" height="9" rx="3.5" fill="#e8c9a0" stroke="#1b2233" stroke-width="2.5"/>
+              <path d="M14 43 l7 9 M118 43 l-7 9" stroke="#1b2233" stroke-width="2.2"/>
+              <g transform="translate(8 4)">
+                <rect x="0" y="8" width="24" height="22" rx="5" fill="#eef6fb" stroke="#1b2233" stroke-width="2" opacity=".95"/>
+                <circle cx="8" cy="22" r="3.4" fill="#e9a83a"/><circle cx="16" cy="24" r="3.4" fill="#e9a83a"/><circle cx="12" cy="17" r="3.4" fill="#c98a4b"/>
+                <rect x="2" y="2" width="20" height="8" rx="3" fill="#bfe3d0" stroke="#1b2233" stroke-width="2"/>
+              </g>
+              <g transform="translate(42 0)">
+                <rect x="0" y="10" width="20" height="24" rx="5" fill="#eef6fb" stroke="#1b2233" stroke-width="2" opacity=".95"/>
+                <g stroke-linecap="round" stroke-width="2.6">
+                  <path d="M5 27 l3 -2" stroke="#ce6969"/><path d="M12 30 l3 -1" stroke="#8fd0f0"/><path d="M8 20 l3 1" stroke="#f4c430"/><path d="M13 23 l3 -2" stroke="#bfe3d0"/>
+                </g>
+                <rect x="2" y="4" width="16" height="8" rx="3" fill="#f2a7c0" stroke="#1b2233" stroke-width="2"/>
+              </g>
+              <g transform="translate(70 10)" stroke="#1b2233" stroke-width="2">
+                <ellipse cx="15" cy="20" rx="13" ry="4.5" fill="#c98a4b"/>
+                <ellipse cx="15" cy="13.5" rx="11" ry="4" fill="#e9a83a"/>
+                <ellipse cx="15" cy="7.5" rx="9" ry="3.6" fill="#c98a4b"/>
+              </g>
+              <rect x="10" y="86" width="112" height="9" rx="3.5" fill="#e8c9a0" stroke="#1b2233" stroke-width="2.5"/>
+              <g transform="translate(22 50)">
+                <path d="M4 30 a18 18 0 0 1 36 0" fill="rgba(255,255,255,.55)" stroke="#1b2233" stroke-width="2"/>
+                <circle cx="22" cy="10.5" r="2.5" fill="#fdf6ef" stroke="#1b2233" stroke-width="1.6"/>
+                <rect x="13" y="20" width="18" height="10" rx="2.5" fill="#f2a7c0" stroke="#1b2233" stroke-width="1.8"/>
+                <circle cx="22" cy="18.5" r="2.2" fill="#ce6969" stroke="#1b2233" stroke-width="1.4"/>
+                <rect x="0" y="30" width="44" height="6" rx="3" fill="#fdf6ef" stroke="#1b2233" stroke-width="2"/>
+              </g>
+              <g transform="translate(84 62)">
+                <rect x="0" y="6" width="26" height="18" rx="3" fill="#d9c7ee" stroke="#1b2233" stroke-width="2"/>
+                <path d="M13 6 V24 M0 14 H26" stroke="#1b2233" stroke-width="1.6" opacity=".45"/>
+                <path d="M13 6 c-7 -7 -13 1 0 0 c13 1 7 -7 0 0" fill="#f2a7c0" stroke="#1b2233" stroke-width="1.6"/>
+              </g>
+            </g>
+            <!-- planta en el piso -->
+            <g transform="translate(148 118)">
+              <g stroke="#1b2233" stroke-width="2">
+                <ellipse cx="20" cy="13" rx="5.5" ry="10" fill="#bfe3d0" transform="rotate(-30 20 13)"/>
+                <ellipse cx="20" cy="13" rx="5.5" ry="10" fill="#bfe3d0" transform="rotate(30 20 13)"/>
+                <ellipse cx="20" cy="10" rx="5.5" ry="11" fill="#9fd4b8"/>
+              </g>
+              <rect x="8" y="22" width="24" height="7" rx="2.5" fill="#ce6969" stroke="#1b2233" stroke-width="2.2"/>
+              <path d="M10 29 h20 l-3 13 h-14 z" fill="#b85c5c" stroke="#1b2233" stroke-width="2.2"/>
+            </g>
+          </svg>
+          <svg id="banderines" viewBox="0 0 520 34" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 4 Q130 14 260 4 Q390 14 520 4" fill="none" stroke="#1b2233" stroke-width="2"/>
+            <g stroke="#1b2233" stroke-width="1.6">
+              <path d="M30 6 L42 24 L54 7 Z" fill="#f2a7c0"/><path d="M95 8 L107 26 L119 8 Z" fill="#bfe3d0"/>
+              <path d="M160 5 L172 23 L184 6 Z" fill="#f7e3a1"/><path d="M225 8 L237 26 L249 8 Z" fill="#f2a7c0"/>
+              <path d="M290 5 L302 23 L314 6 Z" fill="#bfe3d0"/><path d="M355 8 L367 26 L379 8 Z" fill="#d9c7ee"/>
+              <path d="M420 5 L432 23 L444 6 Z" fill="#f2a7c0"/><path d="M478 8 L490 25 L502 8 Z" fill="#bfe3d0"/>
+            </g>
+            <g fill="#ffffff" opacity=".4" stroke="none">
+              <path d="M36 9 L42 18 L48 9.5 Z"/><path d="M101 11 L107 20 L113 11 Z"/>
+              <path d="M166 8 L172 17 L178 9 Z"/><path d="M231 11 L237 20 L243 11 Z"/>
+              <path d="M296 8 L302 17 L308 9 Z"/><path d="M361 11 L367 20 L373 11 Z"/>
+              <path d="M426 8 L432 17 L438 9 Z"/><path d="M484 11 L490 19 L496 11 Z"/>
+            </g>
+            <g>
+              <g class="foco fa" transform="translate(75 8)"><rect x="-2" y="-1" width="4" height="4" rx="1" fill="#6b4226"/><circle cx="0" cy="7.5" r="4" fill="#f4c430" stroke="#1b2233" stroke-width="1.6"/><circle cx="-1.3" cy="6.2" r="1.3" fill="#fff8dd"/></g>
+              <g class="foco fb" transform="translate(140 10)"><rect x="-2" y="-1" width="4" height="4" rx="1" fill="#6b4226"/><circle cx="0" cy="7.5" r="4" fill="#f4c430" stroke="#1b2233" stroke-width="1.6"/><circle cx="-1.3" cy="6.2" r="1.3" fill="#fff8dd"/></g>
+              <g class="foco fc" transform="translate(205 8)"><rect x="-2" y="-1" width="4" height="4" rx="1" fill="#6b4226"/><circle cx="0" cy="7.5" r="4" fill="#f4c430" stroke="#1b2233" stroke-width="1.6"/><circle cx="-1.3" cy="6.2" r="1.3" fill="#fff8dd"/></g>
+              <g class="foco fa" transform="translate(270 10)"><rect x="-2" y="-1" width="4" height="4" rx="1" fill="#6b4226"/><circle cx="0" cy="7.5" r="4" fill="#f4c430" stroke="#1b2233" stroke-width="1.6"/><circle cx="-1.3" cy="6.2" r="1.3" fill="#fff8dd"/></g>
+              <g class="foco fb" transform="translate(335 8)"><rect x="-2" y="-1" width="4" height="4" rx="1" fill="#6b4226"/><circle cx="0" cy="7.5" r="4" fill="#f4c430" stroke="#1b2233" stroke-width="1.6"/><circle cx="-1.3" cy="6.2" r="1.3" fill="#fff8dd"/></g>
+              <g class="foco fc" transform="translate(400 10)"><rect x="-2" y="-1" width="4" height="4" rx="1" fill="#6b4226"/><circle cx="0" cy="7.5" r="4" fill="#f4c430" stroke="#1b2233" stroke-width="1.6"/><circle cx="-1.3" cy="6.2" r="1.3" fill="#fff8dd"/></g>
+              <g class="foco fa" transform="translate(462 9)"><rect x="-2" y="-1" width="4" height="4" rx="1" fill="#6b4226"/><circle cx="0" cy="7.5" r="4" fill="#f4c430" stroke="#1b2233" stroke-width="1.6"/><circle cx="-1.3" cy="6.2" r="1.3" fill="#fff8dd"/></g>
+            </g>
+          </svg>
+          <div id="slots-clientes"></div>
+          <svg id="onda-mostrador" viewBox="0 0 520 20" preserveAspectRatio="none" aria-hidden="true">
+            <rect x="0" y="6" width="520" height="14" fill="#e0b483"/>
+            <g stroke="rgba(107,66,38,.45)" stroke-width="1.5" fill="none" stroke-linecap="round">
+              <path d="M18 14 q9 2.5 20 1 M64 17 q10 -3 19 0 M116 13 q8 3 18 1 M164 17 q9 -2.5 18 0 M216 14 q9 2.5 19 1 M266 17 q10 -3 19 0 M318 13 q8 3 18 1 M366 17 q9 -2.5 18 0 M418 14 q9 2.5 19 1 M468 17 q10 -3 18 0"/>
+            </g>
+            <g stroke="rgba(107,66,38,.55)" stroke-width="1.6">
+              <path d="M74 9 V20 M148 9 V20 M222 9 V20 M296 9 V20 M370 9 V20 M444 9 V20"/>
+            </g>
+            <circle cx="100" cy="15" r="1.6" fill="rgba(107,66,38,.5)"/><circle cx="250" cy="16" r="1.6" fill="rgba(107,66,38,.5)"/><circle cx="402" cy="15" r="1.6" fill="rgba(107,66,38,.5)"/>
+            <path d="M0 8 Q32.5 0 65 8 T130 8 T195 8 T260 8 T325 8 T390 8 T455 8 T520 8 V12 H0 Z" fill="#fdf6ef" stroke="#1b2233" stroke-width="2"/>
+            <g fill="#fdf6ef" stroke="#1b2233" stroke-width="1.6">
+              <circle cx="98" cy="13.5" r="2.4"/><circle cx="228" cy="14" r="2.6"/><circle cx="356" cy="13.5" r="2.4"/><circle cx="470" cy="14" r="2.2"/>
+            </g>
+            <rect x="0" y="18.6" width="520" height="1.4" fill="rgba(27,34,51,.35)"/>
+          </svg>
+        </div>
+
+        <!-- 2) HORNO -->
+        <div id="banda-horno">
+          <div id="horno-card">
+            <div class="horno-panel" aria-hidden="true">
+              <span class="horno-marca">HORNO DE BERNIE</span>
+              <span class="horno-termo"><span class="termo-aguja"></span></span>
+              <span class="horno-perilla k1"></span>
+              <span class="horno-perilla k2"></span>
+              <span class="horno-luz"></span>
+            </div>
+            <div id="horno-puestos"></div>
+            <span class="horno-toalla" aria-hidden="true"></span>
+            <span class="horno-pata p1"></span><span class="horno-pata p2"></span>
+          </div>
+        </div>
+
+        <!-- 3) MESA -->
+        <div id="banda-mesa">
+          <div id="fila-masas" class="fila"></div>
+          <div id="fila-tabla">
+            <button id="btn-deshacer" data-tap="deshacer" aria-label="Deshacer último ingrediente"></button>
+            <div id="tabla-slot" class="vacia" data-drop="tabla"><div id="tabla-galleta" data-drag="tabla"></div></div>
+            <div id="caneca" data-drop="caneca" aria-label="Caneca">
+              <svg viewBox="0 0 48 54" width="44" height="50" aria-hidden="true">
+                <path class="tapa-caneca" d="M8 12 L40 12 L38 8 Q24 4 10 8 Z" fill="#9aa7b8" stroke="#1b2233" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M10 14 L38 14 L35 50 Q24 53 13 50 Z" fill="#b7c1cf" stroke="#1b2233" stroke-width="2.4" stroke-linejoin="round"/>
+                <path d="M19 20 L20 44 M29 20 L28 44" stroke="#1b2233" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+              </svg>
+            </div>
+          </div>
+          <div id="fila-toppings" class="fila"></div>
+          <div id="fila-decos" class="fila"></div>
+          <div id="fila-repisa">
+            <span class="repisa-etiqueta">Listas</span>
+            <div class="repisa-slot" data-drop="repisa:0"><div data-drag="repisa:0"></div></div>
+            <div class="repisa-slot" data-drop="repisa:1"><div data-drag="repisa:1"></div></div>
+            <div class="repisa-slot" data-drop="repisa:2"><div data-drag="repisa:2"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAYS del juego -->
+      <div id="overlay-countdown" class="overlay oculto"><div id="countdown-num">3</div></div>
+
+      <div id="overlay-tutorial" class="oculto">
+        <div id="tuto-globo">
+          <img src="assets/bernie/bernie-chef.png" alt="Bernie" class="tuto-avatar" loading="lazy" width="512" height="397">
+          <p id="tuto-texto"></p>
+        </div>
+        <div id="tuto-mano" class="oculto">
+          <svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><path d="M18 45c-3-3-8.5-9.4-9.6-12.6-.8-2.4 1.8-4.1 3.7-2.4l3.3 2.9V12a3 3 0 0 1 6 0v10.2l1.1-.1V9a3 3 0 0 1 6 0v13.2l1 .1V12.5a2.6 2.6 0 0 1 5.2 0v11l1-.1v-6.9a2.4 2.4 0 0 1 4.8 0v13.8c0 6.2-2.9 10.3-6 14.7z" fill="#fdf6ef" stroke="#1b2233" stroke-width="2.4" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div id="overlay-pausa" class="overlay oculto">
+        <div class="panel-pausa">
+          <div class="pausa-bernie">
+            <img src="assets/bernie/bernie-dormida.png" alt="Bernie dormida" loading="lazy" width="512" height="512">
+            <span class="zzz z1">z</span><span class="zzz z2">z</span><span class="zzz z3">z</span>
+          </div>
+          <h2 class="titulo-px">Pausa</h2>
+          <button class="btn btn-primario" id="btn-continuar">Continuar</button>
+          <button class="btn btn-secundario" id="btn-reintentar">Reintentar día</button>
+          <button class="btn btn-secundario" id="btn-como-pausa">Cómo se juega</button>
+          <button class="btn btn-secundario" id="btn-salir-menu">Salir al menú</button>
+          <button class="btn-icono btn-mute" id="btn-mute-pausa" aria-label="Sonido"></button>
+        </div>
+      </div>
+
+      <div id="overlay-findia" class="overlay oculto"><div class="findia-texto">¡Se acabo el dia!</div></div>
+    </section>
+
+    <!-- ═══════ RESULTADOS ═══════ -->
+    <section id="pantalla-resultados" class="pantalla"></section>
+
+    <!-- toast global -->
+    <div id="toast-juego"></div>
+    <!-- capa de textos flotantes y monedas -->
+    <div id="capa-fx"></div>
+
+    <!-- ═══════ MODAL CÓMO SE JUEGA ═══════ -->
+    <div id="modal-como" class="modal oculto">
+      <div class="modal-panel">
+        <button class="btn-icono" id="btn-cerrar-como" aria-label="Cerrar">✕</button>
+        <h2 class="titulo-px">Como se juega</h2>
+        <div id="como-tarjetas"></div>
+        <div id="como-puntos"></div>
+      </div>
+    </div>
+
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

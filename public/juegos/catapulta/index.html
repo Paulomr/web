@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Catapulta - Crunchy Munch</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <!-- Phaser monta su canvas aqui (z-index 1). Capas DOM encima. -->
+  <audio id="bgm" src="assets/musica/Bernie_El_Heroe_de_las_Galletas.mp3" loop preload="auto"></audio>
+  <button id="mute" aria-label="Silenciar">&#128266;</button>
+  <button id="pauseBtn" class="hidden" aria-label="Pausa">&#9208;</button>
+
+  <div id="hud" class="hidden">
+    <span id="hudLvl"></span>
+    <span id="hudShots" title="Galletas"></span>
+    <span id="hudPigs"></span>
+  </div>
+
+  <div class="screen scrim soft" id="start">
+    <h1 class="title glass">CATAPULTA</h1>
+    <p class="tag">CRUNCHY MUNCH &#9733; BERNIE RECUPERA LAS GALLETAS</p>
+    <button class="btn" id="btnPlay">&#9654; JUGAR</button>
+    <p class="small">LOS CERDOS ROBARON LA MERIENDA&hellip; &iexcl;LANZA A BERNIE!<br>ARRASTRA HACIA ATRAS Y SUELTA &middot; LA MADERA CRUJE &middot; EL TNT EXPLOTA</p>
+    <div class="credito-marca">
+      <img src="assets/marca/logo-oficial.png" alt="Crunchy Munch" width="1000" height="504" loading="lazy">
+      <p>UN JUEGO CREADO POR CRUNCHY MUNCH</p>
+    </div>
+  </div>
+
+  <div class="screen scrim hidden" id="select">
+    <h1 class="title glass">NIVELES</h1>
+    <div id="grid"></div>
+    <button class="btn alt" id="btnBack">VOLVER</button>
+  </div>
+
+  <div class="screen scrim hidden" id="pause">
+    <h1 class="title glass">PAUSA</h1>
+    <div class="row">
+      <button class="btn" id="btnResume">REANUDAR</button>
+      <button class="btn alt" id="btnRestartP">REINICIAR</button>
+      <button class="btn alt" id="btnMenuP">MENU</button>
+    </div>
+    <p class="small">TAMBIEN PUEDES PULSAR [ESC] O [P]</p>
+  </div>
+
+  <div class="screen scrim hidden" id="win">
+    <h1 class="title glass">&iexcl;VICTORIA CRUJIENTE!</h1>
+    <p class="tag">GALLETAS RECUPERADAS</p>
+    <div id="winStars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>
+    <div class="row">
+      <button class="btn" id="btnNext">SIGUIENTE</button>
+      <button class="btn alt" id="btnRetryW">REINTENTAR</button>
+      <button class="btn alt" id="btnMenuW">MENU</button>
+    </div>
+  </div>
+
+  <div class="screen scrim hidden" id="lose">
+    <h1 class="title glass red">DERROTA</h1>
+    <p class="tag">SE ACABARON LOS BERNIES&hellip; LOS CERDOS SE QUEDAN LA MERIENDA</p>
+    <div class="row">
+      <button class="btn" id="btnRetryL">REINTENTAR</button>
+      <button class="btn alt" id="btnMenuL">MENU</button>
+    </div>
+  </div>
+</div></div>
+
+<div id="rotate"><span>&#128260;</span>GIRA TU DISPOSITIVO</div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
