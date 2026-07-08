@@ -16,7 +16,9 @@ import { setText } from '../ui/dom.js';
 
 export class GameScene extends Phaser.Scene {
   constructor(){ super('Game'); }
-  init(d){ this.pickP=d.pickP; this.pickC=d.pickC; this.twoP=!!d.twoP; }
+  // dif/mision llegan del modo misiones (Bearnie IA malvada); sin ellos rige config.
+  init(d){ this.pickP=d.pickP; this.pickC=d.pickC; this.twoP=!!d.twoP;
+           this.dif=d.dif ?? DIFFICULTY; this.mision=d.mision ?? null; }
 
   create(){
     this.sP=0; this.sC=0; this.over=false; this.scoreCD=0;
@@ -90,7 +92,7 @@ export class GameScene extends Phaser.Scene {
     this.inputMgr = new InputManager(this);
 
     // --- IA del rival (no es un patron fijo: anticipa, reacciona y se equivoca) ---
-    const d = Phaser.Math.Clamp((DIFFICULTY-0.7)/0.3, 0, 1); // 0 facil - 1 dificil
+    const d = Phaser.Math.Clamp((this.dif-0.7)/0.3, 0, 1); // 0 facil - 1 dificil
     this.aiCfg = {
       react: Phaser.Math.Linear(300, 95, d),   // ms entre decisiones (reaccion)
       err:   Phaser.Math.Linear(140, 25, d),   // error de punteria en px
@@ -414,7 +416,7 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setZoom(1);
     SFX.whistle();                      // pitazo final
     emit('finale', false);
-    emit('matchEnded', {sP:this.sP, sC:this.sC, twoP:this.twoP});
+    emit('matchEnded', {sP:this.sP, sC:this.sC, twoP:this.twoP, mision:this.mision});
     this.scene.stop();
   }
 

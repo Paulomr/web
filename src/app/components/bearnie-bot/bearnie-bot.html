@@ -1,0 +1,38 @@
+<!-- Burbuja flotante: Bearnie saluda y abre el chat de ayuda. -->
+<button type="button" class="bot-btn" (click)="abierto.set(!abierto())" aria-label="Abrir asistente Bearnie">
+  <img src="fotos/bernie-saludando.webp" alt="" />
+  @if (!abierto()) {
+    <span class="bot-globo">¿DUDAS? ¡PREGÚNTAME!</span>
+  }
+</button>
+
+@if (abierto()) {
+  <section class="bot-panel" aria-label="Chat con Bearnie">
+    <header class="bot-top">
+      <img src="fotos/bearnie-logo.webp" alt="" />
+      <div>
+        <strong>BEARNIE</strong>
+        <span>ASISTENTE DE CRUNCHY MUNCH</span>
+      </div>
+      <button type="button" class="bot-cerrar" (click)="abierto.set(false)" aria-label="Cerrar">✕</button>
+    </header>
+
+    <div class="bot-mensajes">
+      @for (m of mensajes(); track $index) {
+        <p class="burbuja" [class.mia]="m.rol === 'user'">{{ m.texto }}</p>
+      }
+      @if (escribiendo()) {
+        <p class="burbuja escribiendo"><span></span><span></span><span></span></p>
+      }
+    </div>
+
+    <form class="bot-input" (submit)="$event.preventDefault(); enviar(campo)">
+      <input #campo type="text" placeholder="ESCRIBE TU PREGUNTA…" autocomplete="off" />
+      <button type="submit" aria-label="Enviar">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M2.5 10 17 3.2c.5-.24 1 .27.79.78L12.6 16.9c-.22.53-.98.5-1.16-.05l-1.8-5.34a.8.8 0 0 0-.5-.5L3.8 9.2c-.55-.18-.58-.94-.05-1.16z" transform="rotate(45 10 10)" />
+        </svg>
+      </button>
+    </form>
+  </section>
+}

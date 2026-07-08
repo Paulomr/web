@@ -2,8 +2,19 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const concursoRoutes = require('./routes/concurso.routes');
+const scoreRoutes = require('./routes/score.routes');
 
 const app = express();
+
+// CORS: la web Angular (puerto 4200) y los juegos que sirve consumen esta API
+// desde otro origen. Sin dependencia extra: cabeceras a mano.
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  next();
+});
 
 // Parseo del body: imprescindible para que req.body NO llegue undefined.
 // Con tope de tamaño: los payloads del juego son diminutos.
@@ -28,6 +39,8 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // --- API ---
 app.use('/api/concursos', concursoRoutes);
+app.use('/api/scores', scoreRoutes);
+app.use('/api/chat', require('./routes/chat.routes'));
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // Rutas de API desconocidas: 404 en JSON (que no caigan al catch-all del SPA).

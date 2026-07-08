@@ -350,6 +350,8 @@ function gameOver() {
   pauseBtn.classList.add('hidden');
   volumenMusica(0.35);
   const esRecord = registrarPartida(juego.score, juego.level);
+  // Ranking global de Crunchy Munch (silencioso si el backend está apagado).
+  if (window.CrunchyScores) window.CrunchyScores.submit('pacman', juego.score);
   $('go-score').textContent = juego.score.toLocaleString('es-CO');
   $('go-record').textContent = datos.record.toLocaleString('es-CO');
   $('go-level').textContent = juego.level;

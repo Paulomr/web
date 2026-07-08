@@ -1,199 +1,590 @@
 .landing {
-  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem clamp(1.25rem, 5vw, 4rem);
-  overflow: hidden;
+  overflow: clip;
 }
 
-/* ---------- Orbes de fondo flotantes ---------- */
-.orbs {
+/* ============ Hero expandible ============
+   La sección mide 200vh; el contenido queda pegado (sticky) mientras
+   --p va de 0 a 1 con el scroll: la foto crece y el título se abre. */
+.expand {
+  --p: 0;
+  position: relative;
+  width: 100%;
+  height: 200vh;
+}
+
+.pegajoso {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Doodles de la marca en azul suave, sutiles sobre el fondo crema.
+   Se atenúan aún más al expandir la foto. */
+.pegajoso::before {
+  content: '';
   position: absolute;
   inset: 0;
+  opacity: calc(0.42 - var(--p) * 0.25);
+  background-image: url("/fotos/doodles-rosa.webp");
+  background-size: 640px auto;
+}
+
+/* Fotos laterales: más pequeñas, giradas hacia la principal; al bajar se
+   difuminan y retroceden quedando detrás. */
+.exp-lado {
+  grid-area: 1 / 1;
+  width: calc(190px + 4vw);
+  height: 44vh;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 22px 50px -22px rgba(90, 55, 85, 0.5);
   z-index: 0;
-  pointer-events: none;
+  opacity: calc(1 - var(--p) * 1.7);
+  filter: blur(calc(var(--p) * 6px));
 }
 
-.orb {
+.exp-lado.izq {
+  transform: translateX(-23vw) rotate(-8deg) scale(calc(1 - var(--p) * 0.15));
+}
+
+.exp-lado.der {
+  transform: translateX(23vw) rotate(8deg) scale(calc(1 - var(--p) * 0.15));
+}
+
+@media (max-width: 720px) {
+  .exp-lado {
+    width: 120px;
+    height: 30vh;
+  }
+  .exp-lado.izq { transform: translateX(-33vw) rotate(-8deg); }
+  .exp-lado.der { transform: translateX(33vw) rotate(8deg); }
+}
+
+.exp-media {
+  grid-area: 1 / 1;
+  width: calc(300px + (94vw - 300px) * var(--p));
+  height: calc(52vh + 38vh * var(--p));
+  max-width: 94vw;
+  object-fit: cover;
+  border-radius: 26px;
+  box-shadow: 0 30px 70px -24px rgba(90, 55, 85, 0.55);
+  z-index: 1;
+}
+
+/* Velo suave sobre la foto para que el título siempre se lea. */
+.exp-media + .exp-titulos::before {
+  content: '';
   position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.5;
-  animation: float 14s ease-in-out infinite;
+  inset: 0;
+  background: rgba(74, 47, 66, calc(0.26 - var(--p) * 0.14));
+  border-radius: 26px;
+  z-index: -1;
 }
 
-.orb-1 {
-  width: 380px;
-  height: 380px;
-  top: -80px;
-  left: -60px;
-  background: var(--pink);
+.exp-titulos {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  width: calc(300px + (94vw - 300px) * var(--p));
+  height: calc(52vh + 38vh * var(--p));
+  justify-content: center;
+  overflow: visible;
 }
 
-.orb-2 {
-  width: 320px;
-  height: 320px;
-  bottom: -100px;
-  right: -40px;
-  background: var(--cyan);
-  animation-delay: -5s;
+/* CRUNCHY MUNCH: crece con el scroll y se mantiene centrado (sin separarse). */
+.exp-h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 7vw, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: #ffffff;
+  text-shadow: 0 6px 26px rgba(74, 47, 66, 0.55);
+  white-space: nowrap;
+  transform: scale(calc(1 + var(--p) * 0.55));
+  transition: transform 60ms linear;
 }
 
-.orb-3 {
-  width: 260px;
-  height: 260px;
-  top: 40%;
-  left: 55%;
-  background: var(--violet);
-  animation-delay: -9s;
+.exp-linea1 {
+  font-family: var(--font-display);
+  font-size: calc(0.95rem + 0.7rem * var(--p));
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  color: #ffffff;
+  text-shadow: 0 4px 16px rgba(74, 47, 66, 0.6);
 }
 
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -40px) scale(1.08); }
-  66% { transform: translate(-25px, 25px) scale(0.95); }
+.exp-linea2 {
+  font-size: calc(0.82rem + 0.5rem * var(--p));
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 3px 14px rgba(74, 47, 66, 0.62);
 }
 
-/* ---------- Contenido del hero ---------- */
-.hero {
+.exp-hint {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: calc(1 - var(--p) * 2.2);
+}
+
+.chevron {
+  font-size: 1.35rem;
+  animation: bob 1.6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ============ Llamado a la acción ============ */
+.cta {
+  display: flex;
+  justify-content: center;
+  padding: 72px 24px 0;
+}
+
+/* Botón estilo notch: píldora blanca que se amplía lateralmente al pasar
+   el mouse, con gradiente y brillo desenfocado (como los ítems del menú). */
+.btn-notch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 54px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: #ffffff;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 14px 30px -14px rgba(90, 55, 85, 0.45);
+  transition: padding 450ms ease, color 450ms ease, box-shadow 450ms ease;
+}
+
+.btn-notch::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  opacity: 0;
+  transition: opacity 450ms ease;
+}
+
+.btn-notch::after {
+  content: '';
+  position: absolute;
+  inset: 12px 6px -8px 6px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  filter: blur(16px);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 450ms ease;
+}
+
+.btn-notch:hover {
+  padding: 16px 78px;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.btn-notch:hover::before,
+.btn-notch:hover::after {
+  opacity: 1;
+}
+
+.btn-notch:hover::after {
+  opacity: 0.55;
+}
+
+.btn-notch span {
   position: relative;
   z-index: 1;
-  max-width: 760px;
-  text-align: center;
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.eyebrow {
-  display: inline-block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--cyan-soft);
-  background: rgba(34, 211, 238, 0.1);
-  border: 1px solid rgba(34, 211, 238, 0.28);
-  padding: 0.45rem 1rem;
-  border-radius: var(--r-pill);
-  margin-bottom: 1.75rem;
-}
-
-.title {
-  margin: 0 0 1.5rem;
-  line-height: 1;
-}
-
-.title-mark {
-  font-family: var(--font-display);
-  font-size: clamp(2.2rem, 9vw, 5.25rem);
-  background: var(--grad-brand);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 28px rgba(255, 98, 180, 0.35));
-  animation: shimmer 6s linear infinite;
-}
-
-@keyframes shimmer {
-  to { background-position: 200% center; }
-}
-
-.tagline {
-  margin: 0 auto 2.25rem;
-  max-width: 46ch;
-  font-size: clamp(1rem, 2.4vw, 1.2rem);
-  line-height: 1.6;
-  color: var(--text-muted);
-}
-
-/* ---------- Botones ---------- */
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.9rem;
-  justify-content: center;
 }
 
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.9rem 1.9rem;
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  font-weight: 600;
-  text-decoration: none;
+  gap: 10px;
+  padding: 14px 30px;
   border-radius: var(--r-pill);
   border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.25s ease, background 0.2s ease,
-    border-color 0.2s ease;
+  text-decoration: none;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .btn-primary {
-  color: #0a0a0f;
-  background: var(--grad-pink);
+  color: #5c3a52;
+  background: linear-gradient(45deg, #f2a9cd, #c9aee8);
   box-shadow: var(--glow-pink);
 }
 
+/* Brillo desenfocado inferior (estilo gradient-menu). */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 12px 4px -8px 4px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  filter: blur(15px);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 400ms ease;
+}
+
 .btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 34px -2px rgba(255, 98, 180, 0.75);
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover::after {
+  opacity: 0.55;
+}
+
+.btn-ghost {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--border-strong);
+}
+
+.btn-ghost:hover {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .btn-arrow {
-  transition: transform 0.18s ease;
+  transition: transform 180ms ease;
 }
 
 .btn-primary:hover .btn-arrow {
   transform: translateX(4px);
 }
 
-.btn-ghost {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
-  border-color: var(--border-strong);
-}
-
-.btn-ghost:hover {
-  transform: translateY(-3px);
-  border-color: var(--cyan);
-  box-shadow: var(--glow-cyan);
-}
-
-/* ---------- Estadísticas ---------- */
-.stats {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: clamp(1.5rem, 6vw, 3.5rem);
-  margin: 3rem 0 0;
-  padding: 0;
-}
-
-.stats li {
+/* ---------- Menú en movimiento (marquee) ---------- */
+.menu-vivo {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 96px 0 0;
+  text-align: center;
+  overflow: hidden;
 }
 
-.stats strong {
+.menu-vivo h2,
+.sedes h2 {
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: clamp(1.2rem, 3.4vw, 1.8rem);
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.fila {
+  width: 100vw;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+/* La cinta contiene el contenido DUPLICADO: al desplazar -50% el bucle es perfecto. */
+.cinta {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  padding: 12px 0;
+  animation: desfile 46s linear infinite;
+}
+
+.fila.reversa .cinta {
+  animation-direction: reverse;
+  animation-duration: 54s;
+}
+
+.fila.lenta .cinta {
+  animation-duration: 64s;
+}
+
+.fila:hover .cinta {
+  animation-play-state: paused;
+}
+
+@keyframes desfile {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 9px)); }
+}
+
+.bocado {
+  position: relative;
+  flex-shrink: 0;
+  width: 190px;
+  padding: 0;
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  background: none;
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 200ms ease;
+}
+
+.bocado:hover {
+  transform: translateY(-5px) scale(1.03);
+}
+
+.bocado img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.bocado-info {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 22px 12px 10px;
+  background: linear-gradient(to top, rgba(64, 34, 55, 0.72), transparent);
+  text-align: left;
+}
+
+.bocado-info strong {
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.bocado-info em {
+  color: rgba(255, 255, 255, 0.85);
+  font-style: normal;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+/* ---------- Sedes ---------- */
+.sedes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: min(1080px, 94vw);
+  padding: 96px 0 0;
+  text-align: center;
+}
+
+.sedes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.sede {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  text-align: left;
+}
+
+.sede-foto {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+}
+
+.sede-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px 20px;
+}
+
+.sede-info h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
   color: var(--text);
 }
 
-.stats span {
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.sede-info p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.sede-mapa {
+  width: 100%;
+  height: 190px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-top: 6px;
+}
+
+.sede-btn {
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 11px 22px;
+  font-size: 0.92rem;
+}
+
+/* ---------- Sección de fotos de marca ---------- */
+.mundo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 940px;
+  text-align: center;
+  padding: 96px 24px 0;
+}
+
+.mundo h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3.4vw, 1.8rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.seccion-texto {
+  margin: 0;
+  max-width: 560px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.mundo-fotos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  width: 100%;
+  margin: 10px 0 6px;
+}
+
+.mundo-fotos img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.mundo-fotos img:nth-child(2) {
+  transform: translateY(14px);
+}
+
+.mundo-fotos img:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-float);
+}
+
+/* ---------- Osas decorativas ---------- */
+.osa-deco {
+  width: 92px;
+  filter: drop-shadow(0 10px 18px rgba(90, 55, 85, 0.32));
+  animation: osa-flota 3.8s ease-in-out infinite;
+}
+
+.osa-deco.corre {
+  width: 104px;
+  animation-delay: -1s;
+}
+
+.osa-deco.enamorada {
+  animation-delay: -2s;
+}
+
+.osa-deco.comiendo {
+  animation-delay: -0.5s;
+}
+
+.osa-deco.duerme {
+  display: block;
+  width: 84px;
+  margin: 0 auto 10px;
+  animation: none;
+}
+
+@keyframes osa-flota {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 0 -7px; rotate: 2deg; }
+}
+
+/* ---------- Guiño a los minijuegos ---------- */
+.guinio {
+  margin: 56px 0 64px;
   color: var(--text-dim);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.guinio a {
+  color: #a97fd6;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.guinio a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .mundo-fotos {
+    grid-template-columns: 1fr;
+  }
+  .mundo-fotos img:nth-child(2) {
+    transform: none;
+  }
 }

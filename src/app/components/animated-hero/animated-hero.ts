@@ -4,11 +4,15 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 // La lógica de canvas 2D (Pong + texto en píxeles) es idéntica; solo cambian
 // los hooks de React (useEffect/useRef) por el ciclo de vida de Angular.
 
-const COLOR = '#FFFFFF';
-const HIT_COLOR = '#3a2a4d';
-const BACKGROUND_COLOR = '#0a0a0f';
-const BALL_COLOR = '#ff62b4';
-const PADDLE_COLOR = '#22d3ee';
+const COLOR = '#4a3b47';
+// Título "MINIJUEGOS" en rosa fucsia de la marca.
+const TITLE_COLOR = '#f5379c';
+const HIT_COLOR = '#f7bcdd';
+const BACKGROUND_COLOR = '#fdf9f7';
+const BALL_COLOR = '#e78ab8';
+const PADDLE_COLOR = '#8fcfe0';
+/** Logo (solo la cabeza) que reemplaza a la pelota que rebota. */
+const BALL_LOGO_SRC = 'fotos/bearnie-logo.webp';
 const LETTER_SPACING = 1;
 const WORD_SPACING = 3;
 
@@ -147,6 +151,8 @@ interface Pixel {
   y: number;
   size: number;
   hit: boolean;
+  /** true = pertenece al título grande "MINIJUEGOS" (se pinta en fucsia). */
+  big: boolean;
 }
 
 interface Ball {
@@ -184,11 +190,17 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
   private scale = 1;
   private animationId = 0;
   private resizeObserver?: ResizeObserver;
+  private readonly ballLogo = new Image();
+  private ballLogoReady = false;
 
   ngAfterViewInit(): void {
     const canvas = this.canvasRef.nativeElement;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // El logo (cabeza de Bearnie) se dibuja en vez de la pelota cuando carga.
+    this.ballLogo.onload = () => (this.ballLogoReady = true);
+    this.ballLogo.src = BALL_LOGO_SRC;
 
     // Ahora el hero es un banner contenido: el canvas se ajusta al tamaño que
     // le da su contenedor (no a la ventana completa).
@@ -262,7 +274,7 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
                   if (pixelMap[i][j]) {
                     const x = startX + j * pixelSize;
                     const y = startY + i * pixelSize;
-                    this.pixels.push({ x, y, size: pixelSize, hit: false });
+                    this.pixels.push({ x, y, size: pixelSize, hit: false, big: false });
                   }
                 }
               }
@@ -280,7 +292,7 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
                 if (pixelMap[i][j]) {
                   const x = startX + j * pixelSize;
                   const y = startY + i * pixelSize;
-                  this.pixels.push({ x, y, size: pixelSize, hit: false });
+                  this.pixels.push({ x, y, size: pixelSize, hit: false, big: true });
                 }
               }
             }
@@ -414,14 +426,28 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       this.pixels.forEach((pixel) => {
-        ctx.fillStyle = pixel.hit ? HIT_COLOR : COLOR;
+        ctx.fillStyle = pixel.hit ? HIT_COLOR : pixel.big ? TITLE_COLOR : COLOR;
         ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
       });
 
-      ctx.fillStyle = BALL_COLOR;
-      ctx.beginPath();
-      ctx.arc(this.ball.x, this.ball.y, this.ball.radius, 0, Math.PI * 2);
-      ctx.fill();
+      // La pelota es el logo (cabeza de Bearnie), recortado en círculo. Se
+      // dibuja algo más grande que el radio de colisión para que se lea bien.
+      const ball = this.ball;
+      if (this.ballLogoReady) {
+        const d = ball.radius * 4;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, d / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(this.ballLogo, ball.x - d / 2, ball.y - d / 2, d, d);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = BALL_COLOR;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       ctx.fillStyle = PADDLE_COLOR;
       this.paddles.forEach((paddle) => {

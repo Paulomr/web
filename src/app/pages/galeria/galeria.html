@@ -1,0 +1,39 @@
+<section class="galeria" (contextmenu)="bloquear($event)" (dragstart)="bloquear($event)">
+  <header class="head">
+    <h1>GALERÍA</h1>
+    <p>Bearnie, nuestras galletas y el mundo Crunchy Munch.</p>
+  </header>
+
+  <!-- Masonry con columnas CSS: respeta la orientación de cada foto. -->
+  <div class="masonry">
+    @for (foto of fotos; track foto) {
+      <button type="button" class="pic" (click)="abrir(foto)">
+        <img [src]="'fotos/' + foto" [alt]="'Foto Crunchy Munch ' + foto" loading="lazy" draggable="false" />
+        <!-- Notch con el logo: marca de agua visible en cada foto. -->
+        <span class="sello" aria-hidden="true">
+          <img src="fotos/logo-crunchy.webp" alt="" draggable="false" />
+          <em>©</em>
+        </span>
+      </button>
+    }
+  </div>
+
+  <div class="galeria-pie" aria-hidden="true">
+    <img src="fotos/bernie-guino.webp" alt="" />
+    <span>TODAS LAS FOTOS SON NUESTRAS. BEARNIE LAS CUIDA.</span>
+  </div>
+
+  @if (ampliada(); as foto) {
+    <!-- Visor: clic en cualquier parte para cerrar. -->
+    <div class="lightbox" (click)="cerrar()">
+      <div class="marco">
+        <img [src]="'fotos/' + foto" [alt]="'Foto ampliada ' + foto" draggable="false" />
+        <span class="sello grande" aria-hidden="true">
+          <img src="fotos/logo-crunchy.webp" alt="" draggable="false" />
+          <em>© CRUNCHY MUNCH</em>
+        </span>
+      </div>
+      <button type="button" class="cerrar" aria-label="Cerrar">✕</button>
+    </div>
+  }
+</section>

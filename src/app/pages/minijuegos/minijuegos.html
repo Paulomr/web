@@ -17,6 +17,28 @@
       @if (game.note) {
         <p class="note">{{ game.note }}</p>
       }
+
+      @if (game.kind === 'static') {
+        <!-- Ranking del juego abierto. Se alimenta del backend de scores. -->
+        <aside class="scores">
+          <h3>MEJORES PUNTAJES</h3>
+          @if (topScores().length > 0) {
+            <ol>
+              @for (row of topScores(); track $index) {
+                <li>
+                  <span class="pos">{{ $index + 1 }}</span>
+                  <span class="who">{{ row.player }}</span>
+                  <span class="pts">{{ row.points }}</span>
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="empty">
+              Aún no hay puntajes. Juega una partida (con el backend encendido) y sé el primero.
+            </p>
+          }
+        </aside>
+      }
     </div>
   } @else {
     <!-- Hero animado a pantalla completa. Desliza hacia abajo para los juegos. -->
@@ -41,7 +63,53 @@
         @for (game of games; track game.id) {
           <li class="card">
             <div class="card-cover" [style.background]="game.cover">
-              <span class="card-icon">{{ game.icon }}</span>
+              @if (game.trailer) {
+                <!-- Minitrailer real: video grabado del juego, en bucle. -->
+                <video
+                  class="trailer-vid"
+                  [src]="game.trailer"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  aria-hidden="true"
+                ></video>
+              } @else {
+              <!-- Minitrailer: mini-escena animada según el juego. -->
+              <div class="trailer" aria-hidden="true">
+                @switch (game.id) {
+                  @case ('pacman') {
+                    <span class="pac"></span>
+                    <span class="ghost"></span>
+                    <i class="dot p1"></i><i class="dot p2"></i><i class="dot p3"></i>
+                    <i class="dot p4"></i><i class="dot p5"></i>
+                  }
+                  @case ('pasteleria') {
+                    <span class="cup"></span>
+                    <i class="sprk s1"></i><i class="sprk s2"></i><i class="sprk s3"></i>
+                    <i class="sprk s4"></i><i class="sprk s5"></i>
+                  }
+                  @case ('head-soccer') {
+                    <span class="bear left"></span>
+                    <span class="bear right"></span>
+                    <span class="ball-wrap"><span class="ball"></span></span>
+                    <span class="ground"></span>
+                  }
+                  @case ('catapulta') {
+                    <span class="target"></span>
+                    <span class="rock-wrap"><span class="rock"></span></span>
+                    <span class="ground"></span>
+                  }
+                  @case ('trivia') {
+                    <span class="bulb"></span>
+                    <i class="mark m1">?</i><i class="mark m2">!</i><i class="mark m3">?</i>
+                  }
+                  @default {
+                    <span class="card-icon">{{ game.icon }}</span>
+                  }
+                }
+              </div>
+              }
               <span class="card-shine" aria-hidden="true"></span>
             </div>
             <div class="card-body">

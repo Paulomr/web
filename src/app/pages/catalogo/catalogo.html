@@ -1,0 +1,72 @@
+<section class="catalogo">
+  <header class="head">
+    <img class="head-osa" src="fotos/bernie-chef.webp" alt="Bearnie chef" />
+    <h1>CATÁLOGO</h1>
+    <p>NUESTRO MENÚ COMPLETO. AGREGA AL CARRITO Y PIDE POR WHATSAPP.</p>
+  </header>
+
+  @for (s of secciones; track s.id) {
+    <section class="segmento" [id]="'seccion-' + s.id">
+      <h2>{{ s.label }}</h2>
+      <ul class="productos">
+        @for (p of s.productos; track p.id) {
+          <li class="producto" [attr.data-cat]="p.categoria">
+            <div class="foto">
+              @if (p.fotos.length > 0) {
+                <img [src]="'fotos/' + foto(p)" [alt]="p.nombre" loading="lazy" />
+                @if (p.fotos.length > 1) {
+                  <div class="dots" aria-hidden="true">
+                    @for (f of p.fotos; track $index) {
+                      <span class="dot" [class.on]="$index === fotoIndex(p)"></span>
+                    }
+                  </div>
+                }
+              } @else {
+                <div class="sin-foto" aria-hidden="true">
+                  <img class="sin-foto-osa" src="fotos/bearnie-logo.webp" alt="" />
+                  <span class="sin-foto-txt">FOTO MUY PRONTO</span>
+                </div>
+              }
+              @if (p.nuevo) {
+                <span class="nuevo">NUEVO</span>
+              }
+              @if (p.detalle) {
+                <span class="detalle">{{ p.detalle }}</span>
+              }
+            </div>
+
+            <div class="info">
+              <h3>{{ p.nombre }}</h3>
+              <p class="desc">{{ p.descripcion }}</p>
+              <div class="pie">
+                <span class="precio">{{ p.precio || 'CONSULTAR' }}</span>
+                <button type="button" class="pedir" (click)="agregar(p)">AGREGAR</button>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- Notch flotante: navegación rápida entre secciones. -->
+  @if (notchAbierto()) {
+    <div class="notch-fondo" (click)="notchAbierto.set(false)"></div>
+  }
+  <div class="notch-filtro" [class.abierto]="notchAbierto()">
+    @if (!notchAbierto()) {
+      <button type="button" class="notch-trigger" (click)="notchAbierto.set(true)">
+        <span class="notch-label">SECCIONES</span>
+        <span class="notch-flecha" aria-hidden="true">⌃</span>
+      </button>
+    } @else {
+      <div class="notch-panel" role="menu" aria-label="Secciones del catálogo">
+        @for (s of secciones; track s.id) {
+          <button type="button" role="menuitem" (click)="irA(s.id)">
+            <span>{{ s.label }}</span>
+          </button>
+        }
+      </div>
+    }
+  </div>
+</section>

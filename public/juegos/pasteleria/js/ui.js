@@ -140,7 +140,7 @@ function clienteSVG(c) {
 
 function burbujaHTML(c) {
   const items = c.pedido.items
-    .map((it, i) => `<div class="burbuja-item ${it.servido ? 'servida' : ''}" data-item="${i}">${galletaHTML(itemAGalleta(it), 0.3)}${ICONO_CHECK}</div>`)
+    .map((it, i) => `<div class="burbuja-item ${it.servido ? 'servida' : ''}" data-item="${i}">${galletaHTML(itemAGalleta(it), 0.56)}${ICONO_CHECK}</div>`)
     .join('');
   return `<div class="burbuja"><div class="burbuja-items">${items}</div><div class="paciencia"><div class="paciencia-fill"></div></div></div>`;
 }

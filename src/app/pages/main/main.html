@@ -1,34 +1,144 @@
 <main class="landing">
-  <div class="orbs" aria-hidden="true">
-    <span class="orb orb-1"></span>
-    <span class="orb orb-2"></span>
-    <span class="orb orb-3"></span>
-  </div>
+  <!-- Hero expandible: la foto crece con el scroll y el título se abre.
+       El fondo lleva los doodles de la marca en rosa, bien visibles. -->
+  <section class="expand" #expandEl>
+    <div class="pegajoso">
+      <!-- Fotos laterales: acompañan a la principal y se difuminan al bajar. -->
+      <img class="exp-lado izq" src="fotos/bearnie-0648.webp" alt="" aria-hidden="true" />
+      <img class="exp-lado der" src="fotos/bearnie-0019.webp" alt="" aria-hidden="true" />
 
-  <section class="hero">
-    <span class="eyebrow">▸ Arcade en tu navegador</span>
+      <img class="exp-media" src="fotos/bearnie-0825.webp" alt="Clienta disfrutando un milkshake Crunchy Munch" />
 
-    <h1 class="title">
-      <span class="title-mark">ARCADIA</span>
-    </h1>
+      <div class="exp-titulos">
+        <h1 class="exp-h1">CRUNCHY MUNCH</h1>
+        <span class="exp-linea1">NEW YORK STYLE COOKIES</span>
+        <span class="exp-linea2">SAN ANTONIO · MARINILLA</span>
+      </div>
 
-    <p class="tagline">
-      Una colección de minijuegos listos para jugar. Sin descargas, sin esperas:
-      elige, juega y compite.
+      <div class="exp-hint" aria-hidden="true">
+        <span>Desliza para descubrir</span>
+        <span class="chevron">⌄</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Único llamado a la acción: el catálogo. -->
+  <section class="cta">
+    <button type="button" class="btn-notch" routerLink="/catalogo">
+      <span>Ver catálogo</span>
+      <span class="btn-arrow" aria-hidden="true">▸</span>
+    </button>
+  </section>
+
+  <!-- Menú en movimiento: filas de productos que se deslizan desde los lados.
+       Tocar un producto lo agrega al carrito. -->
+  <section class="menu-vivo">
+    <img class="osa-deco corre" src="fotos/bernie-corriendo.webp" alt="" aria-hidden="true" />
+    <h2>NUESTRO MENÚ</h2>
+    <p class="seccion-texto">
+      NY Cookies, crookies, milkshakes, minis y bebidas. Toca cualquiera para agregarla a tu pedido.
     </p>
 
-    <div class="actions">
-      <button type="button" class="btn btn-primary" routerLink="/minijuegos">
-        <span>Jugar ahora</span>
-        <span class="btn-arrow" aria-hidden="true">▸</span>
-      </button>
-      <a class="btn btn-ghost" routerLink="/minijuegos">Ver catálogo</a>
+    <div class="fila" aria-label="Productos destacados">
+      <div class="cinta">
+        @for (p of filaA; track p.id) {
+          <button type="button" class="bocado" (click)="agregar(p)">
+            <img [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" loading="lazy" />
+            <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
+          </button>
+        }
+        @for (p of filaA; track p.id + '-b') {
+          <button type="button" class="bocado" (click)="agregar(p)" aria-hidden="true" tabindex="-1">
+            <img [src]="'fotos/' + p.fotos[0]" [alt]="''" loading="lazy" />
+            <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
+          </button>
+        }
+      </div>
     </div>
 
-    <ul class="stats" aria-label="Resumen">
-      <li><strong>2+</strong><span>Juegos</span></li>
-      <li><strong>0€</strong><span>Gratis</span></li>
-      <li><strong>1·click</strong><span>Para jugar</span></li>
-    </ul>
+    <div class="fila reversa">
+      <div class="cinta">
+        @for (p of filaB; track p.id) {
+          <button type="button" class="bocado" (click)="agregar(p)">
+            <img [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" loading="lazy" />
+            <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
+          </button>
+        }
+        @for (p of filaB; track p.id + '-b') {
+          <button type="button" class="bocado" (click)="agregar(p)" aria-hidden="true" tabindex="-1">
+            <img [src]="'fotos/' + p.fotos[0]" [alt]="''" loading="lazy" />
+            <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="fila lenta">
+      <div class="cinta">
+        @for (p of filaC; track p.id) {
+          <button type="button" class="bocado" (click)="agregar(p)">
+            <img [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" loading="lazy" />
+            <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
+          </button>
+        }
+        @for (p of filaC; track p.id + '-b') {
+          <button type="button" class="bocado" (click)="agregar(p)" aria-hidden="true" tabindex="-1">
+            <img [src]="'fotos/' + p.fotos[0]" [alt]="''" loading="lazy" />
+            <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <button type="button" class="btn-notch" routerLink="/catalogo">
+      <span>Ver catálogo completo</span>
+      <span class="btn-arrow" aria-hidden="true">▸</span>
+    </button>
   </section>
+
+  <!-- Fotos de marca: Bearnie y las galletas, con enlace a la galería completa. -->
+  <section class="mundo">
+    <img class="osa-deco enamorada" src="fotos/bernie-enamorada.webp" alt="" aria-hidden="true" />
+    <h2>EL MUNDO CRUNCHY MUNCH</h2>
+    <p class="seccion-texto">
+      Nuestras tiendas rosas, mucha crema, perritos invitados y una anfitriona
+      inolvidable: Bearnie, la osa de la marca.
+    </p>
+
+    <div class="mundo-fotos">
+      <img src="fotos/bearnie-1085.webp" alt="Clienta con su perrito mostrando una galleta en la tienda" loading="lazy" />
+      <img src="fotos/bearnie-0411.webp" alt="Cajas de galletas Crunchy Munch surtidas" loading="lazy" />
+      <img src="fotos/bearnie-1180.webp" alt="Pareja compartiendo milkshakes con su perrito" loading="lazy" />
+    </div>
+
+    <a class="btn btn-ghost" routerLink="/galeria">Ver galería completa</a>
+  </section>
+
+  <!-- Sedes con mapa y cómo llegar. -->
+  <section class="sedes">
+    <img class="osa-deco comiendo" src="fotos/bernie-comiendo.webp" alt="" aria-hidden="true" />
+    <h2>NUESTRAS SEDES</h2>
+    <p class="seccion-texto">Ven por tu galleta: te esperamos con Bearnie en ambas sedes.</p>
+
+    <div class="sedes-grid">
+      @for (s of sedes; track s.nombre) {
+        <article class="sede">
+          <img class="sede-foto" [src]="'fotos/' + s.foto" [alt]="s.nombre" loading="lazy" />
+          <div class="sede-info">
+            <h3>{{ s.nombre }}</h3>
+            <p>{{ s.direccion }}</p>
+            <iframe class="sede-mapa" [src]="s.mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade" [title]="'Mapa ' + s.nombre"></iframe>
+            <a class="btn btn-primary sede-btn" [href]="s.comoLlegar" target="_blank" rel="noopener">Cómo llegar</a>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- Guiño discreto a los minijuegos: secundario, no protagonista. -->
+  <p class="guinio">
+    <img class="osa-deco duerme" src="fotos/bernie-durmiendo.webp" alt="" aria-hidden="true" />
+    ¿Con antojo de jugar? Bearnie escondió unos
+    <a routerLink="/minijuegos">minijuegos mágicos</a> por aquí.
+  </p>
 </main>

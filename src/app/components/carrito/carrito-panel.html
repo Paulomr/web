@@ -1,0 +1,109 @@
+@if (carrito.abierto()) {
+  <div class="velo" (click)="carrito.abierto.set(false)"></div>
+
+  <aside class="panel" aria-label="Carrito de pedidos">
+    <header class="panel-top">
+      <h2>TU PEDIDO</h2>
+      <button type="button" class="cerrar" (click)="carrito.abierto.set(false)" aria-label="Cerrar">✕</button>
+    </header>
+
+    @if (carrito.items().length === 0) {
+      <div class="vacio">
+        <img src="fotos/bernie-bandeja.webp" alt="" />
+        <p>TU CARRITO ESTÁ VACÍO. AGREGA ALGO DELICIOSO DEL CATÁLOGO.</p>
+      </div>
+    } @else {
+      <ul class="lista">
+        @for (item of carrito.items(); track item.id) {
+          @if (carrito.producto(item.id); as p) {
+            <li class="item">
+              @if (p.fotos.length > 0) {
+                <img class="mini" [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" />
+              } @else {
+                <img class="mini" src="fotos/bearnie-logo.webp" [alt]="p.nombre" />
+              }
+              <div class="item-info">
+                <strong>{{ p.nombre }}</strong>
+                <span class="item-precio">{{ precioLinea(p, item.cantidad) }}</span>
+              </div>
+              <div class="cantidad">
+                <button type="button" (click)="carrito.restar(item.id)" aria-label="Quitar uno">−</button>
+                <span>{{ item.cantidad }}</span>
+                <button type="button" (click)="carrito.agregar(item.id)" aria-label="Agregar uno">+</button>
+              </div>
+            </li>
+          }
+        }
+      </ul>
+
+      <div class="total">
+        <span>TOTAL</span>
+        <strong>{{ totalTexto() }}@if (carrito.hayConsultar()) { <em>+ ÍTEMS POR CONSULTAR</em> }</strong>
+      </div>
+
+      <!-- Datos del pedido -->
+      <form class="datos" (submit)="$event.preventDefault(); enviar()">
+        <fieldset>
+          <legend>ENTREGA</legend>
+          <div class="opciones">
+            <button type="button" [class.on]="carrito.datos().entrega === 'domicilio'"
+              (click)="carrito.actualizarDatos({ entrega: 'domicilio' })">A DOMICILIO</button>
+            <button type="button" [class.on]="carrito.datos().entrega === 'recoger'"
+              (click)="carrito.actualizarDatos({ entrega: 'recoger' })">RECOGER EN TIENDA</button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>SEDE (¿A QUÉ TIENDA LE PIDES?)</legend>
+          <div class="opciones">
+            <button type="button" [class.on]="carrito.datos().sede === 'san-antonio'"
+              (click)="carrito.actualizarDatos({ sede: 'san-antonio' })">SAN ANTONIO</button>
+            <button type="button" [class.on]="carrito.datos().sede === 'marinilla'"
+              (click)="carrito.actualizarDatos({ sede: 'marinilla' })">MARINILLA</button>
+          </div>
+        </fieldset>
+
+        @if (carrito.datos().entrega === 'domicilio') {
+          <label>
+            DIRECCIÓN DE ENTREGA
+            <input type="text" [value]="carrito.datos().direccion" (input)="onInput('direccion', $event)"
+              placeholder="CALLE, NÚMERO, BARRIO, CIUDAD" />
+          </label>
+        }
+
+        <fieldset>
+          <legend>PAGO</legend>
+          <div class="opciones">
+            <button type="button" [class.on]="carrito.datos().pago === 'efectivo'"
+              (click)="carrito.actualizarDatos({ pago: 'efectivo' })">EFECTIVO</button>
+            <button type="button" [class.on]="carrito.datos().pago === 'transferencia'"
+              (click)="carrito.actualizarDatos({ pago: 'transferencia' })">TRANSFERENCIA</button>
+          </div>
+        </fieldset>
+
+        <div class="fila-2">
+          <label>
+            NOMBRE
+            <input type="text" [value]="carrito.datos().nombre" (input)="onInput('nombre', $event)" placeholder="TU NOMBRE" />
+          </label>
+          <label>
+            TELÉFONO
+            <input type="tel" [value]="carrito.datos().telefono" (input)="onInput('telefono', $event)" placeholder="300 000 0000" />
+          </label>
+        </div>
+
+        <label>
+          NOTAS (OPCIONAL)
+          <input type="text" [value]="carrito.datos().notas" (input)="onInput('notas', $event)"
+            placeholder="SIN MANÍ, VELITAS, DEDICATORIA…" />
+        </label>
+
+        <button type="submit" class="enviar" [disabled]="!carrito.puedeEnviar()">
+          ENVIAR PEDIDO POR WHATSAPP
+        </button>
+        <p class="aviso">AL ENVIAR SE ABRE WHATSAPP CON TU PEDIDO LISTO: SOLO CONFIRMAS Y LISTO.</p>
+        <button type="button" class="vaciar" (click)="carrito.vaciar()">VACIAR CARRITO</button>
+      </form>
+    }
+  </aside>
+}

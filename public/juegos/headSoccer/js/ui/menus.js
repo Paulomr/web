@@ -12,9 +12,19 @@ import { SFX } from '../audio/sfx.js';
 import { TOUCH } from '../core/input.js';
 import { on } from '../core/events.js';
 import { submitScore, renderLb } from './leaderboard.js';
+import { MISIONES, misionActual, superarMision, todasSuperadas } from '../misiones.js';
 
 let game=null, pickP=0, pickC=1, playerName="Jugador", inMatch=false;
 let mode=1, choosing=1; // modo 1P/2P y a quien se asigna la proxima card
+let misionEnCurso=null; // mision activa (null = partido libre)
+let againTxt="";        // texto original del boton REPETIR
+
+function pintarMisionInfo(){
+  const el=document.getElementById("misionInfo"); if(!el) return;
+  el.textContent = todasSuperadas()
+    ? "★ VENCISTE TODAS LAS MISIONES DE BEARNIE ★"
+    : `MISION ACTUAL: ${misionActual().n}/${MISIONES.length} — ${misionActual().nombre}`;
+}
 
 function paintSel(){
   const box=document.getElementById("cards");
@@ -66,11 +76,18 @@ function startMatch(){
   hide("hud"); hide("pad"); hide("pauseBtn"); // REPETIR llegaba con el HUD flotando sobre la carga
   inMatch=false; clearTouch();
   game.scene.stop('Game'); // detiene el partido anterior YA: que no termine detras de la carga
+  // En mision: el rival SIEMPRE es Bearnie y la dificultad la fija la mision.
+  const m=misionEnCurso;
+  const idxBearnie=ASSETS.chars.findIndex(c=>c.id==="bearnie");
+  const extra=m?{dif:m.dif, mision:m.n}:{};
+  const rival=m?idxBearnie:pickC;
+  const yo=(m && pickP===idxBearnie)?0:pickP; // en mision no puedes SER Bearnie
   showLoading(()=>{
     hide("load");
     show("hud"); show("pad"); show("pauseBtn"); inMatch=true;
-    game.scene.start('Game', {pickP, pickC, twoP:mode===2});
+    game.scene.start('Game', {pickP:yo, pickC:rival, twoP:!m && mode===2, ...extra});
   });
+  if(m) setText("tip", `MISION ${m.n}: ${m.nombre}`); // la carga anuncia la mision
 }
 
 // Pausa in-game: congela la escena (fisica, timer y tweens) sin cortar la musica
@@ -88,20 +105,37 @@ on('finale', e=>{
 });
 
 on('matchEnded', e=>{
-  const {sP,sC,twoP}=e.detail;
+  const {sP,sC,twoP,mision}=e.detail;
   hide("hud"); hide("pad"); hide("pauseBtn"); inMatch=false; clearTouch();
   showLoading(async()=>{
     hide("load");
     const win=sP>sC, tie=sP===sC;
-    if (twoP){ // en 2P el resultado nombra al ganador (no "ganaste/perdiste" ambiguo)
+    const again=document.getElementById("again");
+    if (mision){ // resultado del modo misiones (vs Bearnie malvada)
+      const m=MISIONES[mision-1];
+      setText("finalScore", `${playerName}  ${sP} - ${sC}  BEARNIE`);
+      if (win){
+        const sig=superarMision(mision);
+        setText("result", mision===MISIONES.length?"¡VENCISTE A BEARNIE DEFINITIVA!":`¡MISION ${mision} SUPERADA!`);
+        misionEnCurso=sig;                       // null si era la ultima
+        again.textContent=sig?"SIGUIENTE MISION":againTxt;
+        // Ranking global Crunchy: la mision N vale N*10 (Bearnie reina con 99).
+        if (window.CrunchyScores) window.CrunchyScores.submit('head-soccer', mision*10, playerName);
+      } else {
+        setText("result", `BEARNIE TE VENCIO — ${m.nombre}`);
+        again.textContent="REINTENTAR MISION";   // misionEnCurso sigue igual
+      }
+    } else if (twoP){ // en 2P el resultado nombra al ganador (no "ganaste/perdiste" ambiguo)
       setText("result", tie?"EMPATE":win?"¡GANA JUGADOR 1!":"¡GANA JUGADOR 2!");
       setText("finalScore", `JUGADOR 1  ${sP} - ${sC}  JUGADOR 2`);
+      again.textContent=againTxt;
     } else {
       setText("result", tie?"EMPATE":win?"¡GANASTE!":"PERDISTE");
       setText("finalScore", `${playerName}  ${sP} - ${sC}  CPU`);
+      again.textContent=againTxt;
     }
     show("over"); overBg.start();
-    if (!twoP) await submitScore(playerName, win?1:0); // el ranking mide victorias contra la CPU
+    if (!twoP && !mision) await submitScore(playerName, win?1:0); // el ranking mide victorias contra la CPU
     renderLb("lbList");
   });
 });
@@ -132,9 +166,24 @@ export function initUI(g){
     hide("start"); maze.stop(); show("select");
   };
   nameEl.addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("goSelect").click(); });
-  document.getElementById("startMatch").onclick=startMatch;
-  document.getElementById("again").onclick=startMatch;
-  document.getElementById("menu").onclick=()=>{hide("over");overBg.stop();show("start");maze.start();};
+  document.getElementById("startMatch").onclick=()=>{ misionEnCurso=null; startMatch(); };
+  document.getElementById("again").onclick=()=>{
+    if (misionEnCurso===null && document.getElementById("again").textContent!==againTxt){
+      // gano la ultima mision: REPETIR vuelve al flujo libre
+      document.getElementById("again").textContent=againTxt;
+    }
+    startMatch();
+  };
+  againTxt=document.getElementById("again").textContent;
+  // MISIONES: arranca (o continua) la campana contra Bearnie con el nombre puesto.
+  document.getElementById("goMision").onclick=()=>{
+    playerName=(nameEl.value.trim()||"Jugador");
+    try{ localStorage.setItem("bs_name", playerName); }catch(e){}
+    misionEnCurso=misionActual();
+    startMatch();
+  };
+  pintarMisionInfo();
+  document.getElementById("menu").onclick=()=>{hide("over");overBg.stop();show("start");maze.start();misionEnCurso=null;document.getElementById("again").textContent=againTxt;pintarMisionInfo();};
   document.getElementById("seeLb").onclick=async()=>{hide("start");maze.stop();show("lbScreen");await renderLb("lbList2");};
   document.getElementById("lbBack").onclick=()=>{hide("lbScreen");show("start");maze.start();};
 

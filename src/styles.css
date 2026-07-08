@@ -1,47 +1,59 @@
 /* ============================================================
-   Arcadia — sistema de diseño global
-   Estética arcade/neón sobre un fondo oscuro profundo.
+   Crunchy Munch — sistema de diseño global
+   Estética pastel clara y fina: crema, rosa pálido, celeste y lila.
    ============================================================ */
+
+/* Fuente de títulos de la marca (burbujeante, como el letrero del local). */
+@font-face {
+  font-family: 'Super Corn';
+  src: url('/fonts/super-corn.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* --- Superficies --- */
-  --bg: #0a0a0f;
-  --bg-elevated: #12121a;
-  --surface: #16161f;
-  --surface-2: #1c1c28;
-  --border: #2a2a38;
-  --border-strong: #3a3a4d;
+  --bg: #fdf9f7;
+  --bg-elevated: #fffcfa;
+  --surface: #ffffff;
+  --surface-2: #faf3f4;
+  --border: #f0e3e9;
+  --border-strong: #e3cfd9;
 
   /* --- Texto --- */
-  --text: #f4f4f8;
-  --text-muted: #a8a8bd;
-  --text-dim: #6e6e85;
+  --text: #4a3b47;
+  --text-muted: #8d7a89;
+  --text-dim: #b8a8b4;
 
-  /* --- Acentos neón --- */
-  --pink: #ff62b4;
-  --pink-soft: #ff8fcb;
-  --cyan: #22d3ee;
-  --cyan-soft: #7ce8f7;
-  --violet: #a855f7;
-  --amber: #fbbf24;
+  /* --- Acentos pastel --- */
+  --pink: #f2a9cd;
+  --pink-soft: #f9d1e5;
+  --cyan: #9adbe8;
+  --cyan-soft: #cdeef5;
+  --violet: #c9aee8;
+  --violet-soft: #e6d9f6;
+  --amber: #f6d8a8;
 
   /* --- Gradientes de marca --- */
-  --grad-brand: linear-gradient(135deg, #ff62b4 0%, #a855f7 50%, #22d3ee 100%);
-  --grad-pink: linear-gradient(135deg, #ff62b4 0%, #a855f7 100%);
+  --grad-brand: linear-gradient(135deg, #f2a9cd 0%, #c9aee8 50%, #9adbe8 100%);
+  --grad-pink: linear-gradient(135deg, #f2a9cd 0%, #c9aee8 100%);
+  --grad-soft: linear-gradient(135deg, #f9d1e5 0%, #e6d9f6 50%, #cdeef5 100%);
 
   /* --- Radios --- */
   --r-sm: 8px;
   --r-md: 14px;
-  --r-lg: 20px;
+  --r-lg: 22px;
   --r-pill: 999px;
 
-  /* --- Sombras / glow --- */
-  --shadow-card: 0 18px 40px -18px rgba(0, 0, 0, 0.85);
-  --glow-pink: 0 0 24px -2px rgba(255, 98, 180, 0.55);
-  --glow-cyan: 0 0 24px -2px rgba(34, 211, 238, 0.5);
+  /* --- Sombras suaves --- */
+  --shadow-card: 0 16px 36px -20px rgba(120, 80, 110, 0.28);
+  --shadow-float: 0 24px 48px -24px rgba(120, 80, 110, 0.35);
+  --glow-pink: 0 10px 28px -8px rgba(242, 169, 205, 0.65);
+  --glow-cyan: 0 10px 28px -8px rgba(154, 219, 232, 0.65);
 
   /* --- Tipografía --- */
-  --font-display: "Press Start 2P", system-ui, sans-serif;
+  --font-display: "Super Corn", "Unbounded", system-ui, sans-serif;
   --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
 }
 
@@ -64,9 +76,11 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Identidad de marca: TODO el texto en mayúsculas, también descripciones. */
+  text-transform: uppercase;
 }
 
-/* Capa de textura ambiental: nebulosa neón sutil sobre todo el fondo. */
+/* Capa ambiental: manchas pastel muy sutiles sobre el fondo crema. */
 body::before {
   content: "";
   position: fixed;
@@ -74,14 +88,33 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(60vw 60vw at 15% 0%, rgba(168, 85, 247, 0.10), transparent 60%),
-    radial-gradient(55vw 55vw at 100% 20%, rgba(34, 211, 238, 0.08), transparent 60%),
-    radial-gradient(70vw 70vw at 50% 110%, rgba(255, 98, 180, 0.10), transparent 60%);
+    radial-gradient(60vw 60vw at 15% 0%, rgba(201, 174, 232, 0.14), transparent 60%),
+    radial-gradient(55vw 55vw at 100% 20%, rgba(154, 219, 232, 0.14), transparent 60%),
+    radial-gradient(70vw 70vw at 50% 110%, rgba(242, 169, 205, 0.16), transparent 60%);
+}
+
+/* Doodles oficiales de la marca, repetidos con muy poca opacidad:
+   decoran todo el fondo sin distraer. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.09;
+  background-image: url("/fotos/doodles-rosa.webp");
+  background-size: 560px auto;
+}
+
+/* Títulos siempre en mayúsculas, finos y espaciados. */
+h1, h2, h3, h4 {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* Foco accesible y consistente para todos los controles. */
 :where(button, a, [tabindex]):focus-visible {
-  outline: 2px solid var(--cyan);
+  outline: 2px solid var(--violet);
   outline-offset: 3px;
   border-radius: var(--r-sm);
 }

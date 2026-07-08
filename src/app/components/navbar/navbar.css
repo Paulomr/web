@@ -1,0 +1,225 @@
+/* Notch flotante: cápsula fija arriba, centrada, con desenfoque de fondo. */
+.notch {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 8px 14px 8px 20px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-card);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand-logo {
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 10px -4px rgba(90, 55, 85, 0.5);
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ============ Ítems estilo gradient-menu ============ */
+.links {
+  display: flex;
+  gap: 8px;
+}
+
+.gitem {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-pill);
+  background: #ffffff;
+  box-shadow: 0 6px 16px -8px rgba(90, 55, 85, 0.4);
+  text-decoration: none;
+  overflow: visible;
+  transition: width 500ms ease, box-shadow 500ms ease;
+}
+
+.gitem:hover,
+.gitem.activa {
+  width: 118px;
+  box-shadow: none;
+}
+
+/* Fondo degradado que aparece al expandir. */
+.gitem::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--gf), var(--gt));
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.gitem:hover::before,
+.gitem.activa::before {
+  opacity: 1;
+}
+
+/* Brillo desenfocado debajo (glow). */
+.gitem::after {
+  content: '';
+  position: absolute;
+  inset: 10px 0 -6px 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--gf), var(--gt));
+  filter: blur(15px);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 500ms ease;
+}
+
+.gitem:hover::after,
+.gitem.activa::after {
+  opacity: 0.5;
+}
+
+.gicon {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  color: #8d7a89;
+  transition: transform 500ms ease;
+}
+
+.gitem:hover .gicon,
+.gitem.activa .gicon {
+  transform: scale(0);
+}
+
+.gtxt {
+  position: absolute;
+  z-index: 1;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transform: scale(0);
+  transition: transform 500ms ease 150ms;
+}
+
+.gitem:hover .gtxt,
+.gitem.activa .gtxt {
+  transform: scale(1);
+}
+
+/* La chispa de Juegos titila incluso cerrada. */
+.gitem.magica .gicon {
+  animation: chispa 1.8s ease-in-out infinite;
+}
+
+@keyframes chispa {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(14deg); }
+}
+
+.gitem.magica:hover .gicon,
+.gitem.magica.activa .gicon {
+  animation: none;
+  transform: scale(0);
+}
+
+/* ============ Carrito en el notch ============ */
+.carrito-notch {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(20, 14, 22, 0.94);
+  color: #f7d9ea;
+  cursor: pointer;
+  margin-left: 2px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.carrito-notch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -6px rgba(90, 55, 85, 0.5);
+}
+
+.carrito-notch svg {
+  width: 21px;
+  height: 21px;
+}
+
+.carrito-num {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(45deg, #f078b8, #e84e9c);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  animation: num-pop 300ms ease;
+}
+
+@keyframes num-pop {
+  0% { transform: scale(0.4); }
+  70% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+/* ============ Móvil: píldoras compactas sin animación de ancho ============ */
+@media (max-width: 620px) {
+  .notch {
+    gap: 10px;
+    padding: 8px 12px;
+  }
+  .brand-name {
+    display: none;
+  }
+  .gitem {
+    width: 40px;
+    height: 40px;
+  }
+  .gitem:hover,
+  .gitem.activa {
+    width: 40px;
+  }
+  .gitem:hover .gicon,
+  .gitem.activa .gicon {
+    transform: scale(1);
+  }
+  .gitem .gtxt {
+    display: none;
+  }
+}

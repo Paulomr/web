@@ -1,0 +1,206 @@
+.galeria {
+  width: min(1180px, 94vw);
+  margin: 0 auto;
+  padding: 110px 0 80px;
+}
+
+.head {
+  text-align: center;
+  margin-bottom: 38px;
+}
+
+.head h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.head p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.02rem;
+}
+
+/* ---------- Masonry ---------- */
+.masonry {
+  columns: 4 260px;
+  column-gap: 16px;
+}
+
+.pic {
+  display: block;
+  width: 100%;
+  /* Altura mínima previa a la carga: evita que el observador de scroll
+     crea que todas las fotos (aún sin alto) están en pantalla. */
+  min-height: 220px;
+  margin: 0 0 16px;
+  padding: 0;
+  border: none;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  cursor: zoom-in;
+  background: var(--surface-2);
+  box-shadow: var(--shadow-card);
+  break-inside: avoid;
+  /* Estado inicial: fuera de escena. Las impares llegan desde la izquierda
+     y las pares desde la derecha (lados contrarios). */
+  opacity: 0;
+  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1), opacity 650ms ease, box-shadow 200ms ease;
+}
+
+.pic:nth-child(odd) {
+  transform: translateX(-70px) rotate(-1.5deg);
+}
+
+.pic:nth-child(even) {
+  transform: translateX(70px) rotate(1.5deg);
+}
+
+.pic.visible {
+  opacity: 1;
+  transform: translateX(0) rotate(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pic,
+  .pic:nth-child(odd),
+  .pic:nth-child(even) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Bearnie despidiendo la galería. */
+.galeria-pie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 44px;
+  text-align: center;
+}
+
+.galeria-pie img {
+  width: 110px;
+  animation: osa-flota 3.6s ease-in-out infinite;
+}
+
+@keyframes osa-flota {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 0 -7px; rotate: 2deg; }
+}
+
+.galeria-pie span {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.pic:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: var(--shadow-float);
+}
+
+.pic img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* Notch de marca de agua sobre cada foto. */
+.sello {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.sello img {
+  height: 16px;
+  width: auto;
+}
+
+.sello em {
+  font-style: normal;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(74, 47, 66, 0.75);
+}
+
+.sello.grande {
+  bottom: 16px;
+  right: 16px;
+  padding: 7px 14px;
+}
+
+.sello.grande img {
+  height: 22px;
+}
+
+.sello.grande em {
+  font-size: 0.78rem;
+}
+
+.marco {
+  position: relative;
+  display: inline-block;
+}
+
+.marco img {
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* ---------- Visor ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 4vh 4vw;
+  background: rgba(74, 59, 71, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: zoom-out;
+}
+
+.lightbox .marco img {
+  max-width: 92vw;
+  max-height: 92vh;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-float);
+}
+
+.cerrar {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+}

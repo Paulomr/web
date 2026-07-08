@@ -10,7 +10,7 @@
 export type GameKind = 'static' | 'server';
 
 export interface Game {
-  /** Identificador único (usado en la URL del reproductor). */
+  /** Identificador único (usado en la URL del reproductor y en los scores). */
   id: string;
   /** Nombre visible del minijuego. */
   name: string;
@@ -24,20 +24,52 @@ export interface Game {
   icon: string;
   /** Fondo (gradiente CSS) de la portada de la tarjeta. */
   cover: string;
+  /** Minitrailer en video (webm) grabado del juego; si falta, se usa la
+   *  mini-escena animada en CSS de la portada. */
+  trailer?: string;
   /** Nota opcional (por ejemplo, requisitos para ejecutarlo). */
   note?: string;
 }
 
 export const GAMES: Game[] = [
   {
+    id: 'pacman',
+    name: 'Pacman',
+    kind: 'static',
+    url: 'juegos/pacman/index.html',
+    description: 'El clásico laberinto: come todos los puntos y escapa de los fantasmas.',
+    icon: '👻',
+    cover: 'linear-gradient(135deg, #f9e6b8 0%, #f9d1e5 100%)',
+    trailer: 'juegos/trailers/pacman.webm',
+  },
+  {
+    id: 'pasteleria',
+    name: 'Pastelería',
+    kind: 'static',
+    url: 'juegos/pasteleria/index.html',
+    description: 'Prepara y decora dulces contra reloj en la cocina de Crunchy Munch.',
+    icon: '🧁',
+    cover: 'linear-gradient(135deg, #f9d1e5 0%, #e6d9f6 100%)',
+  },
+  {
     id: 'head-soccer',
     name: 'Head Soccer (Bears)',
     kind: 'static',
-    url: 'juegos/headSoccer/bear-soccer-phaser.html',
-    description: 'Juego de fútbol 1v1 hecho con Phaser. Se ejecuta en el navegador.',
+    url: 'juegos/headSoccer/index.html',
+    description: 'Fútbol 1v1 de ositos hecho con Phaser. Se ejecuta en el navegador.',
     icon: '⚽',
-    cover: 'linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%)',
+    cover: 'linear-gradient(135deg, #cdeef5 0%, #d8f2dc 100%)',
+    trailer: 'juegos/trailers/head-soccer.webm',
     note: 'Requiere conexión a internet (carga Phaser desde CDN).',
+  },
+  {
+    id: 'catapulta',
+    name: 'Catapulta',
+    kind: 'static',
+    url: 'juegos/catapulta/index.html',
+    description: 'Apunta, calcula la fuerza y lanza. Física y puntería en cada tiro.',
+    icon: '🎯',
+    cover: 'linear-gradient(135deg, #e6d9f6 0%, #cdeef5 100%)',
   },
   {
     id: 'trivia',
@@ -46,7 +78,7 @@ export const GAMES: Game[] = [
     url: 'http://localhost:3000',
     description: 'Trivia con backend Node.js (Express + MongoDB).',
     icon: '🧠',
-    cover: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
+    cover: 'linear-gradient(135deg, #e6d9f6 0%, #f9d1e5 100%)',
     note: 'Necesita el backend levantado en el puerto 3000 y una MONGODB_URI configurada.',
   },
 ];
