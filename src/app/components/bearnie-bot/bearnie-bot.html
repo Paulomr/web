@@ -1,9 +1,6 @@
 <!-- Burbuja flotante: Bearnie saluda y abre el chat de ayuda. -->
 <button type="button" class="bot-btn" (click)="abierto.set(!abierto())" aria-label="Abrir asistente Bearnie">
   <img src="fotos/bernie-saludando.webp" alt="" />
-  @if (!abierto()) {
-    <span class="bot-globo">¿DUDAS? ¡PREGÚNTAME!</span>
-  }
 </button>
 
 @if (abierto()) {

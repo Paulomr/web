@@ -10,7 +10,14 @@ interface Mensaje {
 // 2) Si no está disponible, responde localmente con el conocimiento del
 //    negocio (precios, sedes, pedidos): nunca deja al cliente sin respuesta.
 
-const API_CHAT = 'http://localhost:3000/api/chat';
+// Función serverless de Vercel (misma app). La API key vive en el servidor.
+const API_CHAT = '/api/chat';
+
+// Cada persona (por navegador) tiene 20 mensajes al mes con Bearnie.
+const LIMITE_MENSUAL = 20;
+const LIMITE_TEXTO =
+  'POR AHORA LLEGASTE A TUS 20 MENSAJES DEL MES CONMIGO 🐻 VUELVO EL PRÓXIMO MES, ' +
+  'O ESCRÍBENOS POR WHATSAPP Y TE ATENDEMOS AL INSTANTE.';
 
 const SALUDO: Mensaje = {
   rol: 'assistant',
@@ -92,12 +99,43 @@ export class BearnieBot {
     input.value = '';
 
     this.mensajes.update((m) => [...m, { rol: 'user', texto: texto.toUpperCase() }]);
-    this.escribiendo.set(true);
 
+    // Tope mensual: si ya usó sus 20, avisa y no consulta la IA.
+    if (this.usados() >= LIMITE_MENSUAL) {
+      this.mensajes.update((m) => [...m, { rol: 'assistant', texto: LIMITE_TEXTO }]);
+      this.desplazar();
+      return;
+    }
+    this.registrarUso();
+
+    this.escribiendo.set(true);
     const respuesta = (await this.respuestaIA(texto)) ?? this.respuestaLocal(texto);
     this.mensajes.update((m) => [...m, { rol: 'assistant', texto: respuesta }]);
     this.escribiendo.set(false);
+    this.desplazar();
+  }
 
+  // ---- Límite de 20 mensajes/mes por navegador (localStorage) ----
+  private claveMes(): string {
+    const d = new Date();
+    return `bearnie-msgs-${d.getFullYear()}-${d.getMonth() + 1}`;
+  }
+  private usados(): number {
+    try {
+      return Number(localStorage.getItem(this.claveMes())) || 0;
+    } catch {
+      return 0;
+    }
+  }
+  private registrarUso(): void {
+    try {
+      localStorage.setItem(this.claveMes(), String(this.usados() + 1));
+    } catch {
+      /* modo privado / sin storage: no bloquea el chat */
+    }
+  }
+
+  private desplazar(): void {
     queueMicrotask(() => {
       const caja = document.querySelector('.bot-mensajes');
       caja?.scrollTo({ top: caja.scrollHeight, behavior: 'smooth' });

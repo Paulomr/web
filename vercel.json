@@ -2,6 +2,6 @@
   "buildCommand": "ng build",
   "outputDirectory": "dist/minijuegos-app/browser",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
