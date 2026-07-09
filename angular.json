@@ -26,8 +26,8 @@
                 "ignore": [
                   "**/node_modules/**",
                   "**/*.psd",
-                  "juegos/logo oficial crunchy munch.png",
-                  "juegos/Stickers JuanJose.png"
+                  "juegos/Stickers JuanJose.png",
+                  "juegos/trivia/**"
                 ]
               }
             ],

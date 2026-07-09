@@ -1,0 +1,18 @@
+{
+  "name": "Crunchy Munch · Galletas estilo Nueva York",
+  "short_name": "Crunchy Munch",
+  "description": "Galletas New York style, crookies, milkshakes y minis. Rionegro y Marinilla, Antioquia.",
+  "lang": "es-CO",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fdf9f7",
+  "theme_color": "#fdf9f7",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

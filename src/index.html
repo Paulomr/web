@@ -2,15 +2,168 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Crunchy Munch · Minijuegos</title>
+
+  <!-- =========================================================================
+       SEO — Crunchy Munch · Galletas estilo Nueva York (Rionegro y Marinilla)
+       =========================================================================
+       Los textos por página (título/descripción de /catalogo, /galeria, etc.)
+       se actualizan solos desde  src/app/seo/site.config.ts  (SeoService).
+       Aquí solo va el SEO ESTÁTICO base que ven WhatsApp y Facebook al compartir.
+
+       👉 BUSCA la palabra  RELLENAR  para ver todo lo que debes completar.
+       ========================================================================= -->
+
   <base href="/">
+
+  <title>Crunchy Munch · Galletas estilo Nueva York en Rionegro y Marinilla</title>
+  <meta name="description"
+        content="Galletas New York style, crookies, milkshakes y minis recién horneadas. Crunchy Munch tiene sede en San Antonio de Pereira (Rionegro) y en Marinilla, Antioquia. Pide por WhatsApp.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fdf9f7">
-  <meta name="description" content="Crunchy Munch — colección de minijuegos para jugar y competir directamente en tu navegador.">
+  <meta name="author" content="Crunchy Munch">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="keywords"
+        content="galletas estilo Nueva York, New York cookies, crookies, milkshakes, galletas Rionegro, galletas Marinilla, galletas San Antonio de Pereira, Crunchy Munch, Bearnie, repostería Antioquia">
+
+  <!-- Idioma / región -->
+  <meta name="geo.region" content="CO-ANT">
+  <meta name="geo.placename" content="San Antonio de Pereira, Rionegro / Marinilla, Antioquia">
+
+  <!-- Canonical — la home. El resto de páginas fijan el suyo por JS (SeoService). -->
+  <!-- ⬇️ RELLENAR: tu dominio real (con https, SIN barra final). El MISMO en
+       index.html, src/app/seo/site.config.ts, public/robots.txt y public/sitemap.xml.
+       Sin dominio propio aún, usa el de Vercel: https://crunchy-munch.vercel.app -->
+  <link rel="canonical" href="https://RELLENAR-tu-dominio.com/">
+
+  <!-- ===== Open Graph (WhatsApp, Facebook, LinkedIn) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Crunchy Munch">
+  <meta property="og:locale" content="es_CO">
+  <meta property="og:title" content="Crunchy Munch · Galletas estilo Nueva York">
+  <meta property="og:description"
+        content="NY cookies, crookies, milkshakes y minis recién horneadas. Sedes en San Antonio de Pereira (Rionegro) y Marinilla, Antioquia.">
+  <!-- ⬇️ RELLENAR: dominio (x2). Imagen ideal 1200×630 px, < 300 KB. Te dejo una
+       foto del proyecto como imagen de compartir; cámbiala por una pensada para redes. -->
+  <meta property="og:url" content="https://RELLENAR-tu-dominio.com/">
+  <meta property="og:image" content="https://RELLENAR-tu-dominio.com/fotos/bearnie-0825.webp">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Galletas y milkshake de Crunchy Munch">
+
+  <!-- ===== Twitter / X ===== -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Crunchy Munch · Galletas estilo Nueva York">
+  <meta name="twitter:description"
+        content="NY cookies, crookies, milkshakes y minis. Rionegro y Marinilla, Antioquia.">
+  <!-- ⬇️ RELLENAR: dominio. -->
+  <meta name="twitter:image" content="https://RELLENAR-tu-dominio.com/fotos/bearnie-0825.webp">
+  <!-- ⬇️ RELLENAR (opcional): tu usuario de X/Twitter, o borra esta línea. -->
+  <!-- <meta name="twitter:site" content="@RELLENAR"> -->
+
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.webmanifest">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- =========================================================================
+       DATOS ESTRUCTURADOS (JSON-LD) — esto da las "fichas ricas" en Google
+       (negocio local, mapa, horario). Es la parte más potente del SEO local.
+       Rellena cada  RELLENAR. Los teléfonos y coordenadas ya van pre-cargados.
+       ========================================================================= -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://RELLENAR-tu-dominio.com/#organizacion",
+        "name": "Crunchy Munch",
+        "url": "https://RELLENAR-tu-dominio.com/",
+        "logo": "https://RELLENAR-tu-dominio.com/juegos/logo%20oficial%20crunchy%20munch.png",
+        "description": "Galletas estilo Nueva York, crookies, milkshakes y minis recién horneadas en el oriente antioqueño.",
+        "sameAs": [
+          "https://www.instagram.com/RELLENAR-usuario-instagram",
+          "https://www.facebook.com/RELLENAR-pagina-facebook",
+          "https://www.tiktok.com/@RELLENAR-usuario-tiktok"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://RELLENAR-tu-dominio.com/#sitio",
+        "url": "https://RELLENAR-tu-dominio.com/",
+        "name": "Crunchy Munch",
+        "inLanguage": "es-CO",
+        "publisher": { "@id": "https://RELLENAR-tu-dominio.com/#organizacion" }
+      },
+      {
+        "@type": "Bakery",
+        "@id": "https://RELLENAR-tu-dominio.com/#sede-san-antonio",
+        "name": "Crunchy Munch · San Antonio de Pereira",
+        "image": "https://RELLENAR-tu-dominio.com/fotos/bearnie-1107.webp",
+        "url": "https://RELLENAR-tu-dominio.com/",
+        "parentOrganization": { "@id": "https://RELLENAR-tu-dominio.com/#organizacion" },
+        "priceRange": "$$",
+        "servesCuisine": ["Galletas", "Postres", "Milkshakes"],
+        "telephone": "+573233879652",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "RELLENAR-calle-y-numero",
+          "addressLocality": "San Antonio de Pereira, Rionegro",
+          "addressRegion": "Antioquia",
+          "addressCountry": "CO"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 6.1309694,
+          "longitude": -75.3787989
+        },
+        "hasMap": "https://maps.app.goo.gl/rtGSKErLw9K45GoW9",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+            "opens": "RELLENAR-apertura-ej-11:00",
+            "closes": "RELLENAR-cierre-ej-21:00"
+          }
+        ]
+      },
+      {
+        "@type": "Bakery",
+        "@id": "https://RELLENAR-tu-dominio.com/#sede-marinilla",
+        "name": "Crunchy Munch · Marinilla",
+        "image": "https://RELLENAR-tu-dominio.com/fotos/bearnie-1262.webp",
+        "url": "https://RELLENAR-tu-dominio.com/",
+        "parentOrganization": { "@id": "https://RELLENAR-tu-dominio.com/#organizacion" },
+        "priceRange": "$$",
+        "servesCuisine": ["Galletas", "Postres", "Milkshakes"],
+        "telephone": "+573215265493",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "RELLENAR-calle-y-numero",
+          "addressLocality": "Marinilla",
+          "addressRegion": "Antioquia",
+          "addressCountry": "CO"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 6.1711354,
+          "longitude": -75.3388328
+        },
+        "hasMap": "https://maps.app.goo.gl/LGtExQPKwM9vYJ5NA",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+            "opens": "RELLENAR-apertura-ej-11:00",
+            "closes": "RELLENAR-cierre-ej-21:00"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <app-root></app-root>

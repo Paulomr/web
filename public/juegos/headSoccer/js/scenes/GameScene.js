@@ -157,7 +157,7 @@ export class GameScene extends Phaser.Scene {
     p.body.setSize(bw, bh);
     p.body.setOffset((p.width-bw)/2, p.height-bh);
     p.baseS = s;                  // escala base: ancla del squash/stretch
-    p.dir = dir; p.kicking=false; p.kickCD=0; p.wasDown=true;
+    p.dir = dir; p.kicking=false; p.kickCD=0; p.inAir=false;
     p.jumpAnim = this.anims.exists(key+'_jump') ? key+'_jump' : null;
     p.setFlipX(dir<0);            // mira hacia el centro
     p.body.setCollideWorldBounds(false);
@@ -244,11 +244,13 @@ export class GameScene extends Phaser.Scene {
 
   scoreGoal(side){
     const now=this.time.now; if (now-this.scoreCD < 1100) return;
-    // GOL VALIDO solo si el balon cruzo COMPLETO la linea interna Y por DENTRO del arco
-    // (centro bajo el travesano): un balon rodando sobre el techo curvo jamas cuenta.
-    const r=this.ball.body.halfWidth;
+    // GOL VALIDO cuando el CENTRO del balon cruza la linea interna Y va por DENTRO del
+    // arco (centro bajo el travesano): un balon rodando sobre el techo curvo jamas cuenta.
+    // Antes se exigia que cruzara el balon ENTERO (x±radio); un tiro lento se frenaba dentro
+    // del arco sin llegar a cruzar del todo -> no contaba y quedaba atorado (nadie entra a
+    // sacarlo por las cercas). Con el centro basta: el gol lento cuenta al instante.
     if (this.ball.y < GROUND_Y-GOAL_H+POST_R) return;
-    if (side==='L' ? this.ball.x+r > GOAL_D : this.ball.x-r < W-GOAL_D) return;
+    if (side==='L' ? this.ball.x > GOAL_D : this.ball.x < W-GOAL_D) return;
     this.scoreCD=now;
     const forP1 = side==='R';           // gol en el arco derecho = punto de P1
     if (forP1) this.sP++; else this.sC++;
@@ -289,6 +291,7 @@ export class GameScene extends Phaser.Scene {
 
   jump(p){
     p.body.setVelocityY(-JUMP*this.buff); // en el finale salta mas alto
+    p.inAir=true;                         // marca el salto: el squash de aterrizaje solo dispara al volver al suelo
     SFX.jump();
     // estiron al despegar (anclado a la escala base, igual que la patada)
     this.tweens.killTweensOf(p); p.setScale(p.baseS);
@@ -347,13 +350,16 @@ export class GameScene extends Phaser.Scene {
       const r=p.displayWidth/2;
       if (p.x<r){ p.x=r; if(p.body.velocity.x<0)p.body.setVelocityX(0); }
       if (p.x>W-r){ p.x=W-r; if(p.body.velocity.x>0)p.body.setVelocityX(0); }
-      if (p.y>restY){ p.y=restY; if(p.body.velocity.y>0)p.body.setVelocityY(0); } // tope de suelo
-      if (!p.wasDown && p.body.blocked.down){                                     // aterrizaje
+      // Tope de suelo con 2px de tolerancia: NO teletransporta en cada frame de
+      // reposo (eso peleaba con el piso fisico y hacia parpadear blocked.down ->
+      // el squash de aterrizaje se re-disparaba sin parar = la "vibracion").
+      if (p.y>restY+2){ p.y=restY; if(p.body.velocity.y>0)p.body.setVelocityY(0); }
+      if (p.inAir && p.body.blocked.down){                                        // aterrizaje: solo tras un salto real
+        p.inAir=false;
         SFX.land();
         this.tweens.killTweensOf(p); p.setScale(p.baseS);                         // squash al caer
         this.tweens.add({targets:p, scaleX:p.baseS*1.12, scaleY:p.baseS*0.88, yoyo:true, duration:80});
       }
-      p.wasDown = p.body.blocked.down;
       if (p.jumpAnim && p.body.blocked.down && !p.anims.isPlaying) p.setFrame(0); // reposo al aterrizar
     }
     // estela: solo cuando el balon vuela rapido (patadas potentes)

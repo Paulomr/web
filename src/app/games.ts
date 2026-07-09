@@ -53,7 +53,7 @@ export const GAMES: Game[] = [
   },
   {
     id: 'head-soccer',
-    name: 'Head Soccer (Bears)',
+    name: 'HeadBear Soccer',
     kind: 'static',
     url: 'juegos/headSoccer/index.html',
     description: 'Fútbol 1v1 de ositos hecho con Phaser. Se ejecuta en el navegador.',
@@ -70,16 +70,6 @@ export const GAMES: Game[] = [
     description: 'Apunta, calcula la fuerza y lanza. Física y puntería en cada tiro.',
     icon: '🎯',
     cover: 'linear-gradient(135deg, #e6d9f6 0%, #cdeef5 100%)',
-  },
-  {
-    id: 'trivia',
-    name: 'Trivia / Concursos',
-    kind: 'server',
-    url: 'http://localhost:3000',
-    description: 'Trivia con backend Node.js (Express + MongoDB).',
-    icon: '🧠',
-    cover: 'linear-gradient(135deg, #e6d9f6 0%, #f9d1e5 100%)',
-    note: 'Necesita el backend levantado en el puerto 3000 y una MONGODB_URI configurada.',
   },
 ];
 

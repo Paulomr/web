@@ -1,0 +1,7 @@
+# robots.txt — Crunchy Munch
+# Permite indexar todo el sitio.
+User-agent: *
+Allow: /
+
+# ⬇️ RELLENAR: cambia el dominio por el tuyo (el mismo de index.html).
+Sitemap: https://RELLENAR-tu-dominio.com/sitemap.xml

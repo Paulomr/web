@@ -166,7 +166,7 @@
 .cta {
   display: flex;
   justify-content: center;
-  padding: 72px 24px 0;
+  padding: 28px 24px 0;
 }
 
 /* Botón estilo notch: píldora blanca que se amplía lateralmente al pasar
@@ -300,14 +300,30 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
   width: 100%;
-  padding: 96px 0 0;
+  padding: 32px 0 0;
   text-align: center;
   overflow: hidden;
 }
 
-.menu-vivo h2,
+/* NUESTRO MENÚ: titular gigante que abarca el ancho de la pantalla.
+   Misma fuente display de la marca; el vw hace que escale con el viewport. */
+.menu-vivo h2 {
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 13vw, 16rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .sedes h2 {
   margin: 0;
   font-family: var(--font-display);
