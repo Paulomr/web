@@ -343,12 +343,20 @@
   z-index: 140;
 }
 
-.notch-filtro {
+/* Contenedor fijo: agrupa el notch de secciones y, debajo, el botón de sedes. */
+.acciones-flotantes {
   position: fixed;
   bottom: max(18px, env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   z-index: 150;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.notch-filtro {
   border-radius: 16px;
   background: rgba(20, 14, 22, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -360,8 +368,37 @@
 }
 
 @keyframes notch-sube {
-  from { opacity: 0; transform: translate(-50%, 26px); filter: blur(6px); }
-  to { opacity: 1; transform: translate(-50%, 0); filter: blur(0); }
+  from { opacity: 0; transform: translateY(26px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Botón de sedes: píldora rosa bajo el notch, con la estética de marca. */
+.sedes-flotante {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 20px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  color: #ffffff;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  box-shadow: 0 12px 30px -10px rgba(200, 70, 140, 0.7), var(--glow-pink);
+  animation: notch-sube 560ms cubic-bezier(0.22, 1.2, 0.36, 1);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.sedes-flotante svg {
+  width: 17px;
+  height: 17px;
+}
+
+.sedes-flotante:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px -10px rgba(200, 70, 140, 0.8), var(--glow-pink);
 }
 
 .notch-trigger {

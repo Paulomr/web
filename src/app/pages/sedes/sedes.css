@@ -1,0 +1,259 @@
+.sedes-page {
+  width: min(1080px, 94vw);
+  margin: 0 auto;
+  padding: 110px 0 130px;
+}
+
+/* ---------- Encabezado ---------- */
+.sp-head {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.sp-osa {
+  width: 96px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 10px 18px rgba(90, 55, 85, 0.35));
+  animation: sp-flota 3.6s ease-in-out infinite;
+}
+
+@keyframes sp-flota {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 0 -7px; rotate: 2deg; }
+}
+
+.sp-head h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4.4vw, 2.4rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sp-head p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+}
+
+/* ---------- Grilla de tarjetas ---------- */
+.sp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 26px;
+}
+
+/* Tarjeta con lenguaje del notch: bordes suaves, sombra, y doodles rosa
+   pálido decorando el fondo. */
+.sede-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  transition: transform 240ms ease, box-shadow 240ms ease;
+}
+
+/* Doodles rosa pálido de fondo. */
+.sede-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url('/fotos/doodles-rosa.webp');
+  background-size: 320px auto;
+  filter: saturate(1.4);
+}
+
+.sede-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-float);
+}
+
+/* ---------- Foto ---------- */
+.sc-foto {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.sc-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sc-chip {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  box-shadow: var(--glow-pink);
+}
+
+/* ---------- Cuerpo ---------- */
+.sc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 22px 24px;
+}
+
+.sc-body h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  line-height: 1.1;
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sc-ciudad {
+  margin: -8px 0 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.sc-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #a95a86;
+  margin-bottom: 9px;
+}
+
+.sc-label.off {
+  color: var(--text-dim);
+}
+
+/* ---------- Horarios (estilo panel del notch) ---------- */
+.sc-horarios {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sc-horarios li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.sc-dias {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sc-horas {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4a2f42;
+  white-space: nowrap;
+}
+
+/* ---------- DrinkLab ---------- */
+.sc-drinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sc-drink {
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  background: var(--grad-soft);
+  color: #6a4a63;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--border);
+}
+
+.sc-nota {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+/* ---------- Mapa + botón ---------- */
+.sc-mapa {
+  width: 100%;
+  height: 170px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.sc-btn {
+  position: relative;
+  align-self: stretch;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 20px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  box-shadow: var(--glow-pink);
+  transition: transform 170ms ease, box-shadow 170ms ease;
+}
+
+.sc-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-pink), 0 12px 24px -10px rgba(160, 80, 130, 0.5);
+}
+
+/* ---------- Volver ---------- */
+.sp-volver {
+  display: block;
+  width: fit-content;
+  margin: 36px auto 0;
+  padding: 11px 22px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.sp-volver:hover {
+  color: #a95a86;
+  border-color: var(--pink);
+}

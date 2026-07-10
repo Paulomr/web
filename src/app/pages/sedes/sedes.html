@@ -1,0 +1,68 @@
+<section class="sedes-page">
+  <header class="sp-head">
+    <img class="sp-osa" src="fotos/bernie-bandeja.webp" alt="Bearnie con una bandeja" />
+    <h1>NUESTRAS SEDES</h1>
+    <p>DOS CASAS ROSADAS PARA ANTOJARTE. TE ESPERAMOS CON BEARNIE.</p>
+  </header>
+
+  <div class="sp-grid">
+    @for (s of sedes; track s.nombre) {
+      <article class="sede-card">
+        <div class="sc-foto">
+          <img [src]="'fotos/' + s.fotos[0]" [alt]="s.nombre" loading="lazy" />
+          @if (s.drinkLab) {
+            <span class="sc-chip">✦ DRINKLAB</span>
+          }
+        </div>
+
+        <div class="sc-body">
+          <h2>{{ s.nombre }}</h2>
+          <p class="sc-ciudad"><span aria-hidden="true">📍</span> {{ s.ciudad }}</p>
+
+          <!-- Horarios -->
+          <div class="sc-bloque">
+            <span class="sc-label">HORARIOS</span>
+            <ul class="sc-horarios">
+              @for (h of s.horarios; track h.dias) {
+                <li>
+                  <span class="sc-dias">{{ h.dias }}</span>
+                  <span class="sc-horas">{{ h.horas }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+
+          <!-- DrinkLab -->
+          <div class="sc-bloque">
+            @if (s.drinkLab) {
+              <span class="sc-label">DRINKLAB DISPONIBLE</span>
+              <div class="sc-drinks">
+                @for (d of drinkLab; track d) {
+                  <span class="sc-drink">{{ d }}</span>
+                }
+              </div>
+            } @else {
+              <span class="sc-label off">DRINKLAB — AÚN NO EN ESTA SEDE</span>
+              <p class="sc-nota">
+                Las bebidas de matcha, chai, café y granizados están por ahora
+                solo en San Antonio. ¡Pronto en Marinilla!
+              </p>
+            }
+          </div>
+
+          <!-- Mapa + cómo llegar -->
+          <iframe
+            class="sc-mapa"
+            [src]="s.mapa"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            [title]="'Mapa ' + s.nombre"
+          ></iframe>
+          <a class="sc-btn" [href]="s.comoLlegar" target="_blank" rel="noopener">CÓMO LLEGAR</a>
+        </div>
+      </article>
+    }
+  </div>
+
+  <a class="sp-volver" routerLink="/catalogo">‹ VOLVER AL CATÁLOGO</a>
+</section>

@@ -54,6 +54,13 @@ export const PAGES: Record<string, PageSeo> = {
       'Mira el menú completo de Crunchy Munch: galletas estilo Nueva York, crookies, milkshakes, mini cookies y bebidas. Elige y pide directo por WhatsApp en Rionegro o Marinilla.',
   },
 
+  // Sedes
+  sedes: {
+    title: 'Sedes en Rionegro (San Antonio de Pereira) y Marinilla',
+    description:
+      'Visita Crunchy Munch: sede San Antonio de Pereira (Rionegro), abierta todos los días de 12 m a 8 pm con DrinkLab (matcha, chai, café y granizados), y sede Marinilla. Horarios, mapa y cómo llegar.',
+  },
+
   // Galería
   galeria: {
     title: 'Galería — nuestras galletas y sedes',
