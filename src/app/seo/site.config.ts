@@ -28,7 +28,7 @@ export const SITE = {
   sufijoTitulo: 'Crunchy Munch',
 
   /** Imagen por defecto al compartir (relativa al dominio). 1200×630 ideal. */
-  imagenCompartir: '/fotos/bearnie-0825.webp',
+  imagenCompartir: '/fotos/og-crunchy-munch.jpg',
 };
 
 /** Metadatos por ruta. La clave es la ruta exacta ('' = inicio). */

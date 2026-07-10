@@ -50,21 +50,19 @@ Prioridad: 🔴 alta · 🟡 media · 🟢 opcional / a futuro.
 
 ## 3. Seguridad — 🟡 RECOMENDADO (blindaje del costo y del sitio)
 
-- [ ] **Blindar el límite por IP (a prueba de trampas).**
-      Hoy el tope de 20 mensajes se guarda en el navegador (localStorage): sirve
-      para el uso normal, pero alguien técnico podría reiniciarlo borrando datos
-      del navegador y gastar tu saldo de API. Para un tope real:
-      - Añadir **Vercel KV** (base de datos rápida, gratis en el plan hobby).
-      - En `api/chat.mjs`, contar los mensajes por **IP** (`x-forwarded-for`) y
-        rechazar cuando pasen del límite mensual.
-      - Beneficio: el costo de la API queda blindado aunque borren el navegador.
-      - *Se lo puedo montar cuando digas.*
-- [ ] **Validar el tamaño del mensaje** en la función (rechazar mensajes muy
-      largos) para evitar abuso de tokens. (Ya se valida que exista; falta el
-      largo máximo.)
-- [ ] **Cabeceras de seguridad** en `vercel.json` (`headers`): añadir
-      `X-Content-Type-Options: nosniff`, `Referrer-Policy`,
-      `X-Frame-Options` / CSP. Endurecen el sitio con cero costo.
+- [x] **Blindar el límite por IP (a prueba de trampas).** ✅ HECHO en el código.
+      El tope de 20 mensajes ahora también se cuenta por **IP en el servidor**
+      (`api/chat.mjs`, con **Vercel KV**), no solo en el navegador. Degradación
+      elegante: si aún no creas el store KV, el chat funciona igual (solo se
+      salta el conteo por IP). **Para ACTIVARLO** en Vercel: Storage → crear un
+      store **KV** (Upstash/Redis) y conectarlo al proyecto; eso crea solo las
+      variables `KV_REST_API_URL` y `KV_REST_API_TOKEN`. Luego redeploy.
+- [x] **Validar el tamaño del mensaje** ✅ HECHO. La función rechaza mensajes de
+      más de 1000 caracteres para evitar abuso de tokens.
+- [x] **Cabeceras de seguridad** en `vercel.json` ✅ HECHO. Añadidas
+      `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`,
+      `Referrer-Policy`, `Permissions-Policy` y `Strict-Transport-Security`.
+      (CSP se dejó para después para no romper Google Maps.)
 - [ ] **HTTPS**: ya lo da Vercel automáticamente ✅ (nada que hacer).
 
 ---
@@ -89,18 +87,21 @@ Prioridad: 🔴 alta · 🟡 media · 🟢 opcional / a futuro.
 
 ## 5. Verse profesional — 🟡 detalles que suman
 
-- [ ] **Imagen de compartir (Open Graph) con la foto nueva.** Cuando alguien
-      pega tu link en WhatsApp/Instagram sale una tarjeta con foto. Hoy apunta a
-      una foto vieja. Recomendado: crear una versión **1200×630 px** (horizontal)
-      con la galleta/hero + logo, y ponerla como `og:image`.
-      *Dime "sí" y la genero y la conecto.*
+- [x] **Imagen de compartir (Open Graph) con la foto nueva.** ✅ HECHO. Creé
+      `public/fotos/og-crunchy-munch.jpg` (1200×630 px, ~70 KB) a partir del hero
+      nuevo y la conecté como `og:image` y `twitter:image` en `src/index.html` y
+      en `site.config.ts`. (La tarjeta saldrá bien cuando conectes el dominio
+      real en los `RELLENAR`.)
 - [ ] **Iconos para instalar como app (PWA):** exportar el logo a `icon-192.png`
       y `icon-512.png` en `public/` y enlazarlos en `manifest.webmanifest`.
 - [ ] **Analítica** para ver cuánta gente entra: **Vercel Analytics**
       (1 clic en el panel) o Google Analytics.
 - [ ] **Rendimiento (Lighthouse):** correr una auditoría y afinar. Las fotos ya
       están en `.webp` y con carga diferida ✅; el hero nuevo lo optimicé a 211 KB.
-- [ ] **Página 404 amigable** (con Bearnie) en vez de redirigir siempre al inicio.
+- [x] **Página 404 amigable** (con Bearnie) ✅ HECHO. Nueva página en
+      `src/app/pages/no-encontrada/` con Bearnie sorprendida, "404", texto cálido
+      y botón "VOLVER AL INICIO"; la ruta comodín ahora la muestra en vez de
+      redirigir al inicio.
 - [ ] **Accesibilidad:** revisar contraste de textos y `alt` en imágenes
       (varias ya lo tienen).
 
