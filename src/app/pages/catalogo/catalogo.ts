@@ -1,6 +1,7 @@
 import { Component, HostListener, OnDestroy, inject, signal } from '@angular/core';
 import { CATEGORIAS, PRODUCTOS, Categoria, Producto } from '../../productos';
 import { Carrito } from '../../carrito';
+import { DetalleProducto } from '../../detalle-producto';
 
 interface Seccion {
   id: Categoria;
@@ -16,6 +17,7 @@ interface Seccion {
 })
 export class Catalogo implements OnDestroy {
   readonly carrito = inject(Carrito);
+  readonly detalle = inject(DetalleProducto);
 
   /** Catálogo segmentado por categoría, en orden de presentación. */
   readonly secciones: Seccion[] = CATEGORIAS.map((c) => ({
@@ -58,5 +60,10 @@ export class Catalogo implements OnDestroy {
 
   agregar(p: Producto): void {
     this.carrito.agregar(p.id);
+  }
+
+  /** Abre la tarjeta ampliada del producto. */
+  abrir(p: Producto): void {
+    this.detalle.abrir(p);
   }
 }

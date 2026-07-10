@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PRODUCTOS, Producto } from '../../productos';
 import { Carrito } from '../../carrito';
+import { DetalleProducto } from '../../detalle-producto';
 
 interface Sede {
   nombre: string;
@@ -22,6 +23,7 @@ interface Sede {
 })
 export class Main implements AfterViewInit {
   readonly carrito = inject(Carrito);
+  readonly detalle = inject(DetalleProducto);
 
   /** Productos con foto para las tres filas en movimiento (marquee). */
   readonly filaA: Producto[];
@@ -65,8 +67,9 @@ export class Main implements AfterViewInit {
     ];
   }
 
-  agregar(p: Producto): void {
-    this.carrito.agregar(p.id);
+  /** Tocar un producto del menú vivo abre su tarjeta ampliada. */
+  abrir(p: Producto): void {
+    this.detalle.abrir(p);
   }
 
   /** Sección alta que gobierna el hero expandible (progreso 0 → 1). */

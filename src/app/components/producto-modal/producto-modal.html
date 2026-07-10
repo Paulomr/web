@@ -1,0 +1,53 @@
+@if (detalle.producto(); as p) {
+  <!-- Velo que difumina el fondo; tocar fuera cierra la tarjeta. -->
+  <div class="pm-velo" (click)="cerrar()"></div>
+
+  <div class="pm-card" role="dialog" aria-modal="true" [attr.aria-label]="p.nombre">
+    <button type="button" class="pm-cerrar" (click)="cerrar()" aria-label="Cerrar">✕</button>
+
+    <!-- Galería de fotos del producto. -->
+    <div class="pm-galeria" [attr.data-cat]="p.categoria">
+      @if (fotos().length > 0) {
+        <img class="pm-foto" [src]="'fotos/' + fotos()[indice()]" [alt]="p.nombre" />
+
+        @if (fotos().length > 1) {
+          <button type="button" class="pm-nav prev" (click)="anterior()" aria-label="Foto anterior">‹</button>
+          <button type="button" class="pm-nav next" (click)="siguiente()" aria-label="Foto siguiente">›</button>
+          <div class="pm-dots" role="tablist" aria-label="Fotos">
+            @for (f of fotos(); track $index) {
+              <button
+                type="button"
+                class="pm-dot"
+                [class.on]="$index === indice()"
+                (click)="irA($index)"
+                [attr.aria-label]="'Foto ' + ($index + 1)"
+              ></button>
+            }
+          </div>
+        }
+      } @else {
+        <div class="pm-sinfoto">
+          <img src="fotos/bearnie-logo.webp" alt="" />
+          <span>FOTO MUY PRONTO</span>
+        </div>
+      }
+
+      @if (p.nuevo) {
+        <span class="pm-nuevo">NUEVO</span>
+      }
+      @if (p.detalle) {
+        <span class="pm-badge">{{ p.detalle }}</span>
+      }
+    </div>
+
+    <!-- Información ampliada. -->
+    <div class="pm-info">
+      <h2>{{ p.nombre }}</h2>
+      <p class="pm-desc">{{ p.descripcion }}</p>
+      <div class="pm-pie">
+        <span class="pm-precio">{{ p.precio || 'CONSULTAR' }}</span>
+        <button type="button" class="pm-agregar" (click)="agregar()">AGREGAR AL CARRITO</button>
+      </div>
+    </div>
+  </div>
+}

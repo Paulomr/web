@@ -39,13 +39,13 @@
     <div class="fila" aria-label="Productos destacados">
       <div class="cinta">
         @for (p of filaA; track p.id) {
-          <button type="button" class="bocado" (click)="agregar(p)">
+          <button type="button" class="bocado" (click)="abrir(p)">
             <img [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" loading="lazy" />
             <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
           </button>
         }
         @for (p of filaA; track p.id + '-b') {
-          <button type="button" class="bocado" (click)="agregar(p)" aria-hidden="true" tabindex="-1">
+          <button type="button" class="bocado" (click)="abrir(p)" aria-hidden="true" tabindex="-1">
             <img [src]="'fotos/' + p.fotos[0]" [alt]="''" loading="lazy" />
             <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
           </button>
@@ -56,13 +56,13 @@
     <div class="fila reversa">
       <div class="cinta">
         @for (p of filaB; track p.id) {
-          <button type="button" class="bocado" (click)="agregar(p)">
+          <button type="button" class="bocado" (click)="abrir(p)">
             <img [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" loading="lazy" />
             <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
           </button>
         }
         @for (p of filaB; track p.id + '-b') {
-          <button type="button" class="bocado" (click)="agregar(p)" aria-hidden="true" tabindex="-1">
+          <button type="button" class="bocado" (click)="abrir(p)" aria-hidden="true" tabindex="-1">
             <img [src]="'fotos/' + p.fotos[0]" [alt]="''" loading="lazy" />
             <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
           </button>
@@ -73,13 +73,13 @@
     <div class="fila lenta">
       <div class="cinta">
         @for (p of filaC; track p.id) {
-          <button type="button" class="bocado" (click)="agregar(p)">
+          <button type="button" class="bocado" (click)="abrir(p)">
             <img [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" loading="lazy" />
             <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
           </button>
         }
         @for (p of filaC; track p.id + '-b') {
-          <button type="button" class="bocado" (click)="agregar(p)" aria-hidden="true" tabindex="-1">
+          <button type="button" class="bocado" (click)="abrir(p)" aria-hidden="true" tabindex="-1">
             <img [src]="'fotos/' + p.fotos[0]" [alt]="''" loading="lazy" />
             <span class="bocado-info"><strong>{{ p.nombre }}</strong><em>{{ p.precio || 'Consultar' }}</em></span>
           </button>

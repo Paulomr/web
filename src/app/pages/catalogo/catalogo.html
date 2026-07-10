@@ -11,37 +11,41 @@
       <ul class="productos">
         @for (p of s.productos; track p.id) {
           <li class="producto" [attr.data-cat]="p.categoria">
-            <div class="foto">
-              @if (p.fotos.length > 0) {
-                <img [src]="'fotos/' + foto(p)" [alt]="p.nombre" loading="lazy" />
-                @if (p.fotos.length > 1) {
-                  <div class="dots" aria-hidden="true">
-                    @for (f of p.fotos; track $index) {
-                      <span class="dot" [class.on]="$index === fotoIndex(p)"></span>
-                    }
+            <button type="button" class="abrir" (click)="abrir(p)" [attr.aria-label]="'Ver ' + p.nombre">
+              <div class="foto">
+                @if (p.fotos.length > 0) {
+                  <img [src]="'fotos/' + foto(p)" [alt]="p.nombre" loading="lazy" />
+                  @if (p.fotos.length > 1) {
+                    <div class="dots" aria-hidden="true">
+                      @for (f of p.fotos; track $index) {
+                        <span class="dot" [class.on]="$index === fotoIndex(p)"></span>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <div class="sin-foto" aria-hidden="true">
+                    <img class="sin-foto-osa" src="fotos/bearnie-logo.webp" alt="" />
+                    <span class="sin-foto-txt">FOTO MUY PRONTO</span>
                   </div>
                 }
-              } @else {
-                <div class="sin-foto" aria-hidden="true">
-                  <img class="sin-foto-osa" src="fotos/bearnie-logo.webp" alt="" />
-                  <span class="sin-foto-txt">FOTO MUY PRONTO</span>
-                </div>
-              }
-              @if (p.nuevo) {
-                <span class="nuevo">NUEVO</span>
-              }
-              @if (p.detalle) {
-                <span class="detalle">{{ p.detalle }}</span>
-              }
-            </div>
-
-            <div class="info">
-              <h3>{{ p.nombre }}</h3>
-              <p class="desc">{{ p.descripcion }}</p>
-              <div class="pie">
-                <span class="precio">{{ p.precio || 'CONSULTAR' }}</span>
-                <button type="button" class="pedir" (click)="agregar(p)">AGREGAR</button>
+                @if (p.nuevo) {
+                  <span class="nuevo">NUEVO</span>
+                }
+                @if (p.detalle) {
+                  <span class="detalle">{{ p.detalle }}</span>
+                }
+                <span class="ver-mas" aria-hidden="true">VER +</span>
               </div>
+
+              <div class="info">
+                <h3>{{ p.nombre }}</h3>
+                <p class="desc">{{ p.descripcion }}</p>
+              </div>
+            </button>
+
+            <div class="pie">
+              <span class="precio">{{ p.precio || 'CONSULTAR' }}</span>
+              <button type="button" class="pedir" (click)="agregar(p)">AGREGAR</button>
             </div>
           </li>
         }

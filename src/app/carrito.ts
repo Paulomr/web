@@ -36,6 +36,9 @@ export class Carrito {
   readonly items = signal<ItemCarrito[]>(this.cargar());
   readonly abierto = signal(false);
 
+  /** Último aviso "añadido al carrito" (lo escucha el toast global). */
+  readonly notificacion = signal<{ nonce: number; texto: string } | null>(null);
+
   readonly datos = signal<DatosPedido>({
     entrega: 'domicilio',
     sede: 'san-antonio',
@@ -80,6 +83,9 @@ export class Carrito {
         ? lista.map((i) => (i.id === id ? { ...i, cantidad: i.cantidad + 1 } : i))
         : [...lista, { id, cantidad: 1 }];
     });
+    // Dispara el aviso flotante (nonce único para reactivarlo aunque el texto
+    // se repita al agregar varias veces seguidas).
+    this.notificacion.set({ nonce: Date.now(), texto: 'AÑADIDO AL CARRITO' });
   }
 
   restar(id: string): void {
