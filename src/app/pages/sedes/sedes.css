@@ -107,6 +107,43 @@
   box-shadow: var(--glow-pink);
 }
 
+/* ---------- Tira de miniaturas ---------- */
+.sc-tiras {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px 0;
+}
+
+.sc-tira {
+  flex: 1;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.sc-tira img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sc-tira:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.sc-tira.on {
+  opacity: 1;
+  border-color: var(--pink);
+}
+
 /* ---------- Cuerpo ---------- */
 .sc-body {
   display: flex;

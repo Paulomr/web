@@ -9,11 +9,27 @@
     @for (s of sedes; track s.nombre) {
       <article class="sede-card">
         <div class="sc-foto">
-          <img [src]="'fotos/' + s.fotos[0]" [alt]="s.nombre" loading="lazy" />
+          <img [src]="'fotos/' + s.fotos[indiceFoto(s.nombre)]" [alt]="s.nombre" loading="lazy" />
           @if (s.drinkLab) {
             <span class="sc-chip">✦ DRINKLAB</span>
           }
         </div>
+
+        @if (s.fotos.length > 1) {
+          <div class="sc-tiras" role="tablist" [attr.aria-label]="'Fotos de ' + s.nombre">
+            @for (f of s.fotos; track f) {
+              <button
+                type="button"
+                class="sc-tira"
+                [class.on]="$index === indiceFoto(s.nombre)"
+                (click)="elegirFoto(s.nombre, $index)"
+                [attr.aria-label]="'Ver foto ' + ($index + 1)"
+              >
+                <img [src]="'fotos/' + f" alt="" loading="lazy" />
+              </button>
+            }
+          </div>
+        }
 
         <div class="sc-body">
           <h2>{{ s.nombre }}</h2>

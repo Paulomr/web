@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
@@ -35,6 +35,17 @@ export class Sedes {
 
   readonly sedes: Sede[];
 
+  /** Foto seleccionada en la galería de cada sede (por nombre). */
+  private readonly seleccion = signal<Record<string, number>>({});
+
+  indiceFoto(nombre: string): number {
+    return this.seleccion()[nombre] ?? 0;
+  }
+
+  elegirFoto(nombre: string, i: number): void {
+    this.seleccion.update((m) => ({ ...m, [nombre]: i }));
+  }
+
   constructor(sanitizer: DomSanitizer) {
     // Coordenadas exactas resueltas desde los enlaces cortos oficiales.
     const embed = (lat: number, lon: number) => {
@@ -60,8 +71,7 @@ export class Sedes {
         nombre: 'SEDE MARINILLA',
         ciudad: 'Marinilla · Antioquia',
         direccion: 'Marinilla, Antioquia',
-        // TODO: Paulo pasará fotos propias de la sede Marinilla.
-        fotos: ['bearnie-1262.webp'],
+        fotos: ['sede-marinilla-1.jpg', 'sede-marinilla-2.jpg', 'sede-marinilla-3.jpg'],
         horarios: [
           { dias: 'Lunes', horas: '12:00 m – 6:30 pm' },
           { dias: 'Martes a sábado', horas: '12:00 m – 7:00 pm' },
