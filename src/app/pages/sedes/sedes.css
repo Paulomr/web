@@ -51,6 +51,8 @@
 .sede-card {
   position: relative;
   isolation: isolate;
+  /* Deja aire bajo el navbar fijo al llegar por ancla desde la portada. */
+  scroll-margin-top: 90px;
   display: flex;
   flex-direction: column;
   overflow: hidden;

@@ -8,6 +8,8 @@ interface Horario {
 }
 
 interface Sede {
+  /** Ancla para el scroll desde la portada (#marinilla / #san-antonio). */
+  id: string;
   nombre: string;
   ciudad: string;
   direccion: string;
@@ -58,6 +60,7 @@ export class Sedes {
 
     this.sedes = [
       {
+        id: 'san-antonio',
         nombre: 'SEDE SAN ANTONIO',
         ciudad: 'San Antonio de Pereira · Rionegro',
         direccion: 'San Antonio de Pereira, Rionegro, Antioquia',
@@ -68,6 +71,7 @@ export class Sedes {
         mapa: embed(6.1309694, -75.3787989),
       },
       {
+        id: 'marinilla',
         nombre: 'SEDE MARINILLA',
         ciudad: 'Marinilla · Antioquia',
         direccion: 'Marinilla, Antioquia',

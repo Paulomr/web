@@ -7,7 +7,7 @@
 
   <div class="sp-grid">
     @for (s of sedes; track s.nombre) {
-      <article class="sede-card">
+      <article class="sede-card" [id]="s.id">
         <div class="sc-foto">
           <img [src]="'fotos/' + s.fotos[indiceFoto(s.nombre)]" [alt]="s.nombre" loading="lazy" />
           @if (s.drinkLab) {

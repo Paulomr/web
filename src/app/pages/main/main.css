@@ -12,7 +12,9 @@
   --p: 0;
   position: relative;
   width: 100%;
-  height: 200vh;
+  /* Menos alto = la foto se expande con menos scroll: desplazamiento más
+     fluido y ágil también en escritorio. */
+  height: 150vh;
 }
 
 .pegajoso {
@@ -422,6 +424,105 @@
   font-style: normal;
   font-size: 0.74rem;
   font-weight: 600;
+}
+
+/* ---------- Sedes: CTA compacto en la portada ---------- */
+.sedes-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  width: 100%;
+  padding: 76px 24px 0;
+  text-align: center;
+}
+
+.sedes-cta h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 11vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sedes-cta-botones {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: min(760px, 94vw);
+}
+
+/* Píldora grande estilo notch (gradiente + brillo desenfocado). */
+.sede-pill {
+  position: relative;
+  flex: 1 1 300px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 30px;
+  border-radius: var(--r-pill);
+  text-decoration: none;
+  color: #ffffff;
+  box-shadow: var(--glow-pink);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.sede-pill.marinilla {
+  background: linear-gradient(45deg, #f078b8, #c9aee8);
+}
+
+.sede-pill.sanantonio {
+  background: linear-gradient(45deg, #7cd4ea, #a97fd6);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Brillo desenfocado inferior, hereda el mismo gradiente de la píldora. */
+.sede-pill::after {
+  content: '';
+  position: absolute;
+  inset: 12px 10px -8px 10px;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(16px);
+  opacity: 0.45;
+  z-index: -1;
+}
+
+.sede-pill:hover {
+  transform: translateY(-4px);
+}
+
+.sede-pill svg {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.sede-pill-txt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.sede-pill-txt strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+
+.sede-pill-txt em {
+  font-style: normal;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  opacity: 0.92;
 }
 
 /* ---------- Sedes ---------- */

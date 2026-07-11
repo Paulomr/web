@@ -93,6 +93,34 @@
     </button>
   </section>
 
+  <!-- Sedes: título central y dos píldoras grandes (estilo notch). -->
+  <section class="sedes-cta">
+    <h2>SEDES</h2>
+    <div class="sedes-cta-botones">
+      <a class="sede-pill marinilla" routerLink="/sedes" fragment="marinilla">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 21s-6.5-5.4-6.5-10a6.5 6.5 0 0 1 13 0c0 4.6-6.5 10-6.5 10z" />
+          <circle cx="12" cy="11" r="2.3" />
+        </svg>
+        <span class="sede-pill-txt">
+          <strong>MARINILLA</strong>
+          <em>ANTIOQUIA</em>
+        </span>
+      </a>
+
+      <a class="sede-pill sanantonio" routerLink="/sedes" fragment="san-antonio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 21s-6.5-5.4-6.5-10a6.5 6.5 0 0 1 13 0c0 4.6-6.5 10-6.5 10z" />
+          <circle cx="12" cy="11" r="2.3" />
+        </svg>
+        <span class="sede-pill-txt">
+          <strong>SAN ANTONIO</strong>
+          <em>DE PEREIRA · RIONEGRO</em>
+        </span>
+      </a>
+    </div>
+  </section>
+
   <!-- Fotos de marca: Bearnie y las galletas, con enlace a la galería completa. -->
   <section class="mundo">
     <img class="osa-deco enamorada" src="fotos/bernie-enamorada.webp" alt="" aria-hidden="true" />
@@ -109,27 +137,6 @@
     </div>
 
     <a class="btn btn-ghost" routerLink="/galeria">Ver galería completa</a>
-  </section>
-
-  <!-- Sedes con mapa y cómo llegar. -->
-  <section class="sedes">
-    <img class="osa-deco comiendo" src="fotos/bernie-comiendo.webp" alt="" aria-hidden="true" />
-    <h2>NUESTRAS SEDES</h2>
-    <p class="seccion-texto">Ven por tu galleta: te esperamos con Bearnie en ambas sedes.</p>
-
-    <div class="sedes-grid">
-      @for (s of sedes; track s.nombre) {
-        <article class="sede">
-          <img class="sede-foto" [src]="'fotos/' + s.foto" [alt]="s.nombre" loading="lazy" />
-          <div class="sede-info">
-            <h3>{{ s.nombre }}</h3>
-            <p>{{ s.direccion }}</p>
-            <iframe class="sede-mapa" [src]="s.mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade" [title]="'Mapa ' + s.nombre"></iframe>
-            <a class="btn btn-primary sede-btn" [href]="s.comoLlegar" target="_blank" rel="noopener">Cómo llegar</a>
-          </div>
-        </article>
-      }
-    </div>
   </section>
 
   <!-- Guiño discreto a los minijuegos: secundario, no protagonista. -->

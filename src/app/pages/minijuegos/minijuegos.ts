@@ -69,12 +69,43 @@ export class Minijuegos {
     this.safeUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(game.url));
     this.topScores.set([]);
     void this.refreshScores(game.id);
+    this.pantallaCompletaMovil();
   }
 
   close(): void {
     this.selected.set(null);
     this.safeUrl.set(null);
     this.topScores.set([]);
+    this.salirPantallaCompleta();
+  }
+
+  /** En celular, entra a pantalla completa al abrir un juego (más inmersión).
+      Se llama dentro del gesto del clic para que el navegador lo permita.
+      iOS Safari no soporta fullscreen en contenedores: ahí simplemente no pasa nada. */
+  private pantallaCompletaMovil(): void {
+    if (typeof window === 'undefined') return;
+    if (!window.matchMedia('(max-width: 820px)').matches) return;
+    const el = this.sectionEl?.nativeElement as
+      | (HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void })
+      | undefined;
+    if (!el) return;
+    const pedir = el.requestFullscreen ?? el.webkitRequestFullscreen;
+    try {
+      const r = pedir?.call(el) as Promise<void> | undefined;
+      r?.catch?.(() => {});
+    } catch {
+      /* fullscreen no disponible: se ignora */
+    }
+  }
+
+  private salirPantallaCompleta(): void {
+    if (typeof document === 'undefined' || !document.fullscreenElement) return;
+    try {
+      const r = document.exitFullscreen?.();
+      r?.catch?.(() => {});
+    } catch {
+      /* ignore */
+    }
   }
 
   async refreshScores(gameId: string): Promise<void> {

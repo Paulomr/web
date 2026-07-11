@@ -544,6 +544,41 @@
   box-shadow: var(--shadow-card);
 }
 
+/* ---------- Pantalla completa (celular): el juego ocupa todo ---------- */
+.minijuegos:fullscreen {
+  overflow: hidden;
+}
+
+.minijuegos:fullscreen .player {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.minijuegos:fullscreen .player-bar {
+  padding: 10px 14px;
+  flex-shrink: 0;
+}
+
+.minijuegos:fullscreen .game-frame {
+  flex: 1;
+  width: 100%;
+  aspect-ratio: auto;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.minijuegos:fullscreen .note,
+.minijuegos:fullscreen .scores {
+  display: none;
+}
+
 .note {
   margin: 0;
   color: var(--text-dim);

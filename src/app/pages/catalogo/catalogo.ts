@@ -1,5 +1,4 @@
 import { Component, HostListener, OnDestroy, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CATEGORIAS, PRODUCTOS, Categoria, Producto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
@@ -12,7 +11,7 @@ interface Seccion {
 
 @Component({
   selector: 'app-catalogo',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.css',
 })
