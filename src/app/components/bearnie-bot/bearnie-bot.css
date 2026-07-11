@@ -208,7 +208,7 @@
 }
 
 @media (max-width: 480px) {
-  .bot-btn img { width: 68px; }
+  .bot-btn img { width: 100px; }
   .bot-globo { display: none; }
-  .bot-panel { bottom: 96px; }
+  .bot-panel { bottom: 124px; }
 }

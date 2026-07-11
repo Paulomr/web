@@ -59,6 +59,11 @@
 }
 
 @media (max-width: 720px) {
+  /* En celular la sección es más corta: la foto se expande con mucho menos
+     scroll, así el hero se siente ágil y no lento. */
+  .expand {
+    height: 130vh;
+  }
   .exp-lado {
     width: 120px;
     height: 30vh;

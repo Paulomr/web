@@ -1,4 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 interface Mensaje {
   rol: 'user' | 'assistant';
@@ -89,9 +91,27 @@ const FALLBACK =
   styleUrl: './bearnie-bot.css',
 })
 export class BearnieBot {
+  private readonly router = inject(Router);
+
   readonly abierto = signal(false);
   readonly escribiendo = signal(false);
   readonly mensajes = signal<Mensaje[]>([SALUDO]);
+
+  /** Oculta a Bearnie en la sección de minijuegos (no estorbar al jugar). */
+  readonly oculto = signal(this.enMinijuegos(this.router.url));
+
+  constructor() {
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        if (this.enMinijuegos(e.urlAfterRedirects)) this.abierto.set(false);
+        this.oculto.set(this.enMinijuegos(e.urlAfterRedirects));
+      });
+  }
+
+  private enMinijuegos(url: string): boolean {
+    return url.startsWith('/minijuegos');
+  }
 
   async enviar(input: HTMLInputElement): Promise<void> {
     const texto = input.value.trim();

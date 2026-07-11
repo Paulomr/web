@@ -1,3 +1,5 @@
+<!-- Bearnie no aparece en la sección de minijuegos para no estorbar. -->
+@if (!oculto()) {
 <!-- Burbuja flotante: Bearnie saluda y abre el chat de ayuda. -->
 <button type="button" class="bot-btn" (click)="abierto.set(!abierto())" aria-label="Abrir asistente Bearnie">
   <img src="fotos/bernie-saludando.webp" alt="" />
@@ -32,4 +34,5 @@
       </button>
     </form>
   </section>
+}
 }
