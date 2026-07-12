@@ -19,6 +19,7 @@ interface ProdAdmin {
   orden: number;
   pausadoHasta: string; // 'YYYY-MM-DD' o '' (para <input type="date">)
   _nuevo?: boolean;
+  _abierto?: boolean;
   _guardando?: boolean;
   _msg?: string;
 }
@@ -70,8 +71,30 @@ export class Admin {
     }));
   });
 
+  /** Categorías (módulos) desplegadas. */
+  readonly categoriasAbiertas = signal<Set<string>>(new Set());
+
   constructor() {
     if (this.token()) void this.cargar();
+  }
+
+  catAbierta(id: string): boolean {
+    return this.categoriasAbiertas().has(id);
+  }
+
+  toggleCat(id: string): void {
+    this.categoriasAbiertas.update((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  }
+
+  /** Abre/cierra el editor de una tarjeta al hacer clic en ella. */
+  toggleProd(p: ProdAdmin): void {
+    p._abierto = !p._abierto;
+    this.refrescar();
   }
 
   /** Fotos de un producto como lista (para las miniaturas de preview). */
@@ -171,10 +194,13 @@ export class Admin {
         orden: l.length,
         pausadoHasta: '',
         _nuevo: true,
+        _abierto: true,
         _msg: '',
       },
       ...l,
     ]);
+    // Abre el módulo de "cookies" (categoría por defecto del nuevo) para verlo.
+    this.categoriasAbiertas.update((s) => new Set(s).add('cookies'));
   }
 
   async guardar(p: ProdAdmin): Promise<void> {
