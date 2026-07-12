@@ -2,7 +2,9 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CATEGORIAS } from '../../productos';
+import { GAMES } from '../../games';
 import { ProductosService } from '../../productos.service';
+import { CAMPOS_TEXTO, DEFAULT_TEXTOS } from '../../configuracion.service';
 
 // Producto en el panel: mismos campos que la base, pero 'fotos' como texto
 // (una foto por línea) para editarlo fácil. Los '_' son estado de la pantalla.
@@ -74,8 +76,57 @@ export class Admin {
   /** Categorías (módulos) desplegadas. */
   readonly categoriasAbiertas = signal<Set<string>>(new Set());
 
+  // ---- Contenido del sitio (textos + minijuegos) ----
+  readonly camposTexto = CAMPOS_TEXTO;
+  readonly juegos = GAMES;
+  readonly cfgAbierto = signal(false);
+  readonly cfgGuardando = signal(false);
+  readonly cfgMsg = signal('');
+  cfgTextos: Record<string, string> = { ...DEFAULT_TEXTOS };
+  cfgJuegos: Record<string, boolean> = {};
+
   constructor() {
-    if (this.token()) void this.cargar();
+    if (this.token()) {
+      void this.cargar();
+      void this.cargarConfig();
+    }
+  }
+
+  async cargarConfig(): Promise<void> {
+    try {
+      const r = await fetch('/api/config');
+      if (!r.ok) return;
+      const c = (await r.json()) as { textos?: Record<string, string>; juegos?: Record<string, boolean> };
+      this.cfgTextos = { ...DEFAULT_TEXTOS, ...(c?.textos ?? {}) };
+      const jg: Record<string, boolean> = {};
+      for (const g of GAMES) jg[g.id] = c?.juegos?.[g.id] !== false;
+      this.cfgJuegos = jg;
+    } catch {
+      /* deja los valores por defecto */
+    }
+  }
+
+  async guardarConfig(): Promise<void> {
+    this.cfgGuardando.set(true);
+    this.cfgMsg.set('');
+    let r: Response;
+    try {
+      r = await fetch('/api/config', {
+        method: 'PUT',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ textos: this.cfgTextos, juegos: this.cfgJuegos }),
+      });
+    } catch {
+      this.cfgGuardando.set(false);
+      this.cfgMsg.set('⚠ Sin conexión');
+      return;
+    }
+    this.cfgGuardando.set(false);
+    if (r.status === 401) {
+      this.salir();
+      return;
+    }
+    this.cfgMsg.set(r.ok ? '✓ Guardado' : '⚠ Error al guardar');
   }
 
   catAbierta(id: string): boolean {
@@ -148,6 +199,7 @@ export class Admin {
     this.token.set(t);
     this.claveInput.set('');
     this.productos.set(((await r.json()) as any[]).map(mapDoc));
+    void this.cargarConfig();
   }
 
   salir(): void {

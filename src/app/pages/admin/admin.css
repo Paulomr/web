@@ -360,6 +360,29 @@
   font-size: 0.85rem;
 }
 
+/* ---------- Módulo de contenido del sitio ---------- */
+.cab-cfg {
+  background: linear-gradient(135deg, #4a2f42 0%, #7a4f75 100%);
+}
+
+.cfg-cuerpo {
+  gap: 12px;
+}
+
+.cfg-sub {
+  margin: 6px 0 2px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: #a95a86;
+}
+
+.juegos-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  padding: 4px 0;
+}
+
 /* ---------- Tarjeta de producto ---------- */
 .prod {
   display: flex;

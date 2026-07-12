@@ -56,11 +56,11 @@
           <span aria-hidden="true">←</span> Inicio
         </button>
         <h1>Nuestros minijuegos</h1>
-        <span class="count">{{ games.length }} juegos</span>
+        <span class="count">{{ juegosVisibles().length }} juegos</span>
       </header>
 
       <ul class="grid">
-        @for (game of games; track game.id) {
+        @for (game of juegosVisibles(); track game.id) {
           <li class="card">
             <div class="card-cover" [style.background]="game.cover">
               @if (game.trailer) {

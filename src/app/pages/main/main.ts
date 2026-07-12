@@ -4,6 +4,7 @@ import { Producto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
+import { ConfiguracionService } from '../../configuracion.service';
 
 @Component({
   selector: 'app-main',
@@ -14,6 +15,7 @@ import { ProductosService } from '../../productos.service';
 export class Main implements AfterViewInit {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
+  readonly cfg = inject(ConfiguracionService);
   private readonly productosSvc = inject(ProductosService);
 
   /** Productos con foto, repartidos en tres cintas (marquee). Reacciona al

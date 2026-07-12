@@ -1,9 +1,10 @@
-import { Component, ElementRef, HostListener, ViewChild, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { GAMES, Game } from '../../games';
 import { fetchTopScores, ScoreRow } from '../../scores';
 import { AnimatedHero } from '../../components/animated-hero/animated-hero';
+import { ConfiguracionService } from '../../configuracion.service';
 
 type Rgb = [number, number, number];
 
@@ -14,7 +15,11 @@ type Rgb = [number, number, number];
   styleUrl: './minijuegos.css',
 })
 export class Minijuegos {
+  private readonly cfg = inject(ConfiguracionService);
   readonly games = GAMES;
+
+  /** Juegos que se muestran (según la configuración del panel). */
+  readonly juegosVisibles = computed(() => this.games.filter((g) => this.cfg.juegoActivo(g.id)));
 
   /** Juego actualmente abierto en el reproductor (null = mostrando la lista). */
   readonly selected = signal<Game | null>(null);

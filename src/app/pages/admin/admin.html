@@ -35,6 +35,41 @@
       <p class="cargando">Cargando…</p>
     }
 
+    <!-- Contenido del sitio: textos/títulos y minijuegos -->
+    <div class="modulo">
+      <button type="button" class="modulo-cab cab-cfg" (click)="cfgAbierto.set(!cfgAbierto())">
+        <span class="modulo-nombre">CONTENIDO DEL SITIO</span>
+        <span class="chev" [class.rot]="cfgAbierto()" aria-hidden="true">⌄</span>
+      </button>
+      @if (cfgAbierto()) {
+        <div class="modulo-cuerpo cfg-cuerpo">
+          <h3 class="cfg-sub">Títulos y textos</h3>
+          @for (campo of camposTexto; track campo.clave) {
+            <label class="campo">
+              <span>{{ campo.label }}</span>
+              <input [(ngModel)]="cfgTextos[campo.clave]" />
+            </label>
+          }
+
+          <h3 class="cfg-sub">Minijuegos visibles en la web</h3>
+          <div class="juegos-toggles">
+            @for (j of juegos; track j.id) {
+              <label class="check"><input type="checkbox" [(ngModel)]="cfgJuegos[j.id]" /> {{ j.name }}</label>
+            }
+          </div>
+
+          <div class="fila pie">
+            <button class="guardar" (click)="guardarConfig()" [disabled]="cfgGuardando()">
+              {{ cfgGuardando() ? 'GUARDANDO…' : 'GUARDAR CONTENIDO' }}
+            </button>
+            @if (cfgMsg()) {
+              <span class="msg">{{ cfgMsg() }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
     @for (g of grupos(); track g.id) {
       <div class="modulo">
         <button type="button" class="modulo-cab" (click)="toggleCat(g.id)">
