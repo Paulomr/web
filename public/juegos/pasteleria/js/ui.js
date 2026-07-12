@@ -1,7 +1,7 @@
 /* Render de pantallas, HUD, juego y overlays. Escucha eventos de estado.js y dispara acciones. */
 
 import * as E from './estado.js';
-import { MASAS, TOPPINGS, DECORACIONES, GLASEADOS, masaPorId } from './recetas.js';
+import { MASAS, TOPPINGS, DECORACIONES, GLASEADOS, masaPorId, decoPorId, tieneGlaseado } from './recetas.js';
 import { DIAS } from './dias.js';
 import * as G from './guardado.js';
 import { sfx, alternarMute, estaMute } from './audio.js';
@@ -33,29 +33,47 @@ const NUBE_SVG = `<svg viewBox="0 0 60 36" width="52" height="32"><path d="M14 3
 /* ══════════════ COMPONENTE GALLETA ══════════════ */
 const ANCLAS_CHOC = [[26, 30], [52, 22], [70, 40], [38, 48], [20, 60], [56, 62], [72, 70], [42, 78]];
 const ANCLAS_COL = [[34, 24], [62, 32], [24, 46], [48, 56], [72, 52], [32, 70], [58, 76], [78, 28]];
+const ANCLAS_PERLA = [[30, 26], [58, 24], [72, 44], [22, 48], [46, 44], [66, 64], [36, 66], [54, 78]];
+const ANCLAS_FRESA = [[40, 22], [64, 38], [26, 38], [50, 56], [74, 60], [30, 62], [56, 72], [44, 40]];
 const PASTELES = ['#f2a7c0', '#8fd0f0', '#f7e3a1', '#bfe3d0', '#d9c7ee', '#ce6969'];
+const PERLA_COLS = ['#fff7ea', '#ffeccf', '#fdf6ef'];
+const FRESA_COLS = ['#f7a8c0', '#e56a8a', '#f28ba8'];
 const BLOB_GLASEADO = 'M10 36 C10 16 28 8 48 8 C68 8 86 16 86 36 C86 42 84 47 81 48 C84 58 77 63 73 54 C73 65 65 68 61 58 C59 70 49 72 45 60 C43 70 33 70 31 57 C27 66 19 63 20 51 C14 52 10 44 10 36 Z';
 const SPRINKLES_POS = [[30, 18, 20], [46, 15, -15], [62, 19, 40], [72, 30, -30], [24, 30, 55], [40, 28, -40], [54, 32, 10], [68, 42, 25], [32, 42, -20], [48, 44, 60], [60, 50, -45], [38, 54, 30]];
 
-function chipsHTML(anclas, colores) {
+function chipsHTML(anclas, colores, extraClase = '') {
   return anclas
     .map(([x, y], i) => {
       const rot = ((i * 47) % 70) - 35;
       const extra = colores ? `background:${colores[i % colores.length]};` : '';
-      return `<span class="chip ${colores ? 'chip-color' : ''}" style="left:${x}%;top:${y}%;transform:rotate(${rot}deg);${extra}"></span>`;
+      return `<span class="chip ${colores ? 'chip-color' : ''} ${extraClase}" style="left:${x}%;top:${y}%;transform:rotate(${rot}deg);${extra}"></span>`;
     })
     .join('');
 }
 
-function glaseadoSVG(tipo, conSprinkles) {
-  const idGrad = tipo === 'rosa' ? 'gRosaGl' : 'gChocoGl';
-  const stops = tipo === 'rosa'
-    ? '<stop offset="0" stop-color="#f7bcd0"/><stop offset="1" stop-color="#f2a7c0"/>'
-    : '<stop offset="0" stop-color="#7a4b2b"/><stop offset="1" stop-color="#5d3a20"/>';
-  const spr = conSprinkles
-    ? SPRINKLES_POS.map(([x, y, r], i) => `<rect x="-4" y="-1.25" width="8" height="2.5" rx="1.25" fill="${PASTELES[i % 6]}" stroke="rgba(27,34,51,.35)" stroke-width=".6" transform="translate(${x} ${y}) rotate(${r})"/>`).join('')
-    : '';
-  return `<svg class="glaseado" viewBox="0 0 96 96" aria-hidden="true"><defs><linearGradient id="${idGrad}" x1="0" y1="0" x2="0" y2="1">${stops}</linearGradient></defs><path d="${BLOB_GLASEADO}" fill="url(#${idGrad})" stroke="rgba(27,34,51,.3)" stroke-width="1.5"/><ellipse cx="35" cy="23" rx="13" ry="6" fill="rgba(255,255,255,.4)"/>${spr}</svg>`;
+/* Glaseado (crema): la base. Cada crema trae su degradado g1→g2 en recetas.js. */
+function glaseadoSVG(decoId) {
+  const d = decoPorId(decoId) || { id: decoId, g1: '#f7bcd0', g2: '#f2a7c0' };
+  const idGrad = 'gl_' + d.id;
+  return `<svg class="glaseado" viewBox="0 0 96 96" aria-hidden="true"><defs><linearGradient id="${idGrad}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${d.g1}"/><stop offset="1" stop-color="${d.g2}"/></linearGradient></defs><path d="${BLOB_GLASEADO}" fill="url(#${idGrad})" stroke="rgba(27,34,51,.3)" stroke-width="1.5"/><ellipse cx="35" cy="23" rx="13" ry="6" fill="rgba(255,255,255,.4)"/></svg>`;
+}
+
+/* Lluvia de colores como topping independiente (va ENCIMA de la crema). */
+function sprinklesSVG() {
+  const spr = SPRINKLES_POS.map(([x, y, r], i) => `<rect x="-4" y="-1.25" width="8" height="2.5" rx="1.25" fill="${PASTELES[i % 6]}" stroke="rgba(27,34,51,.35)" stroke-width=".6" transform="translate(${x} ${y}) rotate(${r})"/>`).join('');
+  return `<svg class="topping-cap" viewBox="0 0 96 96" aria-hidden="true">${spr}</svg>`;
+}
+
+/* Dibujo de cada topping (siempre encima de la crema). */
+function toppingHTML(id) {
+  switch (id) {
+    case 'chispas_choc': return chipsHTML(ANCLAS_CHOC, null);
+    case 'chispas_colores': return chipsHTML(ANCLAS_COL, PASTELES);
+    case 'perlas': return chipsHTML(ANCLAS_PERLA, PERLA_COLS, 'perla');
+    case 'chispas_fresa': return chipsHTML(ANCLAS_FRESA, FRESA_COLS);
+    case 'sprinkles': return sprinklesSVG();
+    default: return '';
+  }
 }
 
 /** Componente único de galleta. g = {masa, toppings, deco, coccion} */
@@ -63,10 +81,10 @@ export function galletaHTML(g, esc = 1, clase = '') {
   const masa = masaPorId(g.masa);
   const st = `--esc:${esc};--g-claro:${masa.colores.claro};--g-medio:${masa.colores.medio};--g-borde:${masa.colores.borde}`;
   let dentro = '';
-  if (g.toppings.includes('chispas_choc')) dentro += chipsHTML(ANCLAS_CHOC, null);
-  if (g.toppings.includes('chispas_colores')) dentro += chipsHTML(ANCLAS_COL, PASTELES);
+  /* Orden de dibujo = orden de decoración: primero la CREMA (base), luego los TOPPINGS encima. */
   const glas = (g.deco || []).find((d) => GLASEADOS.includes(d));
-  if (glas) dentro += glaseadoSVG(glas === 'glaseado_rosa' ? 'rosa' : 'choco', (g.deco || []).includes('sprinkles'));
+  if (glas) dentro += glaseadoSVG(glas);
+  for (const t of g.toppings || []) dentro += toppingHTML(t);
   const humo = g.coccion === 'quemada' ? '<div class="humo h1"></div><div class="humo h2"></div>' : '';
   return `<div class="galleta-wrap ${clase}" style="${st}"><div class="galleta coccion-${g.coccion}">${dentro}${humo}</div></div>`;
 }
@@ -140,7 +158,7 @@ function clienteSVG(c) {
 
 function burbujaHTML(c) {
   const items = c.pedido.items
-    .map((it, i) => `<div class="burbuja-item ${it.servido ? 'servida' : ''}" data-item="${i}">${galletaHTML(itemAGalleta(it), 0.56)}${ICONO_CHECK}</div>`)
+    .map((it, i) => `<div class="burbuja-item ${it.servido ? 'servida' : ''}" data-item="${i}">${galletaHTML(itemAGalleta(it), 0.72)}${ICONO_CHECK}</div>`)
     .join('');
   return `<div class="burbuja"><div class="burbuja-items">${items}</div><div class="paciencia"><div class="paciencia-fill"></div></div></div>`;
 }
@@ -149,8 +167,12 @@ function burbujaHTML(c) {
 function contenidoFrasco(id) {
   if (id === 'chispas_choc') return '<span class="mini-chip c1"></span><span class="mini-chip c2"></span><span class="mini-chip c3"></span>';
   if (id === 'chispas_colores') return '<span class="mini-chip col1"></span><span class="mini-chip col2"></span><span class="mini-chip col3"></span>';
+  if (id === 'perlas') return '<span class="mini-chip pe1"></span><span class="mini-chip pe2"></span><span class="mini-chip pe3"></span>';
+  if (id === 'chispas_fresa') return '<span class="mini-chip fr1"></span><span class="mini-chip fr2"></span><span class="mini-chip fr3"></span>';
   if (id === 'glaseado_rosa') return '<span class="mini-glaseado rosa"></span>';
+  if (id === 'glaseado_vainilla') return '<span class="mini-glaseado vainilla"></span>';
   if (id === 'glaseado_choc') return '<span class="mini-glaseado choco"></span>';
+  if (id === 'glaseado_menta') return '<span class="mini-glaseado menta"></span>';
   if (id === 'sprinkles') return '<span class="mini-spr s1"></span><span class="mini-spr s2"></span><span class="mini-spr s3"></span>';
   return '';
 }
@@ -260,14 +282,22 @@ function renderDias() {
 
 /* ══════════════ BRIEFING ══════════════ */
 function componenteDesbloqueo(id) {
-  if (id === 'chocolate') return galletaHTML({ masa: 'chocolate', toppings: [], deco: [], coccion: 'perfecta' }, 0.6);
-  if (id === 'redvelvet') return galletaHTML({ masa: 'redvelvet', toppings: [], deco: [], coccion: 'perfecta' }, 0.6);
-  if (id === 'glaseado_rosa') return galletaHTML({ masa: 'vainilla', toppings: [], deco: ['glaseado_rosa'], coccion: 'perfecta' }, 0.6);
-  if (id === 'glaseado_choc') return galletaHTML({ masa: 'vainilla', toppings: [], deco: ['glaseado_choc'], coccion: 'perfecta' }, 0.6);
-  if (id === 'sprinkles') return galletaHTML({ masa: 'chocolate', toppings: [], deco: ['glaseado_rosa', 'sprinkles'], coccion: 'perfecta' }, 0.6);
-  if (id === 'chispas_colores') return galletaHTML({ masa: 'vainilla', toppings: ['chispas_colores'], deco: [], coccion: 'perfecta' }, 0.6);
-  if (id === 'vip') return `<div class="mini-cliente">${clienteSVG({ tipo: 'vip', variante: { colorCara: '#f7e3a1', accesorio: 'ninguno', semilla: 0.1 } })}</div>`;
-  return '';
+  const gll = (masa, deco = [], toppings = []) => galletaHTML({ masa, toppings, deco, coccion: 'perfecta' }, 0.6);
+  switch (id) {
+    case 'chocolate': return gll('chocolate');
+    case 'redvelvet': return gll('redvelvet');
+    case 'glaseado_rosa': return gll('vainilla', ['glaseado_rosa']);
+    case 'glaseado_vainilla': return gll('vainilla', ['glaseado_vainilla']);
+    case 'glaseado_choc': return gll('vainilla', ['glaseado_choc']);
+    case 'glaseado_menta': return gll('chocolate', ['glaseado_menta']);
+    case 'perlas': return gll('chocolate', ['glaseado_rosa'], ['perlas']);
+    case 'sprinkles': return gll('chocolate', ['glaseado_rosa'], ['sprinkles']);
+    case 'chispas_colores': return gll('vainilla', ['glaseado_vainilla'], ['chispas_colores']);
+    case 'chispas_fresa': return gll('vainilla', ['glaseado_vainilla'], ['chispas_fresa']);
+    case 'chispas_choc': return gll('vainilla', ['glaseado_rosa'], ['chispas_choc']);
+    case 'vip': return `<div class="mini-cliente">${clienteSVG({ tipo: 'vip', variante: { colorCara: '#f7e3a1', accesorio: 'ninguno', semilla: 0.1 } })}</div>`;
+    default: return '';
+  }
 }
 
 function renderBriefing(dia) {
@@ -332,12 +362,11 @@ function construirJuego() {
       <span class="puesto-led"></span>
     </div>`).join('');
 
-  /* mesa */
+  /* mesa — cremas (base) primero, luego toppings (van encima) */
   $('#fila-masas').innerHTML = MASAS.map((m) => bolaHTML(m, diaMax)).join('');
+  $('#fila-decos').innerHTML = DECORACIONES.map((d) => frascoHTML(d, 'deco', diaMax)).join('');
+  $('#fila-decos').classList.remove('oculto');
   $('#fila-toppings').innerHTML = TOPPINGS.map((t) => frascoHTML(t, 'top', diaMax)).join('');
-  const hayDecos = diaMax >= 3;
-  $('#fila-decos').innerHTML = hayDecos ? DECORACIONES.map((d) => frascoHTML(d, 'deco', diaMax)).join('') : '';
-  $('#fila-decos').classList.toggle('oculto', !hayDecos);
   $('#tabla-galleta').innerHTML = '';
   $$('#fila-repisa [data-drag]').forEach((el) => (el.innerHTML = ''));
 
@@ -369,14 +398,16 @@ function formatoTiempo(ms) {
 function actualizarFrascosHabilitados() {
   const g = E.P ? E.P.tabla : null;
   const horneada = g && (g.coccion === 'perfecta' || g.coccion === 'pasada');
+  const conCrema = horneada && tieneGlaseado(g.deco);
+  /* Cremas: activas al haber galleta horneada (son la base). */
   $$('#fila-decos .frasco').forEach((f) => {
     if (f.classList.contains('bloqueado')) return;
     f.classList.toggle('inactivo', !horneada);
   });
-  const cruda = g && g.coccion === 'cruda';
+  /* Toppings: activos solo cuando ya hay crema puesta (van encima). */
   $$('#fila-toppings .frasco').forEach((f) => {
     if (f.classList.contains('bloqueado')) return;
-    f.classList.toggle('inactivo', !cruda);
+    f.classList.toggle('inactivo', !conCrema);
   });
 }
 
@@ -384,7 +415,7 @@ function actualizarFrascosHabilitados() {
 function empezarDia(dia) {
   const necesitaTuto = dia === 1 && !G.datos.tutorialVisto;
   E.iniciarDia(dia, {
-    forzarPrimerPedido: necesitaTuto ? [{ masa: 'vainilla', toppings: ['chispas_choc'], decoraciones: [] }] : null,
+    forzarPrimerPedido: necesitaTuto ? [{ masa: 'vainilla', toppings: ['chispas_choc'], decoraciones: ['glaseado_rosa'] }] : null,
   });
   construirJuego();
   mostrarPantalla('pantalla-juego');
@@ -432,11 +463,12 @@ function countdown(cb) {
 function arrancarTutorial() {
   const pasos = {
     masa: { texto: 'Toca la bola de masa de vainilla para empezar tu galleta.', objetivo: '[data-tap="masa:vainilla"]', permite: (t, d) => t === 'masa' && d === 'vainilla' },
-    topping: { texto: 'Ahora toca el frasco de chispas de chocolate.', objetivo: '[data-tap="top:chispas_choc"]', permite: (t) => t === 'topping' },
-    hornear: { texto: 'Arrastra la galleta a un puesto del horno. También puedes tocarla y luego tocar el horno.', objetivo: '#tabla-slot', permite: (t) => t === 'hornear' },
+    hornear: { texto: 'Arrastra la galleta cruda a un puesto del horno. También puedes tocarla y luego tocar el horno.', objetivo: '#tabla-slot', permite: (t) => t === 'hornear' },
     sacar: { texto: '¡Sácala cuando el anillo esté DORADO! Toca el puesto del horno.', objetivo: null, permite: (t) => t === 'sacar' },
     devolver: { texto: 'Salió cruda: devuélvela al horno, conserva su avance.', objetivo: '#tabla-slot', permite: (t) => t === 'hornear' },
     descartar: { texto: 'Se quemó… Arrástrala a la caneca y toca la masa otra vez.', objetivo: '#caneca', permite: (t) => t === 'descartar' || t === 'masa' },
+    crema: { texto: 'La CREMA va primero: toca el glaseado rosa (siempre antes que los toppings).', objetivo: '[data-tap="deco:glaseado_rosa"]', permite: (t) => t === 'deco' },
+    topping: { texto: 'Ahora sí, encima de la crema pon las chispas de chocolate.', objetivo: '[data-tap="top:chispas_choc"]', permite: (t) => t === 'topping' },
     entregar: { texto: '¡Llévasela a tu cliente! Arrastra la galleta hasta él.', objetivo: '.cliente', permite: (t) => t === 'entregar' },
   };
   tutorial = { paso: 'masa', pasos };
@@ -488,15 +520,16 @@ function avanzarTutorial(accion) {
   if (!tutorial) return;
   const { tipo, dato } = accion;
   const p = tutorial.paso;
-  if (p === 'masa' && tipo === 'masa') tutorial.paso = 'topping';
-  else if (p === 'topping' && tipo === 'topping') tutorial.paso = 'hornear';
+  if (p === 'masa' && tipo === 'masa') tutorial.paso = 'hornear';
   else if ((p === 'hornear' || p === 'devolver') && tipo === 'hornear') tutorial.paso = 'sacar';
   else if (p === 'sacar' && tipo === 'sacar') {
     if (dato.fase === 'cruda') tutorial.paso = 'devolver';
     else if (dato.fase === 'quemada') tutorial.paso = 'descartar';
-    else tutorial.paso = 'entregar';
+    else tutorial.paso = 'crema';
   } else if (p === 'descartar' && tipo === 'descartar') tutorial.paso = 'masa';
-  else if (p === 'descartar' && tipo === 'masa') tutorial.paso = 'topping';
+  else if (p === 'descartar' && tipo === 'masa') tutorial.paso = 'hornear';
+  else if (p === 'crema' && tipo === 'deco') tutorial.paso = 'topping';
+  else if (p === 'topping' && tipo === 'topping') tutorial.paso = 'entregar';
   else return;
   mostrarPasoTutorial();
 }
@@ -827,16 +860,16 @@ function animarResultados(estrellas, dia) {
 /* ══════════════ CÓMO SE JUEGA (modal) ══════════════ */
 function construirComo() {
   const demoCliente = `<div class="como-demo">${clienteSVG({ tipo: 'normal', variante: { colorCara: '#bfe3d0', accesorio: 'gorra', semilla: 0.3 } })}
-    <div class="como-burbuja">${galletaHTML({ masa: 'vainilla', toppings: ['chispas_choc'], deco: [], coccion: 'perfecta' }, 0.3)}<div class="paciencia demo"><div class="paciencia-fill" style="width:60%"></div></div></div></div>`;
+    <div class="como-burbuja">${galletaHTML({ masa: 'vainilla', toppings: ['chispas_choc'], deco: ['glaseado_rosa'], coccion: 'perfecta' }, 0.3)}<div class="paciencia demo"><div class="paciencia-fill" style="width:60%"></div></div></div></div>`;
   const demoAnillo = `<div class="como-anillo"><div class="anillo-demo"></div><ul class="leyenda-anillo">
       <li><span class="pip gris"></span> Cruda</li><li><span class="pip dorado"></span> ¡Perfecta!</li>
       <li><span class="pip rojo"></span> Pasada</li><li><span class="pip navy"></span> Quemada</li></ul></div>`;
-  const demoDecorar = `<div class="como-demo fila">${galletaHTML({ masa: 'chocolate', toppings: [], deco: ['glaseado_rosa', 'sprinkles'], coccion: 'perfecta' }, 0.55)}<span class="flecha">&rarr;</span>${clienteSVG({ tipo: 'normal', variante: { colorCara: '#f7e3a1', accesorio: 'gafas', semilla: 0.7 } })}</div>`;
+  const demoDecorar = `<div class="como-demo fila">${galletaHTML({ masa: 'chocolate', toppings: ['sprinkles'], deco: ['glaseado_rosa'], coccion: 'perfecta' }, 0.55)}<span class="flecha">&rarr;</span>${clienteSVG({ tipo: 'normal', variante: { colorCara: '#f7e3a1', accesorio: 'gafas', semilla: 0.7 } })}</div>`;
   const demoCombo = `<div class="como-demo fila"><span class="moneda-icono grande"></span><span class="badge-demo">x2</span>${ESTRELLA(true)}${ESTRELLA(true)}${ESTRELLA(true)}</div>`;
   const tarjetas = [
     ['Los pedidos y la paciencia', 'Cada cliente pide galletas exactas en su burbuja. Su barra de paciencia baja todo el tiempo: si llega a cero, se va triste.', demoCliente],
-    ['Armar y hornear', 'Toca una masa, agrega las chispas pedidas y arrastra la galleta al horno. Sácala cuando el anillo esté DORADO: esa es la ventana perfecta.', demoAnillo],
-    ['Decorar y entregar', 'Después del horno puedes glasear (y poner sprinkles sobre el glaseado). Arrastra la galleta hasta el cliente, o tócala y toca al cliente.', demoDecorar],
+    ['Armar y hornear', 'Toca una masa y arrástrala al horno. Sácala cuando el anillo esté DORADO: esa es la ventana perfecta.', demoAnillo],
+    ['Decorar y entregar', 'Después del horno, primero la CREMA y encima los toppings (chispas, perlas, lluvia de colores…). Arrastra la galleta hasta el cliente, o tócala y toca al cliente.', demoDecorar],
     ['Propinas, combo y estrellas', 'Entregar rápido da propinas. Pedidos perfectos seguidos suben tu combo: x2 y x3 de propina. Junta monedas para ganar estrellas.', demoCombo],
   ];
   $('#como-tarjetas').innerHTML = tarjetas.map(([t, txt, demo], i) => `

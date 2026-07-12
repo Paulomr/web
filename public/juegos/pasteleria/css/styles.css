@@ -451,17 +451,18 @@ body::after {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-rows: minmax(0, 28fr) minmax(0, 24fr) minmax(0, 48fr);
+  /* zona de clientes más alta, mesón (mesa) más bajo */
+  grid-template-rows: minmax(0, 37fr) minmax(0, 22fr) minmax(0, 41fr);
   touch-action: none;
 }
 
 /* ---- 1) MOSTRADOR (la tienda) ---- */
 #banda-mostrador {
   position: relative;
-  /* papel tapiz: rayas verticales suaves sobre rosa pastel */
+  /* papel tapiz: rayas verticales suaves sobre rosa (local rosado) */
   background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 20px, rgba(255, 255, 255, 0) 20px 44px),
-    linear-gradient(180deg, #fce9f1, #f6cbdd);
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.20) 0 20px, rgba(255, 255, 255, 0) 20px 44px),
+    linear-gradient(180deg, #fbd6e6 0%, #f6b6cf 60%, #f2a7c0 100%);
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -560,11 +561,11 @@ body::after {
 .burbuja {
   position: relative;
   background: #fff;
-  border: 2px solid var(--navy);
-  border-radius: 14px;
-  padding: 5px 7px 6px;
-  margin-bottom: 7px;
-  box-shadow: 0 3px 8px rgba(27, 34, 51, 0.14);
+  border: 2.5px solid var(--navy);
+  border-radius: 16px;
+  padding: 7px 10px 9px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 10px rgba(27, 34, 51, 0.16);
   z-index: 2;
 }
 .burbuja::after {
@@ -577,7 +578,7 @@ body::after {
   border-top-color: var(--navy);
   border-bottom: 0;
 }
-.burbuja-items { display: flex; gap: 6px; justify-content: center; }
+.burbuja-items { display: flex; gap: 8px; justify-content: center; }
 .burbuja-item { position: relative; }
 .burbuja-item .check {
   position: absolute;
@@ -627,9 +628,9 @@ body::after {
 #banda-horno {
   background:
     linear-gradient(180deg, rgba(27, 34, 51, 0.07), rgba(27, 34, 51, 0) 30%),
-    repeating-linear-gradient(0deg, rgba(206, 105, 105, 0.09) 0 1.5px, transparent 1.5px 19px),
-    repeating-linear-gradient(90deg, rgba(206, 105, 105, 0.09) 0 1.5px, transparent 1.5px 19px),
-    linear-gradient(180deg, #fdf0e0, #fae9d3);
+    repeating-linear-gradient(0deg, rgba(229, 103, 155, 0.10) 0 1.5px, transparent 1.5px 19px),
+    repeating-linear-gradient(90deg, rgba(229, 103, 155, 0.10) 0 1.5px, transparent 1.5px 19px),
+    linear-gradient(180deg, #fde3ee, #f9d3e2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -981,11 +982,16 @@ body::after {
 }
 .fila {
   display: flex;
-  justify-content: center;
-  gap: clamp(8px, 4vw, 26px);
+  justify-content: safe center;
+  gap: clamp(6px, 3.4vw, 24px);
   align-items: center;
   min-height: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
+.fila::-webkit-scrollbar { display: none; }
 
 .bola-masa, .frasco {
   position: relative;
@@ -997,7 +1003,8 @@ body::after {
   align-items: center;
   gap: 1px;
   font-family: var(--fuente-ui);
-  min-width: 58px;
+  min-width: 52px;
+  flex: 0 0 auto;
   min-height: 44px;
   padding: 2px 4px;
   transition: transform 200ms ease;
@@ -1079,13 +1086,21 @@ body::after {
 .mini-chip.col1 { left: 18%; bottom: 12%; transform: rotate(-16deg); background: var(--rosa); }
 .mini-chip.col2 { left: 46%; bottom: 26%; transform: rotate(22deg); background: #8fd0f0; }
 .mini-chip.col3 { left: 62%; bottom: 8%; transform: rotate(-30deg); background: var(--menta); }
+.mini-chip.pe1 { left: 18%; bottom: 12%; transform: rotate(-16deg); background: #fff3da; border-radius: 50%; }
+.mini-chip.pe2 { left: 46%; bottom: 26%; transform: rotate(22deg); background: #ffe9c8; border-radius: 50%; }
+.mini-chip.pe3 { left: 62%; bottom: 8%; transform: rotate(-30deg); background: #fdf6ef; border-radius: 50%; }
+.mini-chip.fr1 { left: 18%; bottom: 12%; transform: rotate(-16deg); background: #f28ba8; }
+.mini-chip.fr2 { left: 46%; bottom: 26%; transform: rotate(22deg); background: #e56a8a; }
+.mini-chip.fr3 { left: 62%; bottom: 8%; transform: rotate(-30deg); background: #f7a8c0; }
 .mini-glaseado {
   position: absolute;
   inset: 30% 12% 14% 12%;
   border-radius: 40% 44% 46% 42%;
 }
 .mini-glaseado.rosa { background: linear-gradient(180deg, #f7bcd0, var(--rosa)); }
+.mini-glaseado.vainilla { background: linear-gradient(180deg, #fff0cf, #f4d99f); }
 .mini-glaseado.choco { background: linear-gradient(180deg, #7a4b2b, #5d3a20); }
+.mini-glaseado.menta { background: linear-gradient(180deg, #cdeede, #9fd4b8); }
 .mini-spr { position: absolute; width: 9px; height: 3px; border-radius: 2px; }
 .mini-spr.s1 { left: 18%; bottom: 30%; transform: rotate(24deg); background: var(--coral); }
 .mini-spr.s2 { left: 44%; bottom: 16%; transform: rotate(-32deg); background: #8fd0f0; }
@@ -1230,6 +1245,16 @@ body::after {
 }
 .galleta.coccion-quemada .chip { opacity: 0.35; }
 .galleta.coccion-quemada .glaseado { opacity: 0.3; }
+.galleta.coccion-quemada .topping-cap { opacity: 0.3; }
+
+/* Capa de toppings que van ENCIMA de la crema (p. ej. lluvia de colores). */
+.topping-cap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: caeChip 90ms ease-out backwards;
+}
 
 .chip {
   position: absolute;
@@ -1244,6 +1269,14 @@ body::after {
   animation: caeChip 80ms ease-out backwards;
 }
 .chip-color { border: 1px solid rgba(27, 34, 51, 0.3); box-shadow: inset 1.5px 2px 0 rgba(255, 255, 255, 0.45); }
+/* Perlas: redondas y brillantes */
+.chip.perla {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(27, 34, 51, 0.28);
+  box-shadow: inset 1.5px 1.5px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(27, 34, 51, 0.25);
+}
 @keyframes caeChip {
   from { transform: translateY(-10px) scale(1.4); opacity: 0; }
 }
@@ -1698,8 +1731,8 @@ body::after {
 
 /* ═══════════ tarjeta-teléfono en desktop: mesa con más aire ═══════════ */
 @media (min-width: 600px) and (min-height: 600px) {
-  /* la mesa (superficie principal de trabajo) recibe más fracción del alto */
-  #area-juego { grid-template-rows: minmax(0, 25fr) minmax(0, 21fr) minmax(0, 54fr); }
+  /* zona de clientes con más aire; mesón (mesa) más compacto */
+  #area-juego { grid-template-rows: minmax(0, 35fr) minmax(0, 20fr) minmax(0, 45fr); }
   #banda-mesa {
     grid-template-rows: auto minmax(96px, 1fr) auto auto auto;
     gap: 8px;

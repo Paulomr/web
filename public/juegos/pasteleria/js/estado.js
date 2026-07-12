@@ -357,9 +357,12 @@ export function accionTopping(topId) {
   if (!P || P.pausado || P.terminado) return false;
   if (!permitido('topping', topId)) return false;
   const g = P.tabla;
-  if (!g) { fx('error', 'Primero pon una masa en la tabla'); return false; }
-  if (g.coccion !== 'cruda') { fx('error', 'Los toppings van antes del horno'); return false; }
-  if (g.toppings.includes(topId)) { fx('error', 'Ya tiene esas chispas'); return false; }
+  if (!g) { fx('error', 'Primero hornea una galleta'); return false; }
+  if (g.coccion === 'cruda') { fx('error', 'Hornéala antes de decorar'); return false; }
+  if (g.coccion === 'quemada') { fx('error', 'Está quemada: a la caneca'); return false; }
+  /* Regla: la crema va SIEMPRE antes que los toppings (es la base). */
+  if (!tieneGlaseado(g.deco)) { fx('error', 'La crema va primero: glasea antes del topping'); return false; }
+  if (g.toppings.includes(topId)) { fx('error', 'Ya tiene ese topping'); return false; }
   g.toppings.push(topId);
   g.historial.push({ tipo: 'top', id: topId });
   emit('tabla');
@@ -375,12 +378,7 @@ export function accionDeco(decoId) {
   if (!g) { fx('error', 'Primero pon una galleta en la tabla'); return false; }
   if (g.coccion === 'cruda') { fx('error', 'Hornéala antes de decorar'); return false; }
   if (g.coccion === 'quemada') { fx('error', 'Está quemada: a la caneca'); return false; }
-  if (decoId === 'sprinkles') {
-    if (!tieneGlaseado(g.deco)) { fx('error', 'Los sprinkles necesitan glaseado'); return false; }
-    if (g.deco.includes('sprinkles')) { fx('error', 'Ya tiene sprinkles'); return false; }
-  } else if (GLASEADOS.includes(decoId)) {
-    if (tieneGlaseado(g.deco)) { fx('error', 'Ya tiene glaseado'); return false; }
-  }
+  if (tieneGlaseado(g.deco)) { fx('error', 'Ya tiene crema'); return false; }
   g.deco.push(decoId);
   g.historial.push({ tipo: 'deco', id: decoId });
   emit('tabla');
@@ -395,10 +393,8 @@ export function accionDeshacer() {
   const g = P.tabla;
   if (!g || g.historial.length === 0) { fx('error', 'Nada que deshacer'); return false; }
   const ultimo = g.historial[g.historial.length - 1];
-  if (ultimo.tipo === 'top' && g.coccion !== 'cruda') { fx('error', 'Las chispas ya se hornearon'); return false; }
-  if (ultimo.tipo === 'deco' && ultimo.id !== 'sprinkles' && g.deco.includes('sprinkles')) {
-    /* no quitar el glaseado por debajo de los sprinkles: quita sprinkles primero */
-  }
+  /* La crema es la base: no se puede quitar si aún tiene toppings encima. */
+  if (ultimo.tipo === 'deco' && g.toppings.length) { fx('error', 'Quita primero los toppings'); return false; }
   g.historial.pop();
   if (ultimo.tipo === 'top') g.toppings = g.toppings.filter((t) => t !== ultimo.id);
   else g.deco = g.deco.filter((d) => d !== ultimo.id);

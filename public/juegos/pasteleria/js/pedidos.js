@@ -36,22 +36,20 @@ export function generarPedido(opts) {
   }
   const masas = MASAS.filter((m) => m.dia <= diaMax);
   const toppings = TOPPINGS.filter((t) => t.dia <= diaMax);
-  const decos = DECORACIONES.filter((d) => d.dia <= diaMax);
-  const glaseados = decos.filter((d) => GLASEADOS.includes(d.id));
-  const sprinkles = decos.find((d) => d.id === 'sprinkles');
+  const cremas = DECORACIONES.filter((d) => d.dia <= diaMax); // glaseados = base
 
   const n = primero ? 1 : enteroEntre(itemsRango[0], itemsRango[1]);
   const items = [];
   for (let i = 0; i < n; i++) {
     const masa = eleccionPonderada(masas, debutIds).id;
-    const tops = [];
-    for (const t of toppings) {
-      if (Math.random() < probCon(0.45, t.id, debutIds)) tops.push(t.id);
-    }
     const dec = [];
-    if (!primero && glaseados.length && Math.random() < probCon(0.55, glaseados[0].id, debutIds)) {
-      dec.push(eleccionPonderada(glaseados, debutIds).id);
-      if (sprinkles && Math.random() < probCon(0.4, 'sprinkles', debutIds)) dec.push('sprinkles');
+    const tops = [];
+    /* Primero la crema (base). Solo si hay crema pueden ir toppings encima. */
+    if (!primero && cremas.length && Math.random() < probCon(0.72, cremas[0].id, debutIds)) {
+      dec.push(eleccionPonderada(cremas, debutIds).id);
+      for (const t of toppings) {
+        if (Math.random() < probCon(0.4, t.id, debutIds)) tops.push(t.id);
+      }
     }
     items.push({ masa, toppings: tops, decoraciones: dec, servido: false });
   }
