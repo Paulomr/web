@@ -41,9 +41,11 @@ export class RegistroModal {
     this.error.set('');
     this.cuenta.registrar({
       nombre,
-      edad: this.edad().trim(),
-      instagram: this.instagram().trim(),
-      direccion: this.direccion().trim(),
+      // EDAD viene de un input number: puede llegar como número. Lo pasamos a
+      // texto de forma segura (evita "trim is not a function").
+      edad: String(this.edad() ?? '').trim(),
+      instagram: String(this.instagram() ?? '').trim(),
+      direccion: String(this.direccion() ?? '').trim(),
       acepta: true,
     });
     this.nombre.set('');

@@ -4,20 +4,13 @@
   <div class="reg" role="dialog" aria-modal="true" aria-label="Cuenta Crunchy Munch">
     <button type="button" class="reg-cerrar" (click)="cerrar()" aria-label="Cerrar">✕</button>
 
-    <!-- Panel rosa: gancho + beneficios + Bearnie (atraviesa en PC) -->
+    <!-- Panel rosa: rótulo + gancho corto + Bearnie (atraviesa en PC) -->
     <aside class="reg-aside">
-      <span class="reg-badge">CRUNCHY CLUB</span>
+      <span class="reg-eyebrow">THE CRUNCHY CLUB</span>
       @if (!cuenta.registrado()) {
-        <h2 class="reg-titulo">GANA GALLETAS<br />EN LA VIDA REAL</h2>
-        <p class="reg-sub">Crea tu cuenta, haz tus pedidos y juega para ganar premios de verdad.</p>
-        <ul class="reg-perks">
-          <li><span aria-hidden="true">🍪</span> Galletas reales por jugar</li>
-          <li><span aria-hidden="true">🎁</span> Premios y sorpresas exclusivas</li>
-          <li><span aria-hidden="true">⚡</span> Tus pedidos, más rápidos</li>
-        </ul>
+        <h2 class="reg-titulo">GANA GALLETAS<br />DE VERDAD</h2>
       } @else {
         <h2 class="reg-titulo">HOLA {{ cuenta.primerNombre() }}</h2>
-        <p class="reg-sub">Ya eres parte del mundo Crunchy Munch. ¡A sumar premios!</p>
       }
       <img class="reg-bear" src="fotos/bernie-saludando.webp" alt="Bearnie, la osa de Crunchy Munch" />
     </aside>
@@ -58,9 +51,7 @@
           <label class="reg-consent">
             <input type="checkbox" [ngModel]="acepta()" (ngModelChange)="acepta.set($event)" name="acepta" />
             <span class="reg-check" aria-hidden="true"></span>
-            <span class="reg-consent-txt">
-              Acepto que Crunchy Munch use mis datos para gestionar mis pedidos, premios y contactarme.
-            </span>
+            <span class="reg-consent-txt">Acepto el uso de mis datos para pedidos y premios.</span>
           </label>
 
           @if (error()) {
