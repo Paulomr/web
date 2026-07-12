@@ -45,6 +45,9 @@ __screenshots__/
 .env.*.local
 !.env.example
 
+# Archivos generados por la semilla
+scripts/*.gen.mjs
+
 # System files
 .DS_Store
 Thumbs.db
