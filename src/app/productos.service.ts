@@ -19,6 +19,11 @@ export class ProductosService {
     void this.cargarDesdeBase();
   }
 
+  /** Vuelve a pedir el menú a la base (p. ej. tras editar en el panel). */
+  refrescar(): void {
+    void this.cargarDesdeBase();
+  }
+
   private async cargarDesdeBase(): Promise<void> {
     try {
       const r = await fetch('/api/productos');

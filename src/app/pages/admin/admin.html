@@ -1,0 +1,103 @@
+@if (!token()) {
+  <!-- Ingreso -->
+  <section class="login">
+    <img src="fotos/bearnie-logo.webp" alt="Bearnie" />
+    <h1>PANEL CRUNCHY MUNCH</h1>
+    <p>Ingresa tu clave de administrador para editar el menú.</p>
+    <input
+      type="password"
+      [ngModel]="claveInput()"
+      (ngModelChange)="claveInput.set($event)"
+      (keyup.enter)="entrar()"
+      placeholder="CLAVE DE ADMIN"
+      autocomplete="current-password"
+    />
+    <button class="entrar" (click)="entrar()" [disabled]="cargando()">
+      {{ cargando() ? 'ENTRANDO…' : 'ENTRAR' }}
+    </button>
+    @if (error()) {
+      <p class="err">{{ error() }}</p>
+    }
+    <a routerLink="/">← Volver a la web</a>
+  </section>
+} @else {
+  <!-- Panel -->
+  <section class="panel">
+    <header class="panel-top">
+      <h1>MENÚ</h1>
+      <div class="acciones">
+        <button class="add" (click)="nuevo()">+ NUEVO PRODUCTO</button>
+        <button class="salir" (click)="salir()">Cerrar sesión</button>
+      </div>
+    </header>
+
+    @if (cargando()) {
+      <p class="cargando">Cargando…</p>
+    }
+
+    <div class="lista">
+      @for (p of productos(); track $index) {
+        <article class="prod" [class.inactivo]="!p.activo">
+          <div class="fila">
+            <label class="campo chico">
+              <span>ID {{ p._nuevo ? '(no se cambia luego)' : '' }}</span>
+              <input [(ngModel)]="p.slug" [disabled]="!p._nuevo" placeholder="ej: kinder" />
+            </label>
+            <label class="campo grande">
+              <span>NOMBRE</span>
+              <input [(ngModel)]="p.nombre" />
+            </label>
+          </div>
+
+          <div class="fila">
+            <label class="campo chico">
+              <span>PRECIO</span>
+              <input [(ngModel)]="p.precio" placeholder="$ 15.000" />
+            </label>
+            <label class="campo chico">
+              <span>GRAMAJE</span>
+              <input [(ngModel)]="p.detalle" placeholder="120 G" />
+            </label>
+            <label class="campo chico">
+              <span>CATEGORÍA</span>
+              <select [(ngModel)]="p.categoria">
+                @for (c of categorias; track c.id) {
+                  <option [value]="c.id">{{ c.label }}</option>
+                }
+              </select>
+            </label>
+            <label class="campo mini">
+              <span>ORDEN</span>
+              <input type="number" [(ngModel)]="p.orden" />
+            </label>
+          </div>
+
+          <label class="campo">
+            <span>DESCRIPCIÓN</span>
+            <textarea rows="2" [(ngModel)]="p.descripcion"></textarea>
+          </label>
+
+          <label class="campo">
+            <span>FOTOS — una por línea (nombre del archivo en /fotos)</span>
+            <textarea rows="2" [(ngModel)]="p.fotos" placeholder="bearnie-0228.webp"></textarea>
+          </label>
+
+          <div class="fila opciones">
+            <label class="check"><input type="checkbox" [(ngModel)]="p.nuevo" /> Etiqueta “NUEVO”</label>
+            <label class="check"><input type="checkbox" [(ngModel)]="p.activo" /> Visible en la web</label>
+          </div>
+
+          <div class="fila pie">
+            <button class="guardar" (click)="guardar(p)" [disabled]="p._guardando">
+              {{ p._guardando ? 'GUARDANDO…' : 'GUARDAR' }}
+            </button>
+            <button class="ocultar" (click)="ocultar(p)">{{ p._nuevo ? 'Descartar' : 'Ocultar' }}</button>
+            @if (p._msg) {
+              <span class="msg">{{ p._msg }}</span>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+}

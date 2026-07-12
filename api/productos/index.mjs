@@ -10,6 +10,13 @@ export default async function handler(req, res) {
     await conectarDB();
 
     if (req.method === 'GET') {
+      // El panel de administración pide TODOS (incluye ocultos) con ?all=1.
+      if (req.query.all === '1') {
+        if (!requiereAdmin(req, res)) return;
+        const todos = await Producto.find({}).sort({ orden: 1, createdAt: 1 }).lean();
+        res.status(200).json(todos);
+        return;
+      }
       const productos = await Producto.find({ activo: true })
         .sort({ orden: 1, createdAt: 1 })
         .lean();
