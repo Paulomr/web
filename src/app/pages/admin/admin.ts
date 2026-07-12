@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { CATEGORIAS } from '../../productos';
+import { CATEGORIAS, urlFoto } from '../../productos';
 import { GAMES } from '../../games';
 import { ProductosService } from '../../productos.service';
 import { CAMPOS_TEXTO, DEFAULT_TEXTOS, DEFAULT_SEDES, SedeCfg } from '../../configuracion.service';
@@ -23,6 +23,7 @@ interface ProdAdmin {
   _nuevo?: boolean;
   _abierto?: boolean;
   _guardando?: boolean;
+  _subiendo?: boolean;
   _msg?: string;
 }
 
@@ -55,6 +56,7 @@ function mapDoc(d: any): ProdAdmin {
 })
 export class Admin {
   readonly categorias = CATEGORIAS;
+  readonly urlFoto = urlFoto;
   private readonly productosSvc = inject(ProductosService);
 
   readonly token = signal<string | null>(this.leerToken());
@@ -173,6 +175,116 @@ export class Admin {
       .split(/[\n,]+/)
       .map((s) => s.trim())
       .filter(Boolean);
+  }
+
+  // ---- Subir / editar fotos ----
+  onSeleccionar(p: ProdAdmin, ev: Event): void {
+    const input = ev.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) void this.subirFoto(p, file);
+    input.value = '';
+  }
+
+  onSoltar(p: ProdAdmin, ev: DragEvent): void {
+    ev.preventDefault();
+    const file = ev.dataTransfer?.files?.[0];
+    if (file) void this.subirFoto(p, file);
+  }
+
+  quitarFoto(p: ProdAdmin, i: number): void {
+    const arr = this.fotosDe(p);
+    arr.splice(i, 1);
+    p.fotos = arr.join('\n');
+    this.refrescar();
+  }
+
+  hacerPrincipal(p: ProdAdmin, i: number): void {
+    const arr = this.fotosDe(p);
+    const [x] = arr.splice(i, 1);
+    arr.unshift(x);
+    p.fotos = arr.join('\n');
+    this.refrescar();
+  }
+
+  private async subirFoto(p: ProdAdmin, file: File): Promise<void> {
+    if (!file.type.startsWith('image/')) {
+      p._msg = '⚠ Solo imágenes';
+      this.refrescar();
+      return;
+    }
+    p._subiendo = true;
+    p._msg = '';
+    this.refrescar();
+    try {
+      const { base64, tipo, nombre } = await this.optimizar(file);
+      const r = await fetch('/api/upload', {
+        method: 'POST',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ nombre, tipo, data: base64 }),
+      });
+      if (r.status === 401) {
+        this.salir();
+        return;
+      }
+      if (!r.ok) {
+        p._msg = '⚠ No se pudo subir (¿configuraste Vercel Blob?)';
+        return;
+      }
+      const { url } = (await r.json()) as { url: string };
+      p.fotos = (p.fotos ? p.fotos + '\n' : '') + url;
+      p._msg = '✓ Foto agregada — recuerda GUARDAR';
+    } catch {
+      p._msg = '⚠ Error al procesar la foto';
+    } finally {
+      p._subiendo = false;
+      this.refrescar();
+    }
+  }
+
+  // Achica y comprime la imagen en el navegador (máx 1400px, JPEG) para que
+  // suba liviana y ya optimizada. Devuelve base64 sin el prefijo data:.
+  private async optimizar(file: File): Promise<{ base64: string; tipo: string; nombre: string }> {
+    const img = await this.cargarImagen(file);
+    const MAX = 1400;
+    const escala = Math.min(1, MAX / Math.max(img.width, img.height));
+    const w = Math.max(1, Math.round(img.width * escala));
+    const h = Math.max(1, Math.round(img.height * escala));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('sin canvas');
+    ctx.drawImage(img, 0, 0, w, h);
+    const blob: Blob = await new Promise((resolve, reject) =>
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob'))), 'image/jpeg', 0.82),
+    );
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result));
+      fr.onerror = () => reject(fr.error);
+      fr.readAsDataURL(blob);
+    });
+    return {
+      base64: dataUrl.split(',')[1] ?? '',
+      tipo: 'image/jpeg',
+      nombre: file.name.replace(/\.[^.]+$/, ''),
+    };
+  }
+
+  private cargarImagen(file: File): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('imagen inválida'));
+      };
+      img.src = url;
+    });
   }
 
   private leerToken(): string | null {

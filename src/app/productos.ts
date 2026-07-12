@@ -301,6 +301,16 @@ export const PRODUCTOS: Producto[] = [
   },
 ];
 
+/**
+ * URL final de una foto. Las subidas nuevas guardan una URL completa
+ * (https://…, de Vercel Blob); las viejas guardan solo el nombre del archivo
+ * en /fotos. Este helper resuelve ambos casos.
+ */
+export function urlFoto(foto: string): string {
+  if (!foto) return '';
+  return /^https?:\/\//i.test(foto) ? foto : 'fotos/' + foto;
+}
+
 /** Enlace de pedido directo por WhatsApp con mensaje prellenado. */
 export function linkPedido(p: Producto): string {
   const msg = `Hola Crunchy Munch! Quiero pedir: ${p.nombre}`;

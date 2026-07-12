@@ -1,6 +1,7 @@
 import { Component, HostListener, effect, inject, signal } from '@angular/core';
 import { DetalleProducto } from '../../detalle-producto';
 import { Carrito } from '../../carrito';
+import { urlFoto } from '../../productos';
 
 // Tarjeta ampliada de un producto: fondo difuminado + galería de fotos,
 // descripción completa, precio y botón para agregar al carrito.
@@ -14,6 +15,7 @@ import { Carrito } from '../../carrito';
 export class ProductoModal {
   readonly detalle = inject(DetalleProducto);
   readonly carrito = inject(Carrito);
+  readonly urlFoto = urlFoto;
 
   /** Índice de la foto visible en la galería. */
   readonly indice = signal(0);

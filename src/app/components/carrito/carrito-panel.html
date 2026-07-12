@@ -18,7 +18,7 @@
           @if (carrito.producto(item.id); as p) {
             <li class="item">
               @if (p.fotos.length > 0) {
-                <img class="mini" [src]="'fotos/' + p.fotos[0]" [alt]="p.nombre" />
+                <img class="mini" [src]="urlFoto(p.fotos[0])" [alt]="p.nombre" />
               } @else {
                 <img class="mini" src="fotos/bearnie-logo.webp" [alt]="p.nombre" />
               }

@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
-import { CATEGORIAS, Categoria, Producto } from '../../productos';
+import { CATEGORIAS, Categoria, Producto, urlFoto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
@@ -20,6 +20,7 @@ export class Catalogo implements OnDestroy {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
   private readonly productosSvc = inject(ProductosService);
+  readonly urlFoto = urlFoto;
 
   /** Catálogo segmentado por categoría, en orden de presentación.
       Reacciona al menú del servicio (local al inicio; base de datos si llega). */

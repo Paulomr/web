@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Carrito, formatoCOP, precioNumero } from '../../carrito';
-import { Producto } from '../../productos';
+import { Producto, urlFoto } from '../../productos';
 
 @Component({
   selector: 'app-carrito-panel',
@@ -10,6 +10,7 @@ import { Producto } from '../../productos';
 })
 export class CarritoPanel {
   readonly carrito = inject(Carrito);
+  readonly urlFoto = urlFoto;
 
   precioLinea(p: Producto | undefined, cantidad: number): string {
     const n = precioNumero(p);

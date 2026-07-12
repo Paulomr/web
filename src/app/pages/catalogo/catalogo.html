@@ -14,7 +14,7 @@
             <button type="button" class="abrir" (click)="abrir(p)" [attr.aria-label]="'Ver ' + p.nombre">
               <div class="foto">
                 @if (p.fotos.length > 0) {
-                  <img [src]="'fotos/' + foto(p)" [alt]="p.nombre" loading="lazy" />
+                  <img [src]="urlFoto(foto(p))" [alt]="p.nombre" loading="lazy" />
                   @if (p.fotos.length > 1) {
                     <div class="dots" aria-hidden="true">
                       @for (f of p.fotos; track $index) {

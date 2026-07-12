@@ -129,7 +129,7 @@
                 <!-- Cabecera compacta: clic para desplegar el editor. -->
                 <button type="button" class="tarjeta-cab" (click)="toggleProd(p)">
                   @if (fotosDe(p).length) {
-                    <img class="mini" [src]="'fotos/' + fotosDe(p)[0]" alt="" />
+                    <img class="mini" [src]="urlFoto(fotosDe(p)[0])" alt="" />
                   } @else {
                     <span class="mini vacia" aria-hidden="true">🐻</span>
                   }
@@ -171,19 +171,29 @@
 
                     <label class="campo"><span>DESCRIPCIÓN</span><textarea rows="2" [(ngModel)]="p.descripcion"></textarea></label>
 
-                    @if (fotosDe(p).length) {
-                      <div class="preview">
-                        <img class="pv-main" [src]="'fotos/' + fotosDe(p)[0]" alt="Foto principal" />
-                        <div class="pv-otras">
-                          @for (f of fotosDe(p).slice(1, 3); track $index) { <img class="pv-mini" [src]="'fotos/' + f" alt="" /> }
-                        </div>
+                    <div class="campo">
+                      <span>FOTOS — arrastra o toca para subir (se optimizan solas). La 1ª es la principal.</span>
+                      <div class="fotos-editor" (drop)="onSoltar(p, $event)" (dragover)="$event.preventDefault()">
+                        @for (f of fotosDe(p); track $index) {
+                          <div class="fx" [class.principal]="$index === 0">
+                            <img [src]="urlFoto(f)" alt="" />
+                            @if ($index === 0) {
+                              <span class="fx-badge">principal</span>
+                            }
+                            <div class="fx-acciones">
+                              @if ($index !== 0) {
+                                <button type="button" (click)="hacerPrincipal(p, $index)" title="Hacer principal">★</button>
+                              }
+                              <button type="button" (click)="quitarFoto(p, $index)" title="Quitar">✕</button>
+                            </div>
+                          </div>
+                        }
+                        <label class="fx-add">
+                          <input type="file" accept="image/*" (change)="onSeleccionar(p, $event)" hidden />
+                          <span>{{ p._subiendo ? 'Subiendo…' : '+ Foto' }}</span>
+                        </label>
                       </div>
-                    }
-
-                    <label class="campo avanzado">
-                      <span>FOTOS — pronto podrás arrastrarlas. Por ahora, nombre del archivo (uno por línea)</span>
-                      <textarea rows="2" [(ngModel)]="p.fotos" (ngModelChange)="refrescar()" placeholder="bearnie-0228.webp"></textarea>
-                    </label>
+                    </div>
 
                     <div class="fila opciones">
                       <label class="check"><input type="checkbox" [(ngModel)]="p.nuevo" /> Etiqueta "NUEVO"</label>

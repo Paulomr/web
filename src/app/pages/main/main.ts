@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Producto } from '../../productos';
+import { Producto, urlFoto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
@@ -17,6 +17,7 @@ export class Main implements AfterViewInit {
   readonly detalle = inject(DetalleProducto);
   readonly cfg = inject(ConfiguracionService);
   private readonly productosSvc = inject(ProductosService);
+  readonly urlFoto = urlFoto;
 
   /** Productos con foto, repartidos en tres cintas (marquee). Reacciona al
       menú del servicio (local al inicio; base de datos si llega). */

@@ -8,7 +8,7 @@
     <!-- Galería de fotos del producto. -->
     <div class="pm-galeria" [attr.data-cat]="p.categoria">
       @if (fotos().length > 0) {
-        <img class="pm-foto" [src]="'fotos/' + fotos()[indice()]" [alt]="p.nombre" />
+        <img class="pm-foto" [src]="urlFoto(fotos()[indice()])" [alt]="p.nombre" />
 
         @if (fotos().length > 1) {
           <button type="button" class="pm-nav prev" (click)="anterior()" aria-label="Foto anterior">‹</button>
