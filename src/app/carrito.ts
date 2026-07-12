@@ -1,5 +1,6 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { PRODUCTOS, Producto, WHATSAPP_SEDES } from './productos';
+import { ProductosService } from './productos.service';
 
 // Carrito de pedidos: estado global con signals, persistido en localStorage.
 // El "checkout" no cobra: arma el pedido completo y lo envía por WhatsApp,
@@ -72,8 +73,10 @@ export class Carrito {
     });
   }
 
+  private readonly productosSvc = inject(ProductosService);
+
   producto(id: string): Producto | undefined {
-    return PRODUCTOS.find((p) => p.id === id);
+    return this.productosSvc.porId(id);
   }
 
   agregar(id: string): void {

@@ -1,7 +1,8 @@
-import { Component, HostListener, OnDestroy, inject, signal } from '@angular/core';
-import { CATEGORIAS, PRODUCTOS, Categoria, Producto } from '../../productos';
+import { Component, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
+import { CATEGORIAS, Categoria, Producto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
+import { ProductosService } from '../../productos.service';
 
 interface Seccion {
   id: Categoria;
@@ -18,13 +19,17 @@ interface Seccion {
 export class Catalogo implements OnDestroy {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
+  private readonly productosSvc = inject(ProductosService);
 
-  /** Catálogo segmentado por categoría, en orden de presentación. */
-  readonly secciones: Seccion[] = CATEGORIAS.map((c) => ({
-    id: c.id,
-    label: c.label,
-    productos: PRODUCTOS.filter((p) => p.categoria === c.id),
-  }));
+  /** Catálogo segmentado por categoría, en orden de presentación.
+      Reacciona al menú del servicio (local al inicio; base de datos si llega). */
+  readonly secciones = computed<Seccion[]>(() =>
+    CATEGORIAS.map((c) => ({
+      id: c.id,
+      label: c.label,
+      productos: this.productosSvc.productos().filter((p) => p.categoria === c.id),
+    })),
+  );
 
   /** Panel del notch abierto/cerrado. */
   readonly notchAbierto = signal(false);

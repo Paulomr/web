@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PRODUCTOS, Producto } from '../../productos';
+import { Producto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
+import { ProductosService } from '../../productos.service';
 
 @Component({
   selector: 'app-main',
@@ -13,19 +14,18 @@ import { DetalleProducto } from '../../detalle-producto';
 export class Main implements AfterViewInit {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
+  private readonly productosSvc = inject(ProductosService);
 
-  /** Productos con foto para las tres filas en movimiento (marquee). */
-  readonly filaA: Producto[];
-  readonly filaB: Producto[];
-  readonly filaC: Producto[];
-
-  constructor() {
-    const conFoto = PRODUCTOS.filter((p) => p.fotos.length > 0);
+  /** Productos con foto, repartidos en tres cintas (marquee). Reacciona al
+      menú del servicio (local al inicio; base de datos si llega). */
+  private readonly filas = computed(() => {
+    const conFoto = this.productosSvc.productos().filter((p) => p.fotos.length > 0);
     const tercio = Math.ceil(conFoto.length / 3);
-    this.filaA = conFoto.slice(0, tercio);
-    this.filaB = conFoto.slice(tercio, tercio * 2);
-    this.filaC = conFoto.slice(tercio * 2);
-  }
+    return [conFoto.slice(0, tercio), conFoto.slice(tercio, tercio * 2), conFoto.slice(tercio * 2)];
+  });
+  readonly filaA = computed(() => this.filas()[0]);
+  readonly filaB = computed(() => this.filas()[1]);
+  readonly filaC = computed(() => this.filas()[2]);
 
   /** Tocar un producto del menú vivo abre su tarjeta ampliada. */
   abrir(p: Producto): void {

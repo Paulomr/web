@@ -5,7 +5,7 @@
     <p>NUESTRO MENÚ COMPLETO. AGREGA AL CARRITO Y PIDE POR WHATSAPP.</p>
   </header>
 
-  @for (s of secciones; track s.id) {
+  @for (s of secciones(); track s.id) {
     <section class="segmento" [id]="'seccion-' + s.id">
       <h2>{{ s.label }}</h2>
       <ul class="productos">
@@ -65,7 +65,7 @@
       </button>
     } @else {
       <div class="notch-panel" role="menu" aria-label="Secciones del catálogo">
-        @for (s of secciones; track s.id) {
+        @for (s of secciones(); track s.id) {
           <button type="button" role="menuitem" (click)="irA(s.id)">
             <span>{{ s.label }}</span>
           </button>
