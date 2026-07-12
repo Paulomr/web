@@ -120,9 +120,10 @@
 
 .reg-bear {
   display: block;
-  width: 130px;
+  width: 116px;
   height: auto;
-  margin: 8px auto -4px;
+  margin: 6px auto -4px;
+  pointer-events: none; /* decorativo: nunca bloquea clics del formulario */
   filter: drop-shadow(0 10px 14px rgba(150, 40, 100, 0.35));
   animation: bear-float 4.2s ease-in-out infinite;
 }
@@ -291,6 +292,16 @@
   color: var(--text, #4a3b47);
   text-align: right;
   word-break: break-word;
+}
+
+/* Celular con poca altura: compacta para que el botón siempre quede a la vista. */
+@media (max-width: 799px) and (max-height: 780px) {
+  .reg-aside { padding: 18px 20px 14px; }
+  .reg-titulo { font-size: clamp(20px, 6vw, 25px); }
+  .reg-perks { display: none; }
+  .reg-bear { width: 84px; margin: 4px auto -2px; }
+  .reg-main { padding: 16px 20px 18px; }
+  .reg-form { gap: 10px; }
 }
 
 /* ══════════ ESCRITORIO: recuadro ancho + Bearnie atravesando ══════════ */

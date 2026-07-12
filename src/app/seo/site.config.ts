@@ -20,7 +20,7 @@ export const SITE = {
    *    Sin dominio propio aún → usa el de Vercel, p. ej.
    *    'https://crunchy-munch.vercel.app'
    */
-  url: 'https://www.crunchy-munch.com',
+  url: 'https://crunchy-munch.com',
 
   nombre: 'MUNDO CRUNCHY MUNCH',
 

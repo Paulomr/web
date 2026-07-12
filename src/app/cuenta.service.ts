@@ -59,8 +59,9 @@ export class CuentaService {
       direccion: c.direccion.trim(),
       acepta: !!c.acepta,
     };
+    // No cerramos el modal: pasa a la vista de cuenta ("HOLA X"), que es la
+    // confirmación visible de "cuenta creada". El usuario cierra con el botón.
     this.cuenta.set(limpio);
-    this.abierto.set(false);
     // Sincroniza con la base en segundo plano (best-effort).
     void this.sincronizar(limpio);
   }

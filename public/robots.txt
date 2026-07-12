@@ -5,4 +5,4 @@ Allow: /
 Disallow: /admin
 
 # ⬇️ RELLENAR: cambia el dominio por el tuyo (el mismo de index.html).
-Sitemap: https://www.crunchy-munch.com/sitemap.xml
+Sitemap: https://crunchy-munch.com/sitemap.xml
