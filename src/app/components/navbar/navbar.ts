@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Carrito } from '../../carrito';
+import { CuentaService } from '../../cuenta.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,4 +11,5 @@ import { Carrito } from '../../carrito';
 })
 export class Navbar {
   readonly carrito = inject(Carrito);
+  readonly cuenta = inject(CuentaService);
 }

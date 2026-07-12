@@ -1,6 +1,7 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { PRODUCTOS, Producto, WHATSAPP_SEDES } from './productos';
 import { ProductosService } from './productos.service';
+import { CuentaService } from './cuenta.service';
 
 // Carrito de pedidos: estado global con signals, persistido en localStorage.
 // El "checkout" no cobra: arma el pedido completo y lo envía por WhatsApp,
@@ -74,12 +75,14 @@ export class Carrito {
   }
 
   private readonly productosSvc = inject(ProductosService);
+  private readonly cuenta = inject(CuentaService);
 
   producto(id: string): Producto | undefined {
     return this.productosSvc.porId(id);
   }
 
   agregar(id: string): void {
+    const eraVacio = this.items().length === 0;
     this.items.update((lista) => {
       const existe = lista.find((i) => i.id === id);
       return existe
@@ -89,6 +92,8 @@ export class Carrito {
     // Dispara el aviso flotante (nonce único para reactivarlo aunque el texto
     // se repita al agregar varias veces seguidas).
     this.notificacion.set({ nonce: Date.now(), texto: 'AÑADIDO AL CARRITO' });
+    // Con la PRIMERA galleta del carrito, invita a crear cuenta (una sola vez).
+    if (eraVacio && !this.cuenta.registrado()) this.cuenta.abrir();
   }
 
   restar(id: string): void {

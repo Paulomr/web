@@ -45,6 +45,14 @@
       <span class="gtxt">Juegos</span>
     </a>
 
+    <!-- Chip de cuenta: solo con sesión iniciada. Abre datos / cerrar sesión. -->
+    @if (cuenta.registrado()) {
+      <button type="button" class="cuenta-notch" (click)="cuenta.abrir()"
+        [attr.aria-label]="'Cuenta de ' + cuenta.primerNombre()" [attr.title]="cuenta.primerNombre()">
+        <span class="cuenta-ini">{{ cuenta.primerNombre().charAt(0) }}</span>
+      </button>
+    }
+
     <!-- Carrito integrado en el notch. -->
     <button type="button" class="carrito-notch" (click)="carrito.abierto.set(true)" aria-label="Abrir carrito">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

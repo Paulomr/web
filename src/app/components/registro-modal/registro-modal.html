@@ -1,0 +1,75 @@
+@if (cuenta.abierto()) {
+  <div class="velo" (click)="cerrar()"></div>
+
+  <div class="reg" role="dialog" aria-modal="true" aria-label="Cuenta Crunchy Munch">
+    <button type="button" class="reg-cerrar" (click)="cerrar()" aria-label="Cerrar">✕</button>
+
+    <div class="reg-halo" aria-hidden="true"></div>
+    <img class="reg-bear" src="fotos/bearnie-logo.webp" alt="Bearnie" />
+
+    @if (!cuenta.registrado()) {
+      <!-- ══════ REGISTRO ══════ -->
+      <h2 class="reg-titulo">HAZ TUS PEDIDOS,<br />GANA PREMIOS</h2>
+      <p class="reg-sub">Regístrate y juega para ganar galletas en la vida real 🍪</p>
+
+      <form class="reg-form" (submit)="$event.preventDefault(); registrar()">
+        <label class="reg-campo">
+          <span>NOMBRE</span>
+          <input
+            [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" name="nombre"
+            placeholder="TU NOMBRE" autocomplete="name" (keyup.enter)="registrar()" />
+        </label>
+
+        <div class="reg-fila">
+          <label class="reg-campo">
+            <span>EDAD</span>
+            <input
+              type="number" [ngModel]="edad()" (ngModelChange)="edad.set($event)" name="edad"
+              placeholder="18" min="1" max="120" inputmode="numeric" />
+          </label>
+          <label class="reg-campo">
+            <span>CÉDULA / ID</span>
+            <input
+              [ngModel]="identificacion()" (ngModelChange)="identificacion.set($event)" name="id"
+              placeholder="N.º de documento" inputmode="numeric" />
+          </label>
+        </div>
+
+        <label class="reg-campo">
+          <span>DIRECCIÓN PREFERIDA</span>
+          <input
+            [ngModel]="direccion()" (ngModelChange)="direccion.set($event)" name="dir"
+            placeholder="CALLE, NÚMERO, BARRIO, CIUDAD" autocomplete="street-address" />
+        </label>
+
+        @if (error()) {
+          <p class="reg-error">{{ error() }}</p>
+        }
+
+        <button type="submit" class="reg-cta">CREAR MI CUENTA</button>
+        <p class="reg-aviso">Usamos tus datos solo para tus pedidos y premios de Crunchy Munch. Se guardan en tu dispositivo.</p>
+        <button type="button" class="reg-skip" (click)="cerrar()">Ahora no</button>
+      </form>
+    } @else {
+      <!-- ══════ CUENTA ══════ -->
+      <h2 class="reg-titulo">HOLA {{ cuenta.primerNombre() }}</h2>
+      <p class="reg-sub">Ya eres parte del mundo Crunchy Munch 💗</p>
+
+      <ul class="reg-datos">
+        <li><span>Nombre</span><strong>{{ cuenta.cuenta()?.nombre }}</strong></li>
+        @if (cuenta.cuenta()?.edad) {
+          <li><span>Edad</span><strong>{{ cuenta.cuenta()?.edad }}</strong></li>
+        }
+        @if (cuenta.cuenta()?.identificacion) {
+          <li><span>ID</span><strong>{{ cuenta.cuenta()?.identificacion }}</strong></li>
+        }
+        @if (cuenta.cuenta()?.direccion) {
+          <li><span>Dirección</span><strong>{{ cuenta.cuenta()?.direccion }}</strong></li>
+        }
+      </ul>
+
+      <button type="button" class="reg-cta" (click)="cerrar()">SEGUIR PIDIENDO</button>
+      <button type="button" class="reg-skip" (click)="cuenta.salir()">Cerrar sesión</button>
+    }
+  </div>
+}

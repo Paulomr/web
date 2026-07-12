@@ -5,6 +5,7 @@ import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
 import { ConfiguracionService } from '../../configuracion.service';
+import { CuentaService } from '../../cuenta.service';
 
 @Component({
   selector: 'app-main',
@@ -16,8 +17,14 @@ export class Main implements AfterViewInit {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
   readonly cfg = inject(ConfiguracionService);
+  readonly cuenta = inject(CuentaService);
   private readonly productosSvc = inject(ProductosService);
   readonly urlFoto = urlFoto;
+
+  /** Título del hero: saluda por nombre si hay sesión ("HOLA PAULO"). */
+  readonly tituloHero = computed(() =>
+    this.cuenta.registrado() ? `HOLA ${this.cuenta.primerNombre()}` : this.cfg.texto('heroTitulo'),
+  );
 
   /** Productos con foto, repartidos en tres cintas (marquee). Reacciona al
       menú del servicio (local al inicio; base de datos si llega). */
