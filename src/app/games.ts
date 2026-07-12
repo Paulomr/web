@@ -40,7 +40,7 @@ export const GAMES: Game[] = [
     description: 'El clásico laberinto: come todos los puntos y escapa de los fantasmas.',
     icon: '👻',
     cover: 'linear-gradient(135deg, #f9e6b8 0%, #f9d1e5 100%)',
-    trailer: 'juegos/trailers/pacman.mp4',
+    trailer: 'juegos/trailers/pacman.webm',
   },
   {
     id: 'pasteleria',
@@ -50,7 +50,7 @@ export const GAMES: Game[] = [
     description: 'Prepara y decora dulces contra reloj en la cocina de Crunchy Munch.',
     icon: '🧁',
     cover: 'linear-gradient(135deg, #f9d1e5 0%, #e6d9f6 100%)',
-    trailer: 'juegos/trailers/pasteleria.mp4',
+    trailer: 'juegos/trailers/pasteleria.webm',
   },
   {
     id: 'head-soccer',
@@ -60,7 +60,7 @@ export const GAMES: Game[] = [
     description: 'Fútbol 1v1 de ositos hecho con Phaser. Se ejecuta en el navegador.',
     icon: '⚽',
     cover: 'linear-gradient(135deg, #cdeef5 0%, #d8f2dc 100%)',
-    trailer: 'juegos/trailers/head-soccer.mp4',
+    trailer: 'juegos/trailers/head-soccer.webm',
     note: 'Requiere conexión a internet (carga Phaser desde CDN).',
   },
   {
@@ -71,7 +71,7 @@ export const GAMES: Game[] = [
     description: 'Apunta, calcula la fuerza y lanza. Física y puntería en cada tiro.',
     icon: '🎯',
     cover: 'linear-gradient(135deg, #e6d9f6 0%, #cdeef5 100%)',
-    trailer: 'juegos/trailers/catapulta.mp4',
+    trailer: 'juegos/trailers/catapulta.webm',
   },
   {
     id: 'trivia',
@@ -81,7 +81,7 @@ export const GAMES: Game[] = [
     description: '20 preguntas, 25 segundos por pregunta. Demuestra cuánto sabes de Crunchy Munch.',
     icon: '🧠',
     cover: 'linear-gradient(135deg, #f9d1e5 0%, #f9e6b8 100%)',
-    trailer: 'juegos/trailers/trivia.mp4',
+    trailer: 'juegos/trailers/trivia.webm',
   },
 ];
 
