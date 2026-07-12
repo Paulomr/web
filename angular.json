@@ -27,7 +27,10 @@
                   "**/node_modules/**",
                   "**/*.psd",
                   "juegos/Stickers JuanJose.png",
-                  "juegos/trivia/**"
+                  "juegos/trivia/.env",
+                  "juegos/trivia/.env.*",
+                  "juegos/trivia/.vercel/**",
+                  "juegos/trivia/.gitignore"
                 ]
               }
             ],
