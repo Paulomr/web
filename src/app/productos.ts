@@ -18,10 +18,10 @@ export type Categoria = 'cookies' | 'crookies' | 'milkshakes' | 'minis' | 'bebid
 /** Etiquetas visibles de cada categoría, en orden de presentación. */
 export const CATEGORIAS: { id: Categoria; label: string }[] = [
   { id: 'cookies', label: 'NEW YORK COOKIES' },
-  { id: 'crookies', label: 'CROOKIES' },
-  { id: 'milkshakes', label: 'MILKSHAKES' },
   { id: 'minis', label: 'MINI COOKIES' },
-  { id: 'bebidas', label: 'BEBIDAS' },
+  { id: 'milkshakes', label: 'MILKSHAKES' },
+  { id: 'crookies', label: 'NEW YORK CROOKIES' },
+  { id: 'bebidas', label: 'DRINKLAB' },
 ];
 
 export interface Producto {

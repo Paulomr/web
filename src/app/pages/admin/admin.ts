@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CATEGORIAS } from '../../productos';
@@ -17,6 +17,7 @@ interface ProdAdmin {
   nuevo: boolean;
   activo: boolean;
   orden: number;
+  pausadoHasta: string; // 'YYYY-MM-DD' o '' (para <input type="date">)
   _nuevo?: boolean;
   _guardando?: boolean;
   _msg?: string;
@@ -37,6 +38,7 @@ function mapDoc(d: any): ProdAdmin {
     nuevo: !!d.nuevo,
     activo: d.activo !== false,
     orden: d.orden ?? 0,
+    pausadoHasta: d.pausadoHasta ? new Date(d.pausadoHasta).toISOString().slice(0, 10) : '',
   };
 }
 
@@ -58,8 +60,26 @@ export class Admin {
   readonly error = signal('');
   readonly productos = signal<ProdAdmin[]>([]);
 
+  /** Productos agrupados por categoría, en el orden del catálogo. */
+  readonly grupos = computed(() => {
+    const items = this.productos();
+    return this.categorias.map((c) => ({
+      id: c.id,
+      label: c.label,
+      items: items.filter((p) => p.categoria === c.id),
+    }));
+  });
+
   constructor() {
     if (this.token()) void this.cargar();
+  }
+
+  /** Fotos de un producto como lista (para las miniaturas de preview). */
+  fotosDe(p: ProdAdmin): string[] {
+    return p.fotos
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
   }
 
   private leerToken(): string | null {
@@ -149,6 +169,7 @@ export class Admin {
         nuevo: false,
         activo: true,
         orden: l.length,
+        pausadoHasta: '',
         _nuevo: true,
         _msg: '',
       },
@@ -180,6 +201,7 @@ export class Admin {
       nuevo: p.nuevo,
       activo: p.activo,
       orden: Number(p.orden) || 0,
+      pausadoHasta: p.pausadoHasta ? new Date(p.pausadoHasta).toISOString() : null,
     };
 
     const path = p._nuevo ? '' : `/${encodeURIComponent(p.slug.trim())}`;
@@ -240,8 +262,9 @@ export class Admin {
     }
   }
 
-  // Emite el arreglo de nuevo para que la vista refleje los cambios de estado.
-  private refrescar(): void {
+  // Emite el arreglo de nuevo para que la vista refleje los cambios de estado
+  // (también reagrupa por categoría al cambiar la categoría de un producto).
+  refrescar(): void {
     this.productos.update((l) => [...l]);
   }
 }

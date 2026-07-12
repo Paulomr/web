@@ -35,69 +35,87 @@
       <p class="cargando">Cargando…</p>
     }
 
-    <div class="lista">
-      @for (p of productos(); track $index) {
-        <article class="prod" [class.inactivo]="!p.activo">
-          <div class="fila">
-            <label class="campo chico">
-              <span>ID {{ p._nuevo ? '(no se cambia luego)' : '' }}</span>
-              <input [(ngModel)]="p.slug" [disabled]="!p._nuevo" placeholder="ej: kinder" />
-            </label>
-            <label class="campo grande">
-              <span>NOMBRE</span>
-              <input [(ngModel)]="p.nombre" />
-            </label>
-          </div>
+    @for (g of grupos(); track g.id) {
+      <h2 class="grupo-titulo">{{ g.label }} <span class="cuenta">{{ g.items.length }}</span></h2>
+      <div class="lista">
+        @for (p of g.items; track $index) {
+          <article class="prod" [class.inactivo]="!p.activo">
+            <div class="fila">
+              <label class="campo chico">
+                <span>ID {{ p._nuevo ? '(no se cambia luego)' : '' }}</span>
+                <input [(ngModel)]="p.slug" [disabled]="!p._nuevo" placeholder="ej: kinder" />
+              </label>
+              <label class="campo grande">
+                <span>NOMBRE</span>
+                <input [(ngModel)]="p.nombre" />
+              </label>
+            </div>
 
-          <div class="fila">
-            <label class="campo chico">
-              <span>PRECIO</span>
-              <input [(ngModel)]="p.precio" placeholder="$ 15.000" />
-            </label>
-            <label class="campo chico">
-              <span>GRAMAJE</span>
-              <input [(ngModel)]="p.detalle" placeholder="120 G" />
-            </label>
-            <label class="campo chico">
-              <span>CATEGORÍA</span>
-              <select [(ngModel)]="p.categoria">
-                @for (c of categorias; track c.id) {
-                  <option [value]="c.id">{{ c.label }}</option>
-                }
-              </select>
-            </label>
-            <label class="campo mini">
-              <span>ORDEN</span>
-              <input type="number" [(ngModel)]="p.orden" />
-            </label>
-          </div>
+            <div class="fila">
+              <label class="campo chico">
+                <span>PRECIO</span>
+                <input [(ngModel)]="p.precio" placeholder="$ 15.000" />
+              </label>
+              <label class="campo chico">
+                <span>GRAMAJE</span>
+                <input [(ngModel)]="p.detalle" placeholder="120 G" />
+              </label>
+              <label class="campo chico">
+                <span>CATEGORÍA</span>
+                <select [(ngModel)]="p.categoria" (ngModelChange)="refrescar()">
+                  @for (c of categorias; track c.id) {
+                    <option [value]="c.id">{{ c.label }}</option>
+                  }
+                </select>
+              </label>
+              <label class="campo mini">
+                <span>ORDEN</span>
+                <input type="number" [(ngModel)]="p.orden" />
+              </label>
+            </div>
 
-          <label class="campo">
-            <span>DESCRIPCIÓN</span>
-            <textarea rows="2" [(ngModel)]="p.descripcion"></textarea>
-          </label>
+            <label class="campo">
+              <span>DESCRIPCIÓN</span>
+              <textarea rows="2" [(ngModel)]="p.descripcion"></textarea>
+            </label>
 
-          <label class="campo">
-            <span>FOTOS — una por línea (nombre del archivo en /fotos)</span>
-            <textarea rows="2" [(ngModel)]="p.fotos" placeholder="bearnie-0228.webp"></textarea>
-          </label>
+            <label class="campo">
+              <span>FOTOS — una por línea (nombre del archivo en /fotos)</span>
+              <textarea rows="2" [(ngModel)]="p.fotos" (ngModelChange)="refrescar()" placeholder="bearnie-0228.webp"></textarea>
+            </label>
 
-          <div class="fila opciones">
-            <label class="check"><input type="checkbox" [(ngModel)]="p.nuevo" /> Etiqueta “NUEVO”</label>
-            <label class="check"><input type="checkbox" [(ngModel)]="p.activo" /> Visible en la web</label>
-          </div>
-
-          <div class="fila pie">
-            <button class="guardar" (click)="guardar(p)" [disabled]="p._guardando">
-              {{ p._guardando ? 'GUARDANDO…' : 'GUARDAR' }}
-            </button>
-            <button class="ocultar" (click)="ocultar(p)">{{ p._nuevo ? 'Descartar' : 'Ocultar' }}</button>
-            @if (p._msg) {
-              <span class="msg">{{ p._msg }}</span>
+            @if (fotosDe(p).length) {
+              <div class="preview">
+                <img class="pv-main" [src]="'fotos/' + fotosDe(p)[0]" alt="Foto principal" />
+                <div class="pv-otras">
+                  @for (f of fotosDe(p).slice(1, 3); track $index) {
+                    <img class="pv-mini" [src]="'fotos/' + f" alt="" />
+                  }
+                </div>
+              </div>
             }
-          </div>
-        </article>
-      }
-    </div>
+
+            <div class="fila opciones">
+              <label class="check"><input type="checkbox" [(ngModel)]="p.nuevo" /> Etiqueta "NUEVO"</label>
+              <label class="check"><input type="checkbox" [(ngModel)]="p.activo" /> Visible en la web</label>
+              <label class="campo chico pausa">
+                <span>PAUSAR HASTA (vuelve solo)</span>
+                <input type="date" [(ngModel)]="p.pausadoHasta" />
+              </label>
+            </div>
+
+            <div class="fila pie">
+              <button class="guardar" (click)="guardar(p)" [disabled]="p._guardando">
+                {{ p._guardando ? 'GUARDANDO…' : 'GUARDAR' }}
+              </button>
+              <button class="ocultar" (click)="ocultar(p)">{{ p._nuevo ? 'Descartar' : 'Ocultar' }}</button>
+              @if (p._msg) {
+                <span class="msg">{{ p._msg }}</span>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
   </section>
 }

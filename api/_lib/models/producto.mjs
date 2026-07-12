@@ -20,6 +20,10 @@ const ProductoSchema = new mongoose.Schema(
     // Para ordenar en el catálogo y poder ocultar sin borrar.
     orden: { type: Number, default: 0 },
     activo: { type: Boolean, default: true },
+    // Pausa temporal: oculto en la web hasta esta fecha (null = no pausado).
+    // Sirve para "desactivar por un día" (vuelve solo) o dejarlo con 'activo'
+    // en false para ocultarlo indefinidamente.
+    pausadoHasta: { type: Date, default: null },
   },
   { timestamps: true }, // createdAt / updatedAt automáticos
 );

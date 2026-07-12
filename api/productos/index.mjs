@@ -17,7 +17,13 @@ export default async function handler(req, res) {
         res.status(200).json(todos);
         return;
       }
-      const productos = await Producto.find({ activo: true })
+      // Público: solo activos y que no estén en pausa vigente (la pausa vence
+      // sola cuando su fecha ya pasó).
+      const ahora = new Date();
+      const productos = await Producto.find({
+        activo: true,
+        $or: [{ pausadoHasta: null }, { pausadoHasta: { $lte: ahora } }],
+      })
         .sort({ orden: 1, createdAt: 1 })
         .lean();
       res.status(200).json(productos);

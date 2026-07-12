@@ -27,11 +27,15 @@ scripts/                <- utilidades (semilla de datos, etc.)
 
 ## Fases
 
-- [ ] **Fase 1 — Menú en la base de datos** (en curso)
-      Pasar el menú (hoy escrito en el código) a MongoDB, con API para leerlo y
-      editarlo. Base del panel de administración.
-- [ ] **Fase 2 — Panel de administración**
-      Una pantalla protegida donde TÚ editas menú, precios y fotos sin programador.
+- [x] **Fase 1 — Menú en la base de datos** ✅
+      Menú en MongoDB con API para leerlo (con fallback local) y editarlo.
+- [x] **Fase 2 — Panel de administración** ✅ (en `/admin`, protegido con ADMIN_TOKEN)
+      Crear/editar/ocultar/reordenar productos, agrupados por categoría, con
+      preview de fotos y pausa temporal ("vuelve solo" en una fecha).
+- [ ] **Fase 2.5 — Subir fotos + CMS de contenido**
+      · Arrastrar y subir fotos (producto, hero, galería) → necesita **Vercel Blob**.
+      · Editar desde admin: títulos/subtítulos, activar/desactivar minijuegos,
+        galería de fotos, fotos del hero, horarios y fechas especiales.
 - [ ] **Fase 3 — Guardar pedidos**
       Cada pedido se guarda en la base (además de enviarse por WhatsApp): historial,
       estados, búsqueda.
