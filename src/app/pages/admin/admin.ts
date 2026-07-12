@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { CATEGORIAS } from '../../productos';
 import { GAMES } from '../../games';
 import { ProductosService } from '../../productos.service';
-import { CAMPOS_TEXTO, DEFAULT_TEXTOS } from '../../configuracion.service';
+import { CAMPOS_TEXTO, DEFAULT_TEXTOS, DEFAULT_SEDES, SedeCfg } from '../../configuracion.service';
 
 // Producto en el panel: mismos campos que la base, pero 'fotos' como texto
 // (una foto por línea) para editarlo fácil. Los '_' son estado de la pantalla.
@@ -80,10 +80,24 @@ export class Admin {
   readonly camposTexto = CAMPOS_TEXTO;
   readonly juegos = GAMES;
   readonly cfgAbierto = signal(false);
+  readonly sedesAbierto = signal(false);
   readonly cfgGuardando = signal(false);
   readonly cfgMsg = signal('');
   cfgTextos: Record<string, string> = { ...DEFAULT_TEXTOS };
   cfgJuegos: Record<string, boolean> = {};
+  cfgSedes: SedeCfg[] = this.copiaSedes(DEFAULT_SEDES);
+
+  private copiaSedes(base: SedeCfg[], guardadas?: SedeCfg[]): SedeCfg[] {
+    return base.map((d) => {
+      const s = Array.isArray(guardadas) ? guardadas.find((x) => x?.id === d.id) : undefined;
+      const horarios = (s?.horarios?.length ? s.horarios : d.horarios).map((h) => ({
+        dias: h.dias ?? '',
+        horas: h.horas ?? '',
+      }));
+      const especiales = (s?.especiales ?? []).map((e) => ({ fecha: e.fecha ?? '', nota: e.nota ?? '' }));
+      return { id: d.id, nombre: d.nombre, horarios, especiales };
+    });
+  }
 
   constructor() {
     if (this.token()) {
@@ -96,11 +110,16 @@ export class Admin {
     try {
       const r = await fetch('/api/config');
       if (!r.ok) return;
-      const c = (await r.json()) as { textos?: Record<string, string>; juegos?: Record<string, boolean> };
+      const c = (await r.json()) as {
+        textos?: Record<string, string>;
+        juegos?: Record<string, boolean>;
+        sedes?: SedeCfg[];
+      };
       this.cfgTextos = { ...DEFAULT_TEXTOS, ...(c?.textos ?? {}) };
       const jg: Record<string, boolean> = {};
       for (const g of GAMES) jg[g.id] = c?.juegos?.[g.id] !== false;
       this.cfgJuegos = jg;
+      this.cfgSedes = this.copiaSedes(DEFAULT_SEDES, c?.sedes);
     } catch {
       /* deja los valores por defecto */
     }
@@ -114,7 +133,7 @@ export class Admin {
       r = await fetch('/api/config', {
         method: 'PUT',
         headers: this.cabeceras({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ textos: this.cfgTextos, juegos: this.cfgJuegos }),
+        body: JSON.stringify({ textos: this.cfgTextos, juegos: this.cfgJuegos, sedes: this.cfgSedes }),
       });
     } catch {
       this.cfgGuardando.set(false);

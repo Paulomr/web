@@ -1,11 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-
-interface Horario {
-  dias: string;
-  horas: string;
-}
+import { ConfiguracionService } from '../../configuracion.service';
 
 interface Sede {
   /** Ancla para el scroll desde la portada (#marinilla / #san-antonio). */
@@ -15,7 +11,6 @@ interface Sede {
   direccion: string;
   /** Fotos de la sede (se irán sumando; la primera es la portada). */
   fotos: string[];
-  horarios: Horario[];
   /** ¿Tiene DrinkLab (matcha, chai, café, granizados)? */
   drinkLab: boolean;
   /** Enlace corto oficial de Google Maps. */
@@ -25,6 +20,7 @@ interface Sede {
 }
 
 // Página dedicada a las sedes: horarios, DrinkLab, mapa y cómo llegar.
+// Los horarios y fechas especiales vienen de la configuración (editables en /admin).
 @Component({
   selector: 'app-sedes',
   imports: [RouterLink],
@@ -32,6 +28,8 @@ interface Sede {
   styleUrl: './sedes.css',
 })
 export class Sedes {
+  readonly cfg = inject(ConfiguracionService);
+
   /** Bebidas del DrinkLab. */
   readonly drinkLab = ['MATCHA', 'CHAI', 'CAFÉ', 'GRANIZADOS'];
 
@@ -65,7 +63,6 @@ export class Sedes {
         ciudad: 'San Antonio de Pereira · Rionegro',
         direccion: 'San Antonio de Pereira, Rionegro, Antioquia',
         fotos: ['bearnie-1107.webp', 'bearnie-1085.webp'],
-        horarios: [{ dias: 'Lunes a domingo y festivos', horas: '12:00 m – 8:00 pm' }],
         drinkLab: true,
         comoLlegar: 'https://maps.app.goo.gl/rtGSKErLw9K45GoW9',
         mapa: embed(6.1309694, -75.3787989),
@@ -76,11 +73,6 @@ export class Sedes {
         ciudad: 'Marinilla · Antioquia',
         direccion: 'Marinilla, Antioquia',
         fotos: ['sede-marinilla-1.jpg', 'sede-marinilla-2.jpg', 'sede-marinilla-3.jpg'],
-        horarios: [
-          { dias: 'Lunes', horas: '12:00 m – 6:30 pm' },
-          { dias: 'Martes a sábado', horas: '12:00 m – 7:00 pm' },
-          { dias: 'Domingos y festivos', horas: '12:00 m – 6:30 pm' },
-        ],
         drinkLab: false,
         comoLlegar: 'https://maps.app.goo.gl/LGtExQPKwM9vYJ5NA',
         mapa: embed(6.1711354, -75.3388328),

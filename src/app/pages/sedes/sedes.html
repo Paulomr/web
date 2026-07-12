@@ -35,11 +35,11 @@
           <h2>{{ s.nombre }}</h2>
           <p class="sc-ciudad"><span aria-hidden="true">📍</span> {{ s.ciudad }}</p>
 
-          <!-- Horarios -->
+          <!-- Horarios (editables desde /admin) -->
           <div class="sc-bloque">
             <span class="sc-label">HORARIOS</span>
             <ul class="sc-horarios">
-              @for (h of s.horarios; track h.dias) {
+              @for (h of cfg.sede(s.id).horarios; track $index) {
                 <li>
                   <span class="sc-dias">{{ h.dias }}</span>
                   <span class="sc-horas">{{ h.horas }}</span>
@@ -47,6 +47,21 @@
               }
             </ul>
           </div>
+
+          <!-- Fechas especiales (si hay) -->
+          @if (cfg.sede(s.id).especiales.length) {
+            <div class="sc-bloque">
+              <span class="sc-label">FECHAS ESPECIALES</span>
+              <ul class="sc-horarios">
+                @for (e of cfg.sede(s.id).especiales; track $index) {
+                  <li>
+                    <span class="sc-dias">{{ e.fecha }}</span>
+                    <span class="sc-horas">{{ e.nota }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
 
           <!-- DrinkLab -->
           <div class="sc-bloque">

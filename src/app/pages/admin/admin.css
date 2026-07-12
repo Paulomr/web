@@ -383,6 +383,64 @@
   padding: 4px 0;
 }
 
+/* Editor de horarios / fechas especiales */
+.mini-label {
+  display: block;
+  margin: 8px 0 2px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.hrow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.hrow input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+}
+
+.hrow input:focus {
+  outline: 2px solid var(--violet);
+}
+
+.del {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: #b06;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.mini-add {
+  align-self: flex-start;
+  margin: 2px 0 8px;
+  padding: 6px 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-pill);
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
 /* ---------- Tarjeta de producto ---------- */
 .prod {
   display: flex;

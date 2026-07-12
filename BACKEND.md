@@ -32,10 +32,11 @@ scripts/                <- utilidades (semilla de datos, etc.)
 - [x] **Fase 2 — Panel de administración** ✅ (en `/admin`, protegido con ADMIN_TOKEN)
       Crear/editar/ocultar/reordenar productos, agrupados por categoría, con
       preview de fotos y pausa temporal ("vuelve solo" en una fecha).
-- [ ] **Fase 2.5 — Subir fotos + CMS de contenido**
-      · Arrastrar y subir fotos (producto, hero, galería) → necesita **Vercel Blob**.
-      · Editar desde admin: títulos/subtítulos, activar/desactivar minijuegos,
-        galería de fotos, fotos del hero, horarios y fechas especiales.
+- [~] **Fase 2.5 — CMS de contenido + subir fotos**
+      · [x] Editar títulos/subtítulos desde el panel.
+      · [x] Activar/desactivar minijuegos.
+      · [x] Horarios y fechas especiales de las sedes.
+      · [ ] Arrastrar y subir fotos (producto, hero, galería) → necesita **Vercel Blob**.
 - [ ] **Fase 3 — Guardar pedidos**
       Cada pedido se guarda en la base (además de enviarse por WhatsApp): historial,
       estados, búsqueda.

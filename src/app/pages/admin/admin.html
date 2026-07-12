@@ -70,6 +70,50 @@
       }
     </div>
 
+    <!-- Horarios y fechas especiales de las sedes -->
+    <div class="modulo">
+      <button type="button" class="modulo-cab cab-cfg" (click)="sedesAbierto.set(!sedesAbierto())">
+        <span class="modulo-nombre">HORARIOS DE SEDES</span>
+        <span class="chev" [class.rot]="sedesAbierto()" aria-hidden="true">⌄</span>
+      </button>
+      @if (sedesAbierto()) {
+        <div class="modulo-cuerpo cfg-cuerpo">
+          @for (sede of cfgSedes; track sede.id) {
+            <h3 class="cfg-sub">{{ sede.nombre }}</h3>
+
+            <span class="mini-label">Horarios</span>
+            @for (h of sede.horarios; track $index) {
+              <div class="hrow">
+                <input [(ngModel)]="h.dias" placeholder="Lunes a viernes" />
+                <input [(ngModel)]="h.horas" placeholder="12:00 m – 8:00 pm" />
+                <button type="button" class="del" (click)="sede.horarios.splice($index, 1)" aria-label="Quitar">✕</button>
+              </div>
+            }
+            <button type="button" class="mini-add" (click)="sede.horarios.push({ dias: '', horas: '' })">+ agregar horario</button>
+
+            <span class="mini-label">Fechas especiales</span>
+            @for (e of sede.especiales; track $index) {
+              <div class="hrow">
+                <input [(ngModel)]="e.fecha" placeholder="25 dic" />
+                <input [(ngModel)]="e.nota" placeholder="Cerrado / horario especial" />
+                <button type="button" class="del" (click)="sede.especiales.splice($index, 1)" aria-label="Quitar">✕</button>
+              </div>
+            }
+            <button type="button" class="mini-add" (click)="sede.especiales.push({ fecha: '', nota: '' })">+ agregar fecha especial</button>
+          }
+
+          <div class="fila pie">
+            <button class="guardar" (click)="guardarConfig()" [disabled]="cfgGuardando()">
+              {{ cfgGuardando() ? 'GUARDANDO…' : 'GUARDAR HORARIOS' }}
+            </button>
+            @if (cfgMsg()) {
+              <span class="msg">{{ cfgMsg() }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
     @for (g of grupos(); track g.id) {
       <div class="modulo">
         <button type="button" class="modulo-cab" (click)="toggleCat(g.id)">
