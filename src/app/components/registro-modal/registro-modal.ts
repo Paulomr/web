@@ -16,8 +16,9 @@ export class RegistroModal {
 
   readonly nombre = signal('');
   readonly edad = signal('');
-  readonly identificacion = signal('');
+  readonly instagram = signal('');
   readonly direccion = signal('');
+  readonly acepta = signal(false);
   readonly error = signal('');
 
   constructor() {
@@ -33,17 +34,23 @@ export class RegistroModal {
       this.error.set('Escribe tu nombre para continuar.');
       return;
     }
+    if (!this.acepta()) {
+      this.error.set('Marca la casilla para aceptar el tratamiento de tus datos.');
+      return;
+    }
     this.error.set('');
     this.cuenta.registrar({
       nombre,
       edad: this.edad().trim(),
-      identificacion: this.identificacion().trim(),
+      instagram: this.instagram().trim(),
       direccion: this.direccion().trim(),
+      acepta: true,
     });
     this.nombre.set('');
     this.edad.set('');
-    this.identificacion.set('');
+    this.instagram.set('');
     this.direccion.set('');
+    this.acepta.set(false);
   }
 
   @HostListener('document:keydown.escape')

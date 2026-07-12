@@ -1,13 +1,16 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
 
-// Cuenta del cliente (sesión ligera). Por ahora vive SOLO en este dispositivo
-// (localStorage): no se envía a ningún servidor todavía. Cuando exista el
-// backend de fidelidad/premios (tras el pase de seguridad), aquí se sincroniza.
+// Cuenta del cliente (sesión ligera). Se guarda en el dispositivo (localStorage)
+// y, si el backend está disponible, también se sincroniza con la base de datos
+// (/api/cuentas) para premios/fidelidad. Si el backend falla, la sesión sigue
+// funcionando localmente: la web nunca se rompe.
 export interface Cuenta {
   nombre: string;
   edad: string;
-  identificacion: string;
+  instagram: string;
   direccion: string;
+  /** El usuario aceptó el tratamiento de datos (obligatorio para registrarse). */
+  acepta: boolean;
 }
 
 const KEY = 'crunchy-cuenta-v1';
@@ -49,18 +52,41 @@ export class CuentaService {
   }
 
   registrar(c: Cuenta): void {
-    this.cuenta.set({
+    const limpio: Cuenta = {
       nombre: c.nombre.trim(),
       edad: c.edad.trim(),
-      identificacion: c.identificacion.trim(),
+      instagram: this.normalizarIg(c.instagram),
       direccion: c.direccion.trim(),
-    });
+      acepta: !!c.acepta,
+    };
+    this.cuenta.set(limpio);
     this.abierto.set(false);
+    // Sincroniza con la base en segundo plano (best-effort).
+    void this.sincronizar(limpio);
   }
 
   salir(): void {
     this.cuenta.set(null);
     this.abierto.set(false);
+  }
+
+  /** Normaliza el usuario de Instagram: sin @ repetidos ni espacios, en minúsculas. */
+  private normalizarIg(s: string): string {
+    const v = (s || '').trim().replace(/^@+/, '').replace(/\s+/g, '');
+    return v ? '@' + v.toLowerCase() : '';
+  }
+
+  /** Guarda la cuenta en la base de datos. Silencioso si el backend está apagado. */
+  private async sincronizar(c: Cuenta): Promise<void> {
+    try {
+      await fetch('/api/cuentas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(c),
+      });
+    } catch {
+      /* sin conexión: la cuenta ya quedó guardada en el dispositivo */
+    }
   }
 
   private cargar(): Cuenta | null {
