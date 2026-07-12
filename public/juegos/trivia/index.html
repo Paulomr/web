@@ -48,7 +48,14 @@ body.quiz-bg{background:var(--plum)}
 /* Logo oficial (1 línea) arriba = protagonista de marca */
 .brand-top{display:flex;justify-content:center;padding:4px 0 2px}
 .brand-top img{width:min(320px,84vw);height:auto;display:block;filter:drop-shadow(0 6px 16px rgba(229,103,155,.30))}
-.hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 4px 4px;margin-bottom:16px}
+.hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 4px 6px;margin-bottom:16px}
+/* Fondo suave del hero: envoltura elegante (reemplaza la textura de fondo) */
+.hero::before{content:"";position:absolute;top:-6%;left:50%;transform:translateX(-50%);
+  width:min(440px,98vw);height:88%;z-index:0;pointer-events:none;border-radius:44px;
+  background:
+    radial-gradient(72% 60% at 50% 30%, rgba(242,167,192,.30), rgba(242,167,192,0) 72%),
+    radial-gradient(50% 45% at 78% 78%, rgba(244,196,48,.12), rgba(244,196,48,0) 70%);
+  filter:blur(4px)}
 /* Bernie = hero: stage centrado con halo rosa-dorado */
 .hero-stage{position:relative;display:grid;place-items:center;width:min(340px,82vw);margin-bottom:4px}
 .halo{position:absolute;top:54%;left:50%;transform:translate(-50%,-50%);width:min(270px,70vw);height:min(270px,70vw);border-radius:50%;
@@ -206,9 +213,7 @@ h1 .hi{display:block;color:var(--rasp);text-shadow:0 2px 0 rgba(255,255,255,.85)
 /* Solo desktop: textura doodles sutil + Bernie de acento (nunca en móvil) */
 .side-bernie{display:none}
 @media (min-width:1024px){
-  body::before{content:"";position:fixed;inset:0;z-index:-1;background:url('assets/doodles-suave.png') repeat;background-size:520px auto;opacity:.055;pointer-events:none}
   .side-bernie{display:block;position:fixed;right:3.5vw;bottom:-12px;width:150px;height:auto;z-index:0;filter:drop-shadow(0 14px 22px rgba(107,66,38,.22));animation:floaty 5.2s ease-in-out infinite;pointer-events:none}
-  body.quiz-bg::before{opacity:.04}
 }
 </style>
 </head>

@@ -71,6 +71,15 @@ export const GAMES: Game[] = [
     icon: '🎯',
     cover: 'linear-gradient(135deg, #e6d9f6 0%, #cdeef5 100%)',
   },
+  {
+    id: 'trivia',
+    name: 'Reto Crunchy',
+    kind: 'static',
+    url: 'juegos/trivia/index.html',
+    description: '20 preguntas, 25 segundos por pregunta. Demuestra cuánto sabes de Crunchy Munch.',
+    icon: '🧠',
+    cover: 'linear-gradient(135deg, #f9d1e5 0%, #f9e6b8 100%)',
+  },
 ];
 
 export function findGame(id: string): Game | undefined {

@@ -22,10 +22,10 @@ export const SITE = {
    */
   url: 'https://RELLENAR-tu-dominio.com',
 
-  nombre: 'Crunchy Munch',
+  nombre: 'MUNDO CRUNCHY MUNCH',
 
-  /** Se añade al final de cada título de página: "… · Crunchy Munch". */
-  sufijoTitulo: 'Crunchy Munch',
+  /** Se añade al final de cada título de página: "… · MUNDO CRUNCHY MUNCH". */
+  sufijoTitulo: 'MUNDO CRUNCHY MUNCH',
 
   /** Imagen por defecto al compartir (relativa al dominio). 1200×630 ideal. */
   imagenCompartir: '/fotos/og-crunchy-munch.jpg',
