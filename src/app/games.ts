@@ -50,6 +50,7 @@ export const GAMES: Game[] = [
     description: 'Prepara y decora dulces contra reloj en la cocina de Crunchy Munch.',
     icon: '🧁',
     cover: 'linear-gradient(135deg, #f9d1e5 0%, #e6d9f6 100%)',
+    trailer: 'juegos/trailers/pasteleria.mp4',
   },
   {
     id: 'head-soccer',
@@ -59,7 +60,7 @@ export const GAMES: Game[] = [
     description: 'Fútbol 1v1 de ositos hecho con Phaser. Se ejecuta en el navegador.',
     icon: '⚽',
     cover: 'linear-gradient(135deg, #cdeef5 0%, #d8f2dc 100%)',
-    trailer: 'juegos/trailers/head-soccer.webm',
+    trailer: 'juegos/trailers/head-soccer.mp4',
     note: 'Requiere conexión a internet (carga Phaser desde CDN).',
   },
   {
@@ -70,6 +71,7 @@ export const GAMES: Game[] = [
     description: 'Apunta, calcula la fuerza y lanza. Física y puntería en cada tiro.',
     icon: '🎯',
     cover: 'linear-gradient(135deg, #e6d9f6 0%, #cdeef5 100%)',
+    trailer: 'juegos/trailers/catapulta.mp4',
   },
   {
     id: 'trivia',
