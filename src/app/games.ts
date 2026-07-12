@@ -40,7 +40,7 @@ export const GAMES: Game[] = [
     description: 'El clásico laberinto: come todos los puntos y escapa de los fantasmas.',
     icon: '👻',
     cover: 'linear-gradient(135deg, #f9e6b8 0%, #f9d1e5 100%)',
-    trailer: 'juegos/trailers/pacman.webm',
+    trailer: 'juegos/trailers/pacman.mp4',
   },
   {
     id: 'pasteleria',
@@ -79,6 +79,7 @@ export const GAMES: Game[] = [
     description: '20 preguntas, 25 segundos por pregunta. Demuestra cuánto sabes de Crunchy Munch.',
     icon: '🧠',
     cover: 'linear-gradient(135deg, #f9d1e5 0%, #f9e6b8 100%)',
+    trailer: 'juegos/trailers/trivia.mp4',
   },
 ];
 
