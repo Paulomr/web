@@ -5,6 +5,9 @@
       <header class="player-bar">
         <button type="button" class="link" (click)="close()">← Volver</button>
         <h2>{{ game.name }}</h2>
+        @if (avisoPts() > 0) {
+          <span class="pts-aviso">+{{ avisoPts() }} pts 🍪</span>
+        }
       </header>
 
       <iframe
@@ -19,23 +22,23 @@
       }
 
       @if (game.kind === 'static') {
-        <!-- Ranking del juego abierto. Se alimenta del backend de scores. -->
+        <!-- Ranking Crunchy: Bearnie siempre #1 (98%, barra dorada). -->
         <aside class="scores">
-          <h3>MEJORES PUNTAJES</h3>
-          @if (topScores().length > 0) {
-            <ol>
-              @for (row of topScores(); track $index) {
-                <li>
-                  <span class="pos">{{ $index + 1 }}</span>
-                  <span class="who">{{ row.player }}</span>
-                  <span class="pts">{{ row.points }}</span>
-                </li>
-              }
-            </ol>
-          } @else {
-            <p class="empty">
-              Aún no hay puntajes. Juega una partida (con el backend encendido) y sé el primero.
-            </p>
+          <h3>RANKING CRUNCHY</h3>
+          <ol>
+            @for (f of ranking(); track $index) {
+              <li [class.bernie]="f.bernie" [class.tu]="f.tu">
+                <span class="pos">{{ $index + 1 }}</span>
+                <span class="who">
+                  <span class="who-nom">{{ f.nombre }}@if (f.bernie) { <span class="who-corona" aria-hidden="true">👑</span> }</span>
+                  <span class="barra"><span class="fill" [class.oro]="f.bernie" [style.width.%]="f.pct"></span></span>
+                </span>
+                <span class="pts">{{ f.puntos }}</span>
+              </li>
+            }
+          </ol>
+          @if (!cuenta.registrado()) {
+            <p class="scores-hint">Crea tu cuenta para entrar al ranking y ganar puntos por jugar.</p>
           }
         </aside>
       }

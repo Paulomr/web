@@ -290,6 +290,165 @@
   word-break: break-word;
 }
 
+/* ══════════ CRUNCHY CLUB: puntos, premios y ranking ══════════ */
+.cc-puntos { text-align: center; margin-bottom: 10px; }
+.cc-num {
+  display: block;
+  font-family: var(--font-display, sans-serif);
+  font-weight: 700;
+  font-size: 46px;
+  line-height: 1;
+  color: #e0559f;
+}
+.cc-lbl {
+  font-family: var(--font-body, sans-serif);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #b85a8a;
+}
+
+.cc-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: #fbdcec;
+  overflow: hidden;
+  border: 1.5px solid #f6c9de;
+}
+.cc-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f472b6, #e0559f);
+  transition: width 500ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.cc-next {
+  font-family: var(--font-body, sans-serif);
+  font-size: 12px;
+  text-align: center;
+  color: #8a6579;
+  margin: 8px 0 14px;
+}
+.cc-next strong { color: #e0559f; }
+
+.cc-premios { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 16px; }
+.cc-premio {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fdeaf3;
+  border: 1.5px solid #f6d3e2;
+  border-radius: 12px;
+  padding: 7px 9px;
+  opacity: 0.55;
+  filter: grayscale(0.5);
+  transition: opacity 200ms ease, filter 200ms ease, transform 200ms ease;
+}
+.cc-premio.logrado {
+  opacity: 1;
+  filter: none;
+  background: linear-gradient(135deg, #fff2d6, #ffe1a8);
+  border-color: #f4c66a;
+}
+.cc-premio-ico { font-size: 17px; line-height: 1; }
+.cc-premio-nom {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-body, sans-serif);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text, #4a3b47);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-premio-pts {
+  font-family: var(--font-body, sans-serif);
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #b85a8a;
+}
+
+.cc-rank-tit {
+  font-family: var(--font-body, sans-serif);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: #b85a8a;
+  margin-bottom: 8px;
+}
+.cc-ranking { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.cc-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #fff;
+  border: 1.5px solid #f2d3e0;
+  border-radius: 12px;
+  padding: 7px 10px;
+}
+.cc-row.bernie {
+  background: linear-gradient(110deg, #fff6db, #ffe9ad);
+  border-color: #f0c04e;
+  box-shadow: 0 6px 16px -8px rgba(224, 163, 0, 0.6);
+}
+.cc-row.tu { border-color: #ef73ac; outline: 2px dashed #f7b6d5; outline-offset: 1px; }
+.cc-pos {
+  font-family: var(--font-display, sans-serif);
+  font-weight: 700;
+  font-size: 15px;
+  color: #c58a9f;
+  width: 18px;
+  text-align: center;
+  flex: none;
+}
+.cc-row.bernie .cc-pos { color: #d9a300; }
+.cc-rowinfo { flex: 1; min-width: 0; }
+.cc-name {
+  font-family: var(--font-body, sans-serif);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text, #4a3b47);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cc-crown { font-size: 12px; }
+.cc-rbar {
+  height: 7px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+.cc-rfill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #f2a9cd;
+  transition: width 500ms ease;
+}
+/* Barra dorada brillante de Bearnie (#1, 98%) */
+.cc-rfill.oro {
+  background: linear-gradient(90deg, #f6c545, #ffe89a, #f4b52a, #ffe89a, #f6c545);
+  background-size: 220% 100%;
+  box-shadow: 0 0 10px rgba(244, 181, 42, 0.85), inset 0 0 4px rgba(255, 240, 190, 0.9);
+  animation: oro-brillo 2.2s linear infinite;
+}
+@keyframes oro-brillo {
+  to { background-position: 220% 0; }
+}
+.cc-rpts {
+  font-family: var(--font-display, sans-serif);
+  font-weight: 700;
+  font-size: 13px;
+  color: #e0559f;
+  flex: none;
+}
+.cc-row.bernie .cc-rpts { color: #c8920a; }
+
 /* Celular con poca altura: compacta para que el botón siempre quede a la vista. */
 @media (max-width: 799px) and (max-height: 780px) {
   .reg-aside { padding: 18px 20px 14px; }
@@ -344,6 +503,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .velo, .reg, .reg-bear { animation: none; }
+  .velo, .reg, .reg-bear, .cc-rfill.oro { animation: none; }
   .reg-cerrar:hover { transform: none; }
 }

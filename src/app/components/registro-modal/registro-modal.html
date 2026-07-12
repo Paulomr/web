@@ -62,18 +62,43 @@
           <button type="button" class="reg-skip" (click)="cerrar()">Ahora no</button>
         </form>
       } @else {
-        <ul class="reg-datos">
-          <li><span>Nombre</span><strong>{{ cuenta.cuenta()?.nombre }}</strong></li>
-          @if (cuenta.cuenta()?.instagram) {
-            <li><span>Instagram</span><strong>{{ cuenta.cuenta()?.instagram }}</strong></li>
+        <!-- Puntos + progreso al siguiente premio -->
+        <div class="cc-puntos">
+          <span class="cc-num">{{ cuenta.puntos() }}</span>
+          <span class="cc-lbl">PUNTOS CRUNCHY</span>
+        </div>
+        <div class="cc-bar"><span class="cc-fill" [style.width.%]="cuenta.progresoPremio()"></span></div>
+        <p class="cc-next">
+          Faltan <strong>{{ cuenta.faltanPuntos() }}</strong> pts para
+          {{ cuenta.siguientePremio().icono }} {{ cuenta.siguientePremio().nombre }}
+        </p>
+
+        <!-- Premios -->
+        <div class="cc-premios">
+          @for (p of premios; track p.pts) {
+            <div class="cc-premio" [class.logrado]="cuenta.puntos() >= p.pts">
+              <span class="cc-premio-ico">{{ p.icono }}</span>
+              <span class="cc-premio-nom">{{ p.nombre }}</span>
+              <span class="cc-premio-pts">{{ p.pts }}</span>
+            </div>
           }
-          @if (cuenta.cuenta()?.edad) {
-            <li><span>Edad</span><strong>{{ cuenta.cuenta()?.edad }}</strong></li>
+        </div>
+
+        <!-- Ranking: Bearnie siempre #1, barra dorada -->
+        <h3 class="cc-rank-tit">RANKING CRUNCHY</h3>
+        <div class="cc-ranking">
+          @for (f of ranking(); track $index) {
+            <div class="cc-row" [class.bernie]="f.bernie" [class.tu]="f.tu">
+              <span class="cc-pos">{{ $index + 1 }}</span>
+              <div class="cc-rowinfo">
+                <span class="cc-name">{{ f.nombre }}@if (f.bernie) { <span class="cc-crown" aria-hidden="true">👑</span> }</span>
+                <div class="cc-rbar"><span class="cc-rfill" [class.oro]="f.bernie" [style.width.%]="f.pct"></span></div>
+              </div>
+              <span class="cc-rpts">{{ f.puntos }}</span>
+            </div>
           }
-          @if (cuenta.cuenta()?.direccion) {
-            <li><span>Dirección</span><strong>{{ cuenta.cuenta()?.direccion }}</strong></li>
-          }
-        </ul>
+        </div>
+
         <button type="button" class="reg-cta" (click)="cerrar()">SEGUIR PIDIENDO</button>
         <button type="button" class="reg-skip" (click)="cuenta.salir()">Cerrar sesión</button>
       }

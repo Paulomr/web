@@ -29,6 +29,7 @@ export default async function handler(req, res) {
         return;
       }
       const ig = normalizarIg(instagram);
+      const puntos = Math.max(0, Math.min(100000, Math.round(Number(req.body?.puntos) || 0)));
       const datos = {
         nombre: nombre.toString().trim().slice(0, 80),
         edad: (edad ?? '').toString().trim().slice(0, 3),
@@ -38,15 +39,17 @@ export default async function handler(req, res) {
       };
 
       // Con Instagram: upsert (una cuenta por usuario). Sin él: crea nueva.
+      // Los puntos usan $max: nunca bajan por una sincronización (protege si el
+      // cliente borró su almacenamiento local).
       let cuenta;
       if (ig) {
         cuenta = await Cuenta.findOneAndUpdate(
           { instagram: ig },
-          { $set: datos },
+          { $set: datos, $max: { puntos } },
           { new: true, upsert: true, setDefaultsOnInsert: true },
         ).lean();
       } else {
-        cuenta = (await Cuenta.create(datos)).toObject();
+        cuenta = (await Cuenta.create({ ...datos, puntos })).toObject();
       }
       res.status(200).json({ ok: true, id: cuenta._id, puntos: cuenta.puntos ?? 0 });
       return;

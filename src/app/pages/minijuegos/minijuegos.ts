@@ -5,6 +5,8 @@ import { GAMES, Game } from '../../games';
 import { fetchTopScores, ScoreRow } from '../../scores';
 import { AnimatedHero } from '../../components/animated-hero/animated-hero';
 import { ConfiguracionService } from '../../configuracion.service';
+import { CuentaService } from '../../cuenta.service';
+import { rankingConBernie } from '../../ranking';
 
 type Rgb = [number, number, number];
 
@@ -16,7 +18,17 @@ type Rgb = [number, number, number];
 })
 export class Minijuegos {
   private readonly cfg = inject(ConfiguracionService);
+  readonly cuenta = inject(CuentaService);
   readonly games = GAMES;
+
+  /** Ranking del Crunchy Club: Bearnie siempre #1 (98%, dorado). */
+  readonly ranking = computed(() =>
+    rankingConBernie(this.cuenta.registrado() ? this.cuenta.primerNombre() : null, this.cuenta.puntos()),
+  );
+
+  /** Aviso transitorio "+10 puntos" al abrir un juego (0 = oculto). */
+  readonly avisoPts = signal(0);
+  private avisoTimer = 0;
 
   /** Juegos que se muestran (según la configuración del panel). */
   readonly juegosVisibles = computed(() => this.games.filter((g) => this.cfg.juegoActivo(g.id)));
@@ -75,6 +87,13 @@ export class Minijuegos {
     this.topScores.set([]);
     void this.refreshScores(game.id);
     this.pantallaCompletaMovil();
+    // Premio del Crunchy Club por jugar (una vez por juego al día).
+    const ganados = this.cuenta.premioPorJugar(game.id);
+    if (ganados > 0) {
+      this.avisoPts.set(ganados);
+      clearTimeout(this.avisoTimer);
+      this.avisoTimer = window.setTimeout(() => this.avisoPts.set(0), 2600);
+    }
   }
 
   close(): void {

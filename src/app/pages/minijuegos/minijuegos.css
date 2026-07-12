@@ -650,16 +650,85 @@
 
 .scores .who {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.scores .who-nom {
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scores .who-corona { font-size: 0.85rem; }
+
+/* Barra de progreso por fila. */
+.scores .barra {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+.scores .fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--pink);
+  transition: width 500ms ease;
+}
+/* Barra dorada brillante de Bearnie (#1, 98%). */
+.scores .fill.oro {
+  background: linear-gradient(90deg, #f6c545, #ffe89a, #f4b52a, #ffe89a, #f6c545);
+  background-size: 220% 100%;
+  box-shadow: 0 0 10px rgba(244, 181, 42, 0.85), inset 0 0 4px rgba(255, 240, 190, 0.9);
+  animation: oro-brillo 2.2s linear infinite;
+}
+@keyframes oro-brillo {
+  to { background-position: 220% 0; }
+}
+
+/* Fila del propio usuario. */
+.scores li.tu {
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+  background: var(--pink-soft);
+  outline: 2px dashed var(--pink);
+  outline-offset: 1px;
 }
 
 .scores .pts {
   font-family: var(--font-display);
   font-size: 0.85rem;
   color: #a97fd6;
+  flex: none;
 }
 
-.scores .empty {
+.scores .scores-hint {
+  margin-top: 12px;
   color: var(--text-dim);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/* Aviso "+10 pts" al abrir un juego. */
+.pts-aviso {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #b7791f;
+  background: linear-gradient(90deg, #fdf3d8, #fbe7ae);
+  border: 1px solid #ecc94b66;
+  border-radius: var(--r-pill);
+  padding: 4px 12px;
+  animation: aviso-pop 300ms ease both;
+}
+@keyframes aviso-pop {
+  from { opacity: 0; transform: scale(0.6); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scores .fill.oro, .pts-aviso { animation: none; }
 }
