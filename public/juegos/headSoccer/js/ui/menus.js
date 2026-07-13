@@ -136,6 +136,15 @@ on('matchEnded', e=>{
       again.textContent=againTxt;
     }
     show("over"); overBg.start();
+    // Estrellas en pantalla (no aplican en 2 jugadores).
+    const hsWrap=document.getElementById('hsStars');
+    if (hsWrap){
+      if (twoP){ hsWrap.style.display='none'; }
+      else {
+        hsWrap.style.display='flex';
+        hsWrap.querySelectorAll('.hsStar').forEach((s,i)=>{ s.classList.remove('on'); if(i<estrellasHS) setTimeout(()=>s.classList.add('on'),250+i*280); });
+      }
+    }
     if (!twoP && !mision) await submitScore(playerName, win?1:0); // el ranking mide victorias contra la CPU
     renderLb("lbList");
   });

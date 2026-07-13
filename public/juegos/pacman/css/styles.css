@@ -368,3 +368,17 @@ html, body {
   *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.05s !important; }
   .gota, .level-bernie { animation: none !important; }
 }
+
+/* Estrellas en el game over (3/2/1 según desempeño). */
+.go-stars { display: flex; justify-content: center; gap: 8px; margin: 4px 0 2px; }
+.go-star {
+  font-size: 30px;
+  line-height: 1;
+  color: rgba(120, 90, 60, 0.28);
+  transition: transform .25s cubic-bezier(.2,1.6,.4,1), color .25s ease, text-shadow .25s ease;
+}
+.go-star.on {
+  color: #f6c545;
+  text-shadow: 0 0 10px rgba(246,197,69,.8);
+  transform: scale(1.18);
+}

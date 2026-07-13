@@ -144,3 +144,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
   background:var(--red);border:3px solid var(--ink);box-shadow:2px 2px 0 rgba(42,19,32,.3)}
 input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:0;
   background:var(--red);border:3px solid var(--ink)}
+
+/* Estrellas en la pantalla de resultado (3 = valla en cero). */
+.hsStars { display: flex; justify-content: center; gap: 10px; margin: 4px 0 10px; }
+.hsStar {
+  font-size: 34px;
+  line-height: 1;
+  color: rgba(255,255,255,.28);
+  transition: transform .25s cubic-bezier(.2,1.6,.4,1), color .25s ease, text-shadow .25s ease;
+}
+.hsStar.on {
+  color: #f6c545;
+  text-shadow: 0 0 12px rgba(246,197,69,.9);
+  transform: scale(1.2);
+}

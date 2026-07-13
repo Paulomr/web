@@ -322,6 +322,7 @@ h1 .hi{display:block;color:var(--rasp);text-shadow:0 2px 0 rgba(255,255,255,.85)
 <img class="side-bernie" src="assets/bernie/bernie-guino.png" alt="" width="512" height="512" loading="lazy" aria-hidden="true">
 
 <script src="js/questions.js"></script>
+<script src="../scores-client.js"></script>
 <script>
 /* ============================================================
    CONFIGURACION  -- edita solo este bloque
@@ -527,6 +528,8 @@ async function finish(){
   show('scResult');
   if(hits>0){let n=0;const t=setInterval(()=>{n++;$('resScore').textContent=n;if(n>=hits)clearInterval(t);},45);}
   const row={nombre:player.name,instagram:player.ig,aciertos:hits,tiempo_ms:elapsed};myEntry=row;
+  // Ranking global de estrellas: 3 (>=17 aciertos), 2 (>=10), 1 (>=1), 0 reintento.
+  if(window.CrunchyScores){const _est=hits>=17?3:hits>=10?2:hits>=1?1:0;window.CrunchyScores.submit('trivia',hits,_est);}
   let dupMsg='';
   try{ if(!FREEPLAY && USE_DB){await dbInsert(row);}else{demoRows.push(row);} }catch(e){ if(e.status===409||e.status===400)dupMsg=e.message; }
   if(dupMsg){
