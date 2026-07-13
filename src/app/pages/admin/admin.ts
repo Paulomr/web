@@ -89,6 +89,14 @@ export class Admin {
   cfgJuegos: Record<string, boolean> = {};
   cfgSedes: SedeCfg[] = this.copiaSedes(DEFAULT_SEDES);
 
+  // ---- Fidelidad (código del día + QR) ----
+  readonly fidAbierto = signal(false);
+  readonly fidCodigo = signal('');
+  readonly fidFecha = signal('');
+  readonly fidQr = signal('');
+  readonly fidGenerando = signal(false);
+  readonly fidMsg = signal('');
+
   private copiaSedes(base: SedeCfg[], guardadas?: SedeCfg[]): SedeCfg[] {
     return base.map((d) => {
       const s = Array.isArray(guardadas) ? guardadas.find((x) => x?.id === d.id) : undefined;
@@ -105,6 +113,7 @@ export class Admin {
     if (this.token()) {
       void this.cargar();
       void this.cargarConfig();
+      void this.cargarFidelidad();
     }
   }
 
@@ -148,6 +157,68 @@ export class Admin {
       return;
     }
     this.cfgMsg.set(r.ok ? '✓ Guardado' : '⚠ Error al guardar');
+  }
+
+  // ---- Fidelidad ----
+  async cargarFidelidad(): Promise<void> {
+    try {
+      const r = await fetch('/api/fidelidad', { headers: this.cabeceras() });
+      if (r.status === 401) return;
+      if (!r.ok) return;
+      const d = (await r.json()) as { codigoDia?: string; fecha?: string };
+      this.fidCodigo.set(d.codigoDia ?? '');
+      this.fidFecha.set(d.fecha ?? '');
+      if (d.codigoDia) void this.generarQr(d.codigoDia);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  async generarCodigo(): Promise<void> {
+    this.fidGenerando.set(true);
+    this.fidMsg.set('');
+    let r: Response;
+    try {
+      r = await fetch('/api/fidelidad', {
+        method: 'PUT',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({}),
+      });
+    } catch {
+      this.fidGenerando.set(false);
+      this.fidMsg.set('⚠ Sin conexión');
+      return;
+    }
+    this.fidGenerando.set(false);
+    if (r.status === 401) {
+      this.salir();
+      return;
+    }
+    if (!r.ok) {
+      this.fidMsg.set('⚠ Error al generar');
+      return;
+    }
+    const d = (await r.json()) as { codigoDia?: string; fecha?: string };
+    this.fidCodigo.set(d.codigoDia ?? '');
+    this.fidFecha.set(d.fecha ?? '');
+    this.fidMsg.set('✓ Código del día listo');
+    void this.generarQr(d.codigoDia ?? '');
+  }
+
+  private async generarQr(code: string): Promise<void> {
+    if (!code) {
+      this.fidQr.set('');
+      return;
+    }
+    try {
+      const QRCode = (await import('qrcode')).default;
+      const url = `${location.origin}/fidelidad?c=${code}`;
+      this.fidQr.set(
+        await QRCode.toDataURL(url, { margin: 1, width: 240, color: { dark: '#4a3b47', light: '#ffffff' } }),
+      );
+    } catch {
+      this.fidQr.set('');
+    }
   }
 
   catAbierta(id: string): boolean {
@@ -331,6 +402,7 @@ export class Admin {
     this.claveInput.set('');
     this.productos.set(((await r.json()) as any[]).map(mapDoc));
     void this.cargarConfig();
+    void this.cargarFidelidad();
   }
 
   salir(): void {

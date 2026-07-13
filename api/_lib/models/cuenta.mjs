@@ -15,8 +15,13 @@ const CuentaSchema = new mongoose.Schema(
     direccion: { type: String, default: '' },
     // Consentimiento de tratamiento de datos (obligatorio para registrarse).
     acepta: { type: Boolean, default: false },
-    // Fidelidad: puntos acumulados (se irán sumando con pedidos/juegos).
+    // Trofeos de juegos (gamificación, aparte de la fidelidad).
     puntos: { type: Number, default: 0 },
+    // Tarjeta de fidelidad: sellos actuales (0..meta) y tarjetas completadas.
+    sellos: { type: Number, default: 0 },
+    tarjetas: { type: Number, default: 0 },
+    // Fecha (YYYY-MM-DD) del último sello: 1 sello por cuenta por día.
+    ultimoSello: { type: String, default: '' },
   },
   { timestamps: true },
 );

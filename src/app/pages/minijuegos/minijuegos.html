@@ -6,7 +6,7 @@
         <button type="button" class="link" (click)="close()">← Volver</button>
         <h2>{{ game.name }}</h2>
         @if (avisoPts() > 0) {
-          <span class="pts-aviso">+{{ avisoPts() }} pts 🍪</span>
+          <span class="pts-aviso">+{{ avisoPts() }} 🏆</span>
         }
       </header>
 
@@ -38,7 +38,7 @@
             }
           </ol>
           @if (!cuenta.registrado()) {
-            <p class="scores-hint">Crea tu cuenta para entrar al ranking y ganar puntos por jugar.</p>
+            <p class="scores-hint">Crea tu cuenta para entrar al ranking y ganar trofeos por jugar.</p>
           }
         </aside>
       }

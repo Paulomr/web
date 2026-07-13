@@ -44,6 +44,15 @@
       </svg>
       <span class="gtxt">Juegos</span>
     </a>
+    <a class="gitem" style="--gf:#f6c545;--gt:#e8a11c" routerLink="/fidelidad"
+       routerLinkActive="activa" aria-label="Fidelidad">
+      <svg class="gicon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2.5" y="5" width="15" height="10" rx="2.4" />
+        <path d="M2.5 9h15" />
+        <path d="M6 12.4h3" />
+      </svg>
+      <span class="gtxt">Fidelidad</span>
+    </a>
 
     <!-- Chip de cuenta: solo con sesión iniciada. Abre datos / cerrar sesión. -->
     @if (cuenta.registrado()) {

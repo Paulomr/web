@@ -659,3 +659,25 @@
   font-weight: 700;
   color: #6a9a5e;
 }
+
+/* ── Fidelidad: código del día + QR ── */
+.fid-admin-ayuda { font-size: 13px; line-height: 1.5; color: var(--text-muted, #8d7a89); margin-bottom: 12px; }
+.fid-admin { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; }
+.fid-admin-cod { display: flex; flex-direction: column; gap: 4px; }
+.fid-admin-lbl { font-size: 10.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-muted, #8d7a89); }
+.fid-admin-code {
+  font-family: var(--font-display, monospace);
+  font-weight: 700;
+  font-size: 34px;
+  letter-spacing: 6px;
+  color: #e0559f;
+}
+.fid-admin-fecha { font-size: 12px; color: var(--text-dim, #b8a8b4); }
+.fid-admin-qr {
+  width: 150px;
+  height: 150px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border, #f0e3e9);
+  background: #fff;
+  padding: 6px;
+}

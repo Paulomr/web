@@ -1,0 +1,63 @@
+<main class="fid">
+  <header class="fid-top">
+    <a class="fid-volver" routerLink="/"><span aria-hidden="true">←</span> Inicio</a>
+    <h1 class="fid-tit">TARJETA DE FIDELIDAD</h1>
+  </header>
+
+  @if (!cuenta.registrado()) {
+    <section class="fid-card">
+      <img class="fid-bear" src="fotos/bernie-saludando.webp" alt="Bearnie" />
+      <h2 class="fid-h2">TU TARJETA CRUNCHY</h2>
+      <p class="fid-lead">Crea tu cuenta para juntar sellos y ganar galletas.</p>
+      <button type="button" class="fid-cta" (click)="cuenta.abrir()">CREAR MI CUENTA</button>
+    </section>
+  } @else {
+    <section class="fid-card">
+      <p class="fid-hola">HOLA {{ cuenta.primerNombre() }} 💗</p>
+
+      <!-- Tarjeta de sellos -->
+      <div class="fid-sellos">
+        @for (lleno of slots(); track $index) {
+          <span class="fid-slot" [class.lleno]="lleno" aria-hidden="true">{{ lleno ? '🍪' : '' }}</span>
+        }
+      </div>
+      <p class="fid-prog">
+        <strong>{{ cuenta.sellos() }}</strong> / {{ cuenta.metaSellos() }} sellos
+        @if (cuenta.tarjetas() > 0) {
+          <span class="fid-completas">· {{ cuenta.tarjetas() }} completada(s) 🎉</span>
+        }
+      </p>
+
+      @if (!cuenta.cuenta()?.instagram) {
+        <div class="fid-ig">
+          <p>Para activar tu tarjeta, agrega tu Instagram:</p>
+          <div class="fid-row">
+            <input [ngModel]="igInput()" (ngModelChange)="igInput.set($event)"
+              placeholder="@tuusuario" autocapitalize="none" spellcheck="false" />
+            <button type="button" (click)="guardarIg()">Guardar</button>
+          </div>
+        </div>
+      } @else {
+        <div class="fid-code">
+          <label>CÓDIGO DEL DÍA</label>
+          <div class="fid-row">
+            <input [ngModel]="codigo()" (ngModelChange)="codigo.set($event.toUpperCase())"
+              placeholder="ABC123" maxlength="6" autocapitalize="characters" spellcheck="false"
+              (keyup.enter)="sumar()" />
+            <button type="button" (click)="sumar()" [disabled]="cargando()">
+              {{ cargando() ? '…' : 'SUMAR SELLO' }}
+            </button>
+          </div>
+          @if (mensaje()) {
+            <p class="fid-msg" [class.ok]="exito()">{{ mensaje() }}</p>
+          }
+        </div>
+      }
+
+      <p class="fid-info">
+        Cada compra mayor a $25.000 suma 1 sello. Pídele el QR del día a la tienda y escanéalo,
+        o escribe el código aquí. Completa {{ cuenta.metaSellos() }} y reclama tu premio. 🍪
+      </p>
+    </section>
+  }
+</main>

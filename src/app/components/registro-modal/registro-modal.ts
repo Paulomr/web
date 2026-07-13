@@ -1,14 +1,14 @@
-import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
+import { Component, HostListener, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CuentaService, PREMIOS } from '../../cuenta.service';
-import { rankingConBernie } from '../../ranking';
+import { RouterLink } from '@angular/router';
+import { CuentaService } from '../../cuenta.service';
 
 // Modal global de sesión. Se abre al agregar la primera galleta al carrito
-// (registro) o desde el chip de cuenta del notch (ver datos / cerrar sesión).
+// (registro) o desde el chip de cuenta del notch (resumen + cerrar sesión).
 // Vive una sola vez en la app (montado en app.html).
 @Component({
   selector: 'app-registro-modal',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './registro-modal.html',
   styleUrl: './registro-modal.css',
 })
@@ -21,12 +21,6 @@ export class RegistroModal {
   readonly direccion = signal('');
   readonly acepta = signal(false);
   readonly error = signal('');
-
-  /** Premios del Crunchy Club y ranking (Bearnie siempre #1). */
-  readonly premios = PREMIOS;
-  readonly ranking = computed(() =>
-    rankingConBernie(this.cuenta.primerNombre() || 'TÚ', this.cuenta.puntos()),
-  );
 
   constructor() {
     // Bloquea el scroll del fondo mientras el modal está abierto.

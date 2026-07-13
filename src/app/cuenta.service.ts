@@ -11,8 +11,13 @@ export interface Cuenta {
   direccion: string;
   /** El usuario aceptó el tratamiento de datos (obligatorio para registrarse). */
   acepta: boolean;
-  /** Puntos Crunchy acumulados (fidelidad). */
+  /** Trofeos de juegos (gamificación, aparte de la fidelidad). */
   puntos: number;
+  /** Tarjeta de fidelidad: sellos actuales y tarjetas completadas. */
+  sellos: number;
+  tarjetas: number;
+  /** Fecha (YYYY-MM-DD) del último sello (1 por día). */
+  ultimoSello: string;
 }
 
 /** Premios del Crunchy Club por puntos (de menor a mayor). */
@@ -49,8 +54,13 @@ export class CuentaService {
     return n ? n.split(/\s+/)[0].toUpperCase() : '';
   });
 
-  /** Puntos Crunchy actuales. */
+  /** Trofeos de juegos. */
   readonly puntos = computed(() => this.cuenta()?.puntos ?? 0);
+
+  /** Fidelidad: sellos actuales, tarjetas completadas y meta (sellos por tarjeta). */
+  readonly sellos = computed(() => this.cuenta()?.sellos ?? 0);
+  readonly tarjetas = computed(() => this.cuenta()?.tarjetas ?? 0);
+  readonly metaSellos = signal(10);
 
   /** Próximo premio por alcanzar (o el mayor si ya los tiene todos). */
   readonly siguientePremio = computed<Premio>(() => {
@@ -81,6 +91,8 @@ export class CuentaService {
         /* almacenamiento bloqueado: la sesión vive solo en memoria */
       }
     });
+    // Al arrancar, sincroniza la fidelidad desde el servidor (si hay Instagram).
+    void this.sincronizarFidelidad();
   }
 
   abrir(): void {
@@ -91,7 +103,7 @@ export class CuentaService {
     this.abierto.set(false);
   }
 
-  registrar(c: Omit<Cuenta, 'puntos'>): void {
+  registrar(c: { nombre: string; edad: string; instagram: string; direccion: string; acepta: boolean }): void {
     const previos = this.cuenta()?.puntos ?? 0;
     const limpio: Cuenta = {
       nombre: c.nombre.trim(),
@@ -99,8 +111,11 @@ export class CuentaService {
       instagram: this.normalizarIg(c.instagram),
       direccion: c.direccion.trim(),
       acepta: !!c.acepta,
-      // Bono de bienvenida solo para cuentas nuevas.
+      // Bono de bienvenida (trofeos) solo para cuentas nuevas.
       puntos: previos > 0 ? previos : BONO_BIENVENIDA,
+      sellos: this.cuenta()?.sellos ?? 0,
+      tarjetas: this.cuenta()?.tarjetas ?? 0,
+      ultimoSello: this.cuenta()?.ultimoSello ?? '',
     };
     // No cerramos el modal: pasa a la vista de cuenta ("HOLA X"), que es la
     // confirmación visible de "cuenta creada". El usuario cierra con el botón.
@@ -148,6 +163,65 @@ export class CuentaService {
     return PUNTOS_POR_JUEGO;
   }
 
+  /** Agrega/actualiza el Instagram de la cuenta (necesario para la fidelidad). */
+  agregarInstagram(ig: string): void {
+    const c = this.cuenta();
+    if (!c) return;
+    const norm = this.normalizarIg(ig);
+    if (!norm) return;
+    const upd = { ...c, instagram: norm };
+    this.cuenta.set(upd);
+    void this.sincronizar(upd);
+    void this.sincronizarFidelidad();
+  }
+
+  /** Trae el estado de fidelidad desde el servidor (autoritativo). */
+  async sincronizarFidelidad(): Promise<void> {
+    const c = this.cuenta();
+    if (!c?.instagram) return;
+    try {
+      const r = await fetch(`/api/fidelidad?ig=${encodeURIComponent(c.instagram)}`);
+      if (!r.ok) return;
+      const d = (await r.json()) as { sellos?: number; tarjetas?: number; meta?: number };
+      if (typeof d.meta === 'number') this.metaSellos.set(d.meta);
+      const actual = this.cuenta();
+      if (actual) {
+        this.cuenta.set({
+          ...actual,
+          sellos: d.sellos ?? actual.sellos,
+          tarjetas: d.tarjetas ?? actual.tarjetas,
+        });
+      }
+    } catch {
+      /* sin conexión: se quedan los valores locales */
+    }
+  }
+
+  /** Canjea el código del día por 1 sello. Devuelve resultado para la UI. */
+  async redimir(codigo: string): Promise<{ ok: boolean; mensaje: string; premio?: boolean }> {
+    const c = this.cuenta();
+    if (!c) return { ok: false, mensaje: 'Inicia sesión primero.' };
+    if (!c.instagram) return { ok: false, mensaje: 'Agrega tu Instagram para activar tu tarjeta.' };
+    const code = (codigo || '').trim().toUpperCase();
+    if (!code) return { ok: false, mensaje: 'Escribe el código.' };
+    try {
+      const r = await fetch('/api/fidelidad', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instagram: c.instagram, codigo: code }),
+      });
+      const d = (await r.json()) as { sellos?: number; tarjetas?: number; meta?: number; premio?: boolean; error?: string };
+      if (typeof d.meta === 'number') this.metaSellos.set(d.meta);
+      if (typeof d.sellos === 'number') {
+        this.cuenta.set({ ...c, sellos: d.sellos, tarjetas: d.tarjetas ?? c.tarjetas });
+      }
+      if (!r.ok) return { ok: false, mensaje: d.error || 'No se pudo canjear.' };
+      return { ok: true, mensaje: d.premio ? '¡Completaste la tarjeta! 🎉' : '¡+1 sello! 💗', premio: d.premio };
+    } catch {
+      return { ok: false, mensaje: 'Sin conexión. Intenta de nuevo.' };
+    }
+  }
+
   private normalizarIg(s: string): string {
     const v = (s || '').trim().replace(/^@+/, '').replace(/\s+/g, '');
     return v ? '@' + v.toLowerCase() : '';
@@ -170,7 +244,11 @@ export class CuentaService {
       const c = localStorage.getItem(KEY);
       if (!c) return null;
       const obj = JSON.parse(c) as Cuenta;
-      if (typeof obj.puntos !== 'number') obj.puntos = 0; // compat con versiones previas
+      // Compatibilidad con versiones previas.
+      if (typeof obj.puntos !== 'number') obj.puntos = 0;
+      if (typeof obj.sellos !== 'number') obj.sellos = 0;
+      if (typeof obj.tarjetas !== 'number') obj.tarjetas = 0;
+      if (typeof obj.ultimoSello !== 'string') obj.ultimoSello = '';
       return obj;
     } catch {
       return null;

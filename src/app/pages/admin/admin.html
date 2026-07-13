@@ -70,6 +70,38 @@
       }
     </div>
 
+    <!-- Fidelidad: código del día + QR -->
+    <div class="modulo">
+      <button type="button" class="modulo-cab cab-cfg" (click)="fidAbierto.set(!fidAbierto())">
+        <span class="modulo-nombre">FIDELIDAD · CÓDIGO DEL DÍA</span>
+        <span class="chev" [class.rot]="fidAbierto()" aria-hidden="true">⌄</span>
+      </button>
+      @if (fidAbierto()) {
+        <div class="modulo-cuerpo cfg-cuerpo">
+          <p class="fid-admin-ayuda">
+            Genera el código de hoy y muéstralo (o el QR) al cliente cuando su compra supere $25.000.
+            El cliente lo escanea o lo escribe en su tarjeta y suma 1 sello. Cada cuenta suma máximo 1 sello por día.
+          </p>
+          <div class="fid-admin">
+            <div class="fid-admin-cod">
+              <span class="fid-admin-lbl">Código de hoy</span>
+              <span class="fid-admin-code">{{ fidCodigo() || '——————' }}</span>
+              @if (fidFecha()) { <span class="fid-admin-fecha">válido {{ fidFecha() }}</span> }
+            </div>
+            @if (fidQr()) {
+              <img class="fid-admin-qr" [src]="fidQr()" alt="QR del código del día" />
+            }
+          </div>
+          <div class="fila pie">
+            <button class="guardar" (click)="generarCodigo()" [disabled]="fidGenerando()">
+              {{ fidGenerando() ? 'GENERANDO…' : (fidCodigo() ? 'GENERAR NUEVO CÓDIGO' : 'GENERAR CÓDIGO DEL DÍA') }}
+            </button>
+            @if (fidMsg()) { <span class="msg">{{ fidMsg() }}</span> }
+          </div>
+        </div>
+      }
+    </div>
+
     <!-- Horarios y fechas especiales de las sedes -->
     <div class="modulo">
       <button type="button" class="modulo-cab cab-cfg" (click)="sedesAbierto.set(!sedesAbierto())">
