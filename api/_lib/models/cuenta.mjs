@@ -26,6 +26,8 @@ const CuentaSchema = new mongoose.Schema(
     ultimoSello: { type: String, default: '' },
     // Premio de estrellas (todos los juegos al 100%) ya reclamado (una vez).
     premioEstrellas: { type: Boolean, default: false },
+    // Cupón de bienvenida (20% primera compra) ya usado (una vez por cuenta).
+    cuponUsado: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

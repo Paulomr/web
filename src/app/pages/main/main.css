@@ -710,3 +710,29 @@
     transform: none;
   }
 }
+
+/* Banda de cupón cruzando la osa que corre (sobre "NUESTRO MENÚ"). */
+.osa-promo { position: relative; display: inline-flex; }
+.promo-sash {
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.4px;
+  color: #fff;
+  background: linear-gradient(135deg, #f472b6, #e0559f);
+  padding: 5px 14px;
+  border-radius: 5px;
+  box-shadow: 0 8px 18px -6px rgba(224, 85, 159, 0.75);
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  z-index: 2;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .promo-sash { animation: sash-pop 420ms cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+  @keyframes sash-pop { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(0.7); } }
+}

@@ -32,6 +32,7 @@ function publica(c) {
     sellos: c.sellos ?? 0,
     tarjetas: c.tarjetas ?? 0,
     ultimoSello: c.ultimoSello ?? '',
+    cuponUsado: !!c.cuponUsado,
   };
 }
 
@@ -55,6 +56,28 @@ export default async function handler(req, res) {
           res.status(401).json({ error: 'Instagram o código incorrecto.' });
           return;
         }
+        res.status(200).json({ ok: true, cuenta: publica(c) });
+        return;
+      }
+
+      // ── Usar el cupón de bienvenida (una vez por cuenta) ──
+      if (body.accion === 'usar-cupon') {
+        const ig = normalizarIg(body.instagram);
+        if (!ig) {
+          res.status(400).json({ error: 'Falta el Instagram' });
+          return;
+        }
+        const c = await Cuenta.findOne({ instagram: ig });
+        if (!c) {
+          res.status(404).json({ error: 'Cuenta no encontrada' });
+          return;
+        }
+        if (c.cuponUsado) {
+          res.status(409).json({ error: 'El cupón ya se usó', cuenta: publica(c) });
+          return;
+        }
+        c.cuponUsado = true;
+        await c.save();
         res.status(200).json({ ok: true, cuenta: publica(c) });
         return;
       }

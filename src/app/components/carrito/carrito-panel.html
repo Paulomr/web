@@ -36,6 +36,13 @@
         }
       </ul>
 
+      @if (carrito.cuponAplicado()) {
+        <div class="cupon-linea">
+          <span>🎁 Cupón bienvenida −20%</span>
+          <span class="cupon-desc">−{{ descuentoTexto() }}</span>
+        </div>
+      }
+
       <div class="total">
         <span>TOTAL</span>
         <strong>{{ totalTexto() }}@if (carrito.hayConsultar()) { <em>+ ÍTEMS POR CONSULTAR</em> }</strong>

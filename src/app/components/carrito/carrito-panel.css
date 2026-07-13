@@ -353,3 +353,20 @@ input:focus {
   cursor: pointer;
   text-decoration: underline;
 }
+
+/* Línea del cupón de bienvenida en los totales. */
+.cupon-linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 2px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fde4f0, #fbd0e6);
+  border: 1px solid #f4b6d5;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #b83a77;
+}
+.cupon-linea .cupon-desc { font-variant-numeric: tabular-nums; }

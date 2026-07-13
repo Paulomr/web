@@ -52,6 +52,7 @@ export default async function handler(req, res) {
           tarjetas: c?.tarjetas ?? 0,
           estrellas: c?.puntos ?? 0, // total de estrellas del perfil (juegos)
           premioEstrellas: !!c?.premioEstrellas,
+          cuponUsado: !!c?.cuponUsado,
           meta: cfg.meta,
           umbral: cfg.umbral,
           fecha: hoyBogota(),

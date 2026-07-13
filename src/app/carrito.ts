@@ -64,6 +64,13 @@ export class Carrito {
     this.items().some((i) => precioNumero(this.producto(i.id)) === 0),
   );
 
+  /** Cupón de bienvenida 20% aplicable (cuenta con cupón disponible + hay total). */
+  readonly cuponAplicado = computed(() => this.cuenta.cuponDisponible() && this.total() > 0);
+  /** Descuento en pesos (20% del total con precio). */
+  readonly descuento = computed(() => (this.cuponAplicado() ? Math.round(this.total() * 0.2) : 0));
+  /** Total a pagar tras el cupón. */
+  readonly totalFinal = computed(() => Math.max(0, this.total() - this.descuento()));
+
   constructor() {
     effect(() => {
       try {
@@ -139,7 +146,13 @@ export class Carrito {
     }
 
     lineas.push('');
-    lineas.push(`TOTAL: ${formatoCOP(this.total())}${this.hayConsultar() ? ' + ÍTEMS POR CONSULTAR' : ''}`);
+    if (this.cuponAplicado()) {
+      lineas.push(`Subtotal: ${formatoCOP(this.total())}`);
+      lineas.push(`🎁 CUPÓN BIENVENIDA (-20%): -${formatoCOP(this.descuento())}`);
+      lineas.push(`TOTAL: ${formatoCOP(this.totalFinal())}${this.hayConsultar() ? ' + ÍTEMS POR CONSULTAR' : ''}`);
+    } else {
+      lineas.push(`TOTAL: ${formatoCOP(this.total())}${this.hayConsultar() ? ' + ÍTEMS POR CONSULTAR' : ''}`);
+    }
     lineas.push('');
     lineas.push(`SEDE: ${SEDES[d.sede]}`);
     if (d.entrega === 'domicilio') {
@@ -155,6 +168,11 @@ export class Carrito {
     if (d.notas.trim()) lineas.push(`NOTAS: ${d.notas.trim()}`);
 
     return `https://wa.me/${WHATSAPP_SEDES[d.sede]}?text=${encodeURIComponent(lineas.join('\n'))}`;
+  }
+
+  /** Tras enviar el pedido: consume el cupón de bienvenida (una vez por cuenta). */
+  confirmarEnvio(): void {
+    if (this.cuponAplicado()) void this.cuenta.usarCupon();
   }
 
   private cargar(): ItemCarrito[] {

@@ -18,12 +18,18 @@ export class CarritoPanel {
   }
 
   totalTexto(): string {
-    return formatoCOP(this.carrito.total());
+    return formatoCOP(this.carrito.totalFinal());
+  }
+
+  descuentoTexto(): string {
+    return formatoCOP(this.carrito.descuento());
   }
 
   enviar(): void {
     if (!this.carrito.puedeEnviar()) return;
     window.open(this.carrito.linkPedido(), '_blank', 'noopener');
+    // Consume el cupón de bienvenida (si estaba aplicado): una vez por cuenta.
+    this.carrito.confirmarEnvio();
   }
 
   onInput(campo: 'nombre' | 'telefono' | 'direccion' | 'notas', ev: Event): void {
