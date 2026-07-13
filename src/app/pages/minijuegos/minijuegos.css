@@ -732,3 +732,21 @@
 @media (prefers-reduced-motion: reduce) {
   .scores .fill.oro, .pts-aviso { animation: none; }
 }
+
+/* Conteo de jugadores y etiqueta "tú" en el ranking global. */
+.scores-count {
+  margin: -6px 0 12px;
+  font-size: 0.8rem;
+  color: var(--text-dim, #b8a8b4);
+  font-weight: 600;
+}
+.who-tu {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--pink, #f2a9cd);
+  border-radius: 999px;
+  padding: 1px 6px;
+}

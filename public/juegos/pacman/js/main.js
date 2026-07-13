@@ -350,8 +350,12 @@ function gameOver() {
   pauseBtn.classList.add('hidden');
   volumenMusica(0.35);
   const esRecord = registrarPartida(juego.score, juego.level);
-  // Ranking global de Crunchy Munch (silencioso si el backend está apagado).
-  if (window.CrunchyScores) window.CrunchyScores.submit('pacman', juego.score);
+  // Estrellas por desempeño (nivel y puntaje): 3 perfecto, 2 medio, 1 bajo.
+  if (window.CrunchyScores) {
+    const est = (juego.level >= 3 || juego.score >= 3000) ? 3
+      : (juego.level >= 2 || juego.score >= 1200) ? 2 : 1;
+    window.CrunchyScores.submit('pacman', juego.score, est);
+  }
   $('go-score').textContent = juego.score.toLocaleString('es-CO');
   $('go-record').textContent = datos.record.toLocaleString('es-CO');
   $('go-level').textContent = juego.level;

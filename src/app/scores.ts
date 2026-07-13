@@ -1,21 +1,25 @@
-// Acceso al ranking de puntajes que expone el backend (Express + MongoDB).
-// Mismo backend que la trivia, levantado en el puerto 3000.
+// Ranking global por juego (estrellas), servido por /api/scores.
+// Cada jugador aparece con su @instagram y su mejor cantidad de estrellas.
 
 export interface ScoreRow {
-  player: string;
-  points: number;
-  createdAt?: string;
+  instagram: string;
+  estrellas: number;
+  puntos: number;
 }
 
-const API = 'http://localhost:3000/api/scores';
+export interface RankingGlobal {
+  rows: ScoreRow[];
+  total: number;
+}
 
-/** Top N de un juego. Devuelve [] si el backend no responde: la UI nunca se rompe. */
-export async function fetchTopScores(gameId: string, limit = 10): Promise<ScoreRow[]> {
+/** Top N del juego + total de jugadores. Silencioso si el backend no responde. */
+export async function fetchRankingGlobal(gameId: string, limit = 10): Promise<RankingGlobal> {
   try {
-    const res = await fetch(`${API}/${encodeURIComponent(gameId)}/top?limit=${limit}`);
-    if (!res.ok) return [];
-    return (await res.json()) as ScoreRow[];
+    const res = await fetch(`/api/scores?gameId=${encodeURIComponent(gameId)}&top=${limit}`);
+    if (!res.ok) return { rows: [], total: 0 };
+    const d = (await res.json()) as Partial<RankingGlobal>;
+    return { rows: Array.isArray(d.rows) ? d.rows : [], total: Number(d.total) || 0 };
   } catch {
-    return [];
+    return { rows: [], total: 0 };
   }
 }

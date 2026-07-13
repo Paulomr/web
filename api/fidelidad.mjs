@@ -50,6 +50,7 @@ export default async function handler(req, res) {
         res.status(200).json({
           sellos: c?.sellos ?? 0,
           tarjetas: c?.tarjetas ?? 0,
+          estrellas: c?.puntos ?? 0, // total de estrellas del perfil (juegos)
           meta: cfg.meta,
           umbral: cfg.umbral,
           fecha: hoyBogota(),

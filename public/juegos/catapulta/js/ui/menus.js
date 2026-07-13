@@ -86,6 +86,7 @@ export function initUI(){
     const { level, stars }=e.detail;
     playing=false;
     saveStars(level,stars);
+    if (window.CrunchyScores) window.CrunchyScores.submit('catapulta', (level+1)*100 + stars*10, stars);
     hide('hud'); hide('pauseBtn');
     // estrellas escalonadas: pop una a una con "ding" ascendente
     document.querySelectorAll('#winStars span').forEach((s,i)=>{

@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, ViewChild, computed, inject, signa
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { GAMES, Game } from '../../games';
-import { fetchTopScores, ScoreRow } from '../../scores';
+import { fetchRankingGlobal, RankingGlobal } from '../../scores';
 import { AnimatedHero } from '../../components/animated-hero/animated-hero';
 import { ConfiguracionService } from '../../configuracion.service';
 import { CuentaService } from '../../cuenta.service';
@@ -21,13 +21,19 @@ export class Minijuegos {
   readonly cuenta = inject(CuentaService);
   readonly games = GAMES;
 
-  /** Ranking del Crunchy Club: Bearnie siempre #1 (98%, dorado). */
+  /** Ranking global del juego abierto (mejores estrellas por jugador) + total. */
+  readonly rankingGlobal = signal<RankingGlobal>({ rows: [], total: 0 });
+
+  /** Filas del ranking con Bearnie fija en #1 (98%, dorado). */
   readonly ranking = computed(() =>
-    rankingConBernie(this.cuenta.registrado() ? this.cuenta.primerNombre() : null, this.cuenta.puntos()),
+    rankingConBernie(this.rankingGlobal().rows, this.cuenta.cuenta()?.instagram ?? null),
   );
 
-  /** Aviso transitorio "+10 puntos" al abrir un juego (0 = oculto). */
-  readonly avisoPts = signal(0);
+  /** Cuántos jugadores hay en el global de este juego. */
+  readonly totalJugadores = computed(() => this.rankingGlobal().total);
+
+  /** Aviso transitorio de estrellas ganadas al terminar una ronda (0 = oculto). */
+  readonly avisoEstrellas = signal(0);
   private avisoTimer = 0;
 
   /** Juegos que se muestran (según la configuración del panel). */
@@ -38,9 +44,6 @@ export class Minijuegos {
 
   /** URL saneada que consume el iframe del juego seleccionado. */
   readonly safeUrl = signal<SafeResourceUrl | null>(null);
-
-  /** Top 10 de puntajes del juego abierto ([] si el backend está apagado). */
-  readonly topScores = signal<ScoreRow[]>([]);
 
   /** Referencia a la sección para actualizar su fondo según el scroll. */
   @ViewChild('sectionEl') private sectionEl?: ElementRef<HTMLElement>;
@@ -84,23 +87,34 @@ export class Minijuegos {
   open(game: Game): void {
     this.selected.set(game);
     this.safeUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(game.url));
-    this.topScores.set([]);
-    void this.refreshScores(game.id);
+    this.rankingGlobal.set({ rows: [], total: 0 });
+    this.avisoEstrellas.set(0);
+    void this.cargarRanking(game.id);
     this.pantallaCompletaMovil();
-    // Premio del Crunchy Club por jugar (una vez por juego al día).
-    const ganados = this.cuenta.premioPorJugar(game.id);
-    if (ganados > 0) {
-      this.avisoPts.set(ganados);
-      clearTimeout(this.avisoTimer);
-      this.avisoTimer = window.setTimeout(() => this.avisoPts.set(0), 2600);
-    }
   }
 
   close(): void {
     this.selected.set(null);
     this.safeUrl.set(null);
-    this.topScores.set([]);
+    this.rankingGlobal.set({ rows: [], total: 0 });
     this.salirPantallaCompleta();
+  }
+
+  /** Escucha el aviso del juego (iframe) al terminar una ronda: muestra las
+      estrellas ganadas y refresca ranking + perfil. */
+  @HostListener('window:message', ['$event'])
+  onMensajeJuego(ev: MessageEvent): void {
+    const d = ev.data;
+    if (!d || d.type !== 'crunchy-score') return;
+    const est = Math.max(0, Math.min(3, Number(d.estrellas) || 0));
+    if (est > 0) {
+      this.avisoEstrellas.set(est);
+      clearTimeout(this.avisoTimer);
+      this.avisoTimer = window.setTimeout(() => this.avisoEstrellas.set(0), 3200);
+    }
+    const g = this.selected();
+    if (g) void this.cargarRanking(g.id);
+    void this.cuenta.sincronizarFidelidad();
   }
 
   /** En celular, entra a pantalla completa al abrir un juego (más inmersión).
@@ -132,7 +146,7 @@ export class Minijuegos {
     }
   }
 
-  async refreshScores(gameId: string): Promise<void> {
-    this.topScores.set(await fetchTopScores(gameId));
+  async cargarRanking(gameId: string): Promise<void> {
+    this.rankingGlobal.set(await fetchRankingGlobal(gameId));
   }
 }

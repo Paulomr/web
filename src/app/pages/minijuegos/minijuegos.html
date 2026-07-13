@@ -5,8 +5,8 @@
       <header class="player-bar">
         <button type="button" class="link" (click)="close()">← Volver</button>
         <h2>{{ game.name }}</h2>
-        @if (avisoPts() > 0) {
-          <span class="pts-aviso">+{{ avisoPts() }} 🏆</span>
+        @if (avisoEstrellas() > 0) {
+          <span class="pts-aviso">¡{{ avisoEstrellas() }} ⭐ sumadas!</span>
         }
       </header>
 
@@ -24,21 +24,24 @@
       @if (game.kind === 'static') {
         <!-- Ranking Crunchy: Bearnie siempre #1 (98%, barra dorada). -->
         <aside class="scores">
-          <h3>RANKING CRUNCHY</h3>
+          <h3>RANKING GLOBAL</h3>
+          <p class="scores-count">{{ totalJugadores() }} {{ totalJugadores() === 1 ? 'jugador' : 'jugadores' }} en {{ game.name }}</p>
           <ol>
             @for (f of ranking(); track $index) {
               <li [class.bernie]="f.bernie" [class.tu]="f.tu">
                 <span class="pos">{{ $index + 1 }}</span>
                 <span class="who">
-                  <span class="who-nom">{{ f.nombre }}@if (f.bernie) { <span class="who-corona" aria-hidden="true">👑</span> }</span>
+                  <span class="who-nom">{{ f.nombre }}@if (f.bernie) { <span class="who-corona" aria-hidden="true">👑</span> }@if (f.tu) { <span class="who-tu">tú</span> }</span>
                   <span class="barra"><span class="fill" [class.oro]="f.bernie" [style.width.%]="f.pct"></span></span>
                 </span>
-                <span class="pts">{{ f.puntos }}</span>
+                <span class="pts">@if (f.bernie) { 👑 } @else { {{ f.estrellas }}⭐ }</span>
               </li>
             }
           </ol>
           @if (!cuenta.registrado()) {
-            <p class="scores-hint">Crea tu cuenta para entrar al ranking y ganar trofeos por jugar.</p>
+            <p class="scores-hint">Crea tu cuenta (con Instagram) para entrar al ranking y ganar estrellas.</p>
+          } @else if (!cuenta.cuenta()?.instagram) {
+            <p class="scores-hint">Agrega tu Instagram en tu cuenta para aparecer en el ranking.</p>
           }
         </aside>
       }

@@ -110,6 +110,9 @@ on('matchEnded', e=>{
   showLoading(async()=>{
     hide("load");
     const win=sP>sC, tie=sP===sC;
+    // Estrellas: ganar con valla en cero = 3; ganar = 2; empate = 1; perder = 0.
+    const estrellasHS = win ? (sC===0 ? 3 : 2) : (tie ? 1 : 0);
+    if (window.CrunchyScores && estrellasHS>0) window.CrunchyScores.submit('head-soccer', (mision?mision*100:0)+sP, estrellasHS);
     const again=document.getElementById("again");
     if (mision){ // resultado del modo misiones (vs Bearnie malvada)
       const m=MISIONES[mision-1];
@@ -119,8 +122,6 @@ on('matchEnded', e=>{
         setText("result", mision===MISIONES.length?"¡VENCISTE A BEARNIE DEFINITIVA!":`¡MISION ${mision} SUPERADA!`);
         misionEnCurso=sig;                       // null si era la ultima
         again.textContent=sig?"SIGUIENTE MISION":againTxt;
-        // Ranking global Crunchy: la mision N vale N*10 (Bearnie reina con 99).
-        if (window.CrunchyScores) window.CrunchyScores.submit('head-soccer', mision*10, playerName);
       } else {
         setText("result", `BEARNIE TE VENCIO — ${m.nombre}`);
         again.textContent="REINTENTAR MISION";   // misionEnCurso sigue igual

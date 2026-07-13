@@ -111,8 +111,8 @@ export class CuentaService {
       instagram: this.normalizarIg(c.instagram),
       direccion: c.direccion.trim(),
       acepta: !!c.acepta,
-      // Bono de bienvenida (trofeos) solo para cuentas nuevas.
-      puntos: previos > 0 ? previos : BONO_BIENVENIDA,
+      // Estrellas del perfil (vienen de los juegos; se sincronizan del servidor).
+      puntos: previos,
       sellos: this.cuenta()?.sellos ?? 0,
       tarjetas: this.cuenta()?.tarjetas ?? 0,
       ultimoSello: this.cuenta()?.ultimoSello ?? '',
@@ -182,7 +182,7 @@ export class CuentaService {
     try {
       const r = await fetch(`/api/fidelidad?ig=${encodeURIComponent(c.instagram)}`);
       if (!r.ok) return;
-      const d = (await r.json()) as { sellos?: number; tarjetas?: number; meta?: number };
+      const d = (await r.json()) as { sellos?: number; tarjetas?: number; estrellas?: number; meta?: number };
       if (typeof d.meta === 'number') this.metaSellos.set(d.meta);
       const actual = this.cuenta();
       if (actual) {
@@ -190,6 +190,7 @@ export class CuentaService {
           ...actual,
           sellos: d.sellos ?? actual.sellos,
           tarjetas: d.tarjetas ?? actual.tarjetas,
+          puntos: d.estrellas ?? actual.puntos,
         });
       }
     } catch {
