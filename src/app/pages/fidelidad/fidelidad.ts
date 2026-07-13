@@ -1,10 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CuentaService } from '../../cuenta.service';
 
-// Tarjeta de fidelidad por sellos. El QR del vendedor abre esta página con
-// ?c=CODIGO y, si hay sesión con Instagram, suma el sello automáticamente.
+// Tarjeta de fidelidad como "expandable card": colapsada muestra el club;
+// al expandir aparecen los sellos y el canje. El QR del vendedor abre esta
+// página con ?c=CODIGO y, si hay sesión con Instagram, suma el sello.
 @Component({
   selector: 'app-fidelidad',
   imports: [FormsModule, RouterLink],
@@ -15,6 +16,7 @@ export class Fidelidad implements OnInit {
   readonly cuenta = inject(CuentaService);
   private readonly route = inject(ActivatedRoute);
 
+  readonly expandido = signal(false);
   readonly codigo = signal('');
   readonly igInput = signal('');
   readonly mensaje = signal('');
@@ -31,10 +33,24 @@ export class Fidelidad implements OnInit {
     const c = this.route.snapshot.queryParamMap.get('c');
     if (c) {
       this.codigo.set(c.toUpperCase().slice(0, 6));
+      this.expandido.set(true); // llega desde el QR: abre la tarjeta
       if (this.cuenta.registrado() && this.cuenta.cuenta()?.instagram) {
         void this.sumar();
       }
     }
+  }
+
+  abrir(): void {
+    this.expandido.set(true);
+  }
+
+  cerrarExpand(): void {
+    this.expandido.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.expandido.set(false);
   }
 
   async sumar(): Promise<void> {
