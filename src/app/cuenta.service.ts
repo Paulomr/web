@@ -18,7 +18,14 @@ export interface Cuenta {
   tarjetas: number;
   /** Fecha (YYYY-MM-DD) del último sello (1 por día). */
   ultimoSello: string;
+  /** Premio de estrellas (todos los juegos al 100%) ya reclamado. */
+  premioEstrellas: boolean;
 }
+
+/** Estrellas para el premio maestro: 5 juegos × 3 estrellas. */
+export const META_ESTRELLAS = 15;
+/** COP que vale cada tarjeta de sellos completa. */
+export const VALOR_TARJETA = 60000;
 
 /** Premios del Crunchy Club por puntos (de menor a mayor). */
 export interface Premio {
@@ -64,6 +71,10 @@ export class CuentaService {
   readonly sellos = computed(() => this.cuenta()?.sellos ?? 0);
   readonly tarjetas = computed(() => this.cuenta()?.tarjetas ?? 0);
   readonly metaSellos = signal(10);
+
+  /** Premio maestro de estrellas. */
+  readonly metaEstrellas = META_ESTRELLAS;
+  readonly premioEstrellasReclamado = computed(() => !!this.cuenta()?.premioEstrellas);
 
   /** Próximo premio por alcanzar (o el mayor si ya los tiene todos). */
   readonly siguientePremio = computed<Premio>(() => {
@@ -120,7 +131,27 @@ export class CuentaService {
       sellos: Number(c.sellos) || 0,
       tarjetas: Number(c.tarjetas) || 0,
       ultimoSello: (c.ultimoSello ?? '').toString(),
+      premioEstrellas: !!c.premioEstrellas,
     });
+  }
+
+  /** Reclama un premio (crea un código de un solo uso que el vendedor confirma). */
+  async reclamar(tipo: 'sellos' | 'estrellas'): Promise<{ ok: boolean; codigo?: string; descripcion?: string; error?: string }> {
+    const c = this.cuenta();
+    if (!c?.instagram) return { ok: false, error: 'Agrega tu Instagram para reclamar.' };
+    try {
+      const r = await fetch('/api/premios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instagram: c.instagram, tipo }),
+      });
+      const d = (await r.json()) as { codigo?: string; descripcion?: string; error?: string };
+      if (!r.ok) return { ok: false, error: d.error || 'No se pudo reclamar.' };
+      await this.sincronizarFidelidad();
+      return { ok: true, codigo: d.codigo, descripcion: d.descripcion };
+    } catch {
+      return { ok: false, error: 'Sin conexión. Intenta de nuevo.' };
+    }
   }
 
   /** Crea la cuenta con código de 4 dígitos. No cierra el modal (muestra cuenta). */
@@ -232,7 +263,9 @@ export class CuentaService {
     try {
       const r = await fetch(`/api/fidelidad?ig=${encodeURIComponent(c.instagram)}`);
       if (!r.ok) return;
-      const d = (await r.json()) as { sellos?: number; tarjetas?: number; estrellas?: number; meta?: number };
+      const d = (await r.json()) as {
+        sellos?: number; tarjetas?: number; estrellas?: number; premioEstrellas?: boolean; meta?: number;
+      };
       if (typeof d.meta === 'number') this.metaSellos.set(d.meta);
       const actual = this.cuenta();
       if (actual) {
@@ -241,6 +274,7 @@ export class CuentaService {
           sellos: d.sellos ?? actual.sellos,
           tarjetas: d.tarjetas ?? actual.tarjetas,
           puntos: d.estrellas ?? actual.puntos,
+          premioEstrellas: d.premioEstrellas ?? actual.premioEstrellas,
         });
       }
     } catch {
@@ -300,6 +334,7 @@ export class CuentaService {
       if (typeof obj.sellos !== 'number') obj.sellos = 0;
       if (typeof obj.tarjetas !== 'number') obj.tarjetas = 0;
       if (typeof obj.ultimoSello !== 'string') obj.ultimoSello = '';
+      if (typeof obj.premioEstrellas !== 'boolean') obj.premioEstrellas = false;
       return obj;
     } catch {
       return null;

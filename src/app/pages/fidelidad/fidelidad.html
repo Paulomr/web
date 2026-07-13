@@ -83,9 +83,57 @@
             </div>
           }
 
+          <!-- Premios -->
+          <div class="premios">
+            <h3 class="premios-tit">PREMIOS</h3>
+
+            <div class="premio">
+              <div class="premio-top">
+                <span class="premio-ico">💵</span>
+                <div class="premio-info">
+                  <strong>$60.000 en Crunchy Munch</strong>
+                  <span>Por cada tarjeta de {{ cuenta.metaSellos() }} sellos completa</span>
+                </div>
+              </div>
+              @if (cuenta.tarjetas() > 0) {
+                <button class="premio-btn" (click)="reclamar('sellos')" [disabled]="reclamando()">
+                  RECLAMAR ({{ cuenta.tarjetas() }} disponible{{ cuenta.tarjetas() === 1 ? '' : 's' }})
+                </button>
+              } @else {
+                <div class="premio-barra"><span [style.width.%]="(cuenta.sellos() / cuenta.metaSellos()) * 100"></span></div>
+                <span class="premio-hint">Te faltan {{ cuenta.metaSellos() - cuenta.sellos() }} sellos</span>
+              }
+            </div>
+
+            <div class="premio">
+              <div class="premio-top">
+                <span class="premio-ico">🏆</span>
+                <div class="premio-info">
+                  <strong>Crookie + 2 galletas + postal</strong>
+                  <span>Los 5 juegos al 100% ({{ cuenta.metaEstrellas }} ⭐)</span>
+                </div>
+              </div>
+              @if (cuenta.premioEstrellasReclamado()) {
+                <span class="premio-listo">Reclamado ✓</span>
+              } @else if (cuenta.puntos() >= cuenta.metaEstrellas) {
+                <button class="premio-btn" (click)="reclamar('estrellas')" [disabled]="reclamando()">RECLAMAR</button>
+              } @else {
+                <div class="premio-barra"><span [style.width.%]="estrellasPct()"></span></div>
+                <span class="premio-hint">{{ cuenta.puntos() }} / {{ cuenta.metaEstrellas }} estrellas</span>
+              }
+            </div>
+
+            @if (premioMsg()) {
+              <div class="premio-canje" [class.err]="!premioCodigo()">
+                <p>{{ premioMsg() }}</p>
+                @if (premioCodigo()) { <span class="premio-cod">{{ premioCodigo() }}</span> }
+              </div>
+            }
+          </div>
+
           <p class="fid-info">
             Cada compra mayor a $25.000 suma 1 sello. Pídele el QR del día a la tienda y escanéalo,
-            o escribe el código. Completa {{ cuenta.metaSellos() }} y reclama tu premio. 🍪
+            o escribe el código. Los premios se reclaman aquí y los muestras en tienda. 🍪
           </p>
         }
       </div>

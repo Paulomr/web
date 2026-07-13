@@ -24,6 +24,8 @@ const CuentaSchema = new mongoose.Schema(
     tarjetas: { type: Number, default: 0 },
     // Fecha (YYYY-MM-DD) del último sello: 1 sello por cuenta por día.
     ultimoSello: { type: String, default: '' },
+    // Premio de estrellas (todos los juegos al 100%) ya reclamado (una vez).
+    premioEstrellas: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

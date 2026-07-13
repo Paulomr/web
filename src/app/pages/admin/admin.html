@@ -102,6 +102,43 @@
       }
     </div>
 
+    <!-- Canjes de premios -->
+    <div class="modulo">
+      <button type="button" class="modulo-cab cab-cfg" (click)="canjesAbierto.set(!canjesAbierto()); cargarCanjes()">
+        <span class="modulo-nombre">CANJES DE PREMIOS</span>
+        <span class="chev" [class.rot]="canjesAbierto()" aria-hidden="true">⌄</span>
+      </button>
+      @if (canjesAbierto()) {
+        <div class="modulo-cuerpo cfg-cuerpo">
+          <p class="fid-admin-ayuda">
+            Cuando un cliente reclama un premio, aparece aquí con su código. Verifica el código que te
+            muestra y dale "Entregar" (lo marca usado para que no se repita).
+          </p>
+          @if (canjes().length === 0) {
+            <p class="vacio-cat">No hay canjes todavía.</p>
+          } @else {
+            <div class="canjes">
+              @for (c of canjes(); track c.codigo) {
+                <div class="canje" [class.entregado]="c.entregado">
+                  <span class="canje-cod">{{ c.codigo }}</span>
+                  <div class="canje-info">
+                    <strong>{{ c.descripcion }}</strong>
+                    <span>{{ c.instagram }}</span>
+                  </div>
+                  @if (c.entregado) {
+                    <span class="canje-listo">Entregado ✓</span>
+                  } @else {
+                    <button class="guardar" (click)="confirmarCanje(c)">Entregar</button>
+                  }
+                </div>
+              }
+            </div>
+          }
+          @if (canjesMsg()) { <span class="msg">{{ canjesMsg() }}</span> }
+        </div>
+      }
+    </div>
+
     <!-- Horarios y fechas especiales de las sedes -->
     <div class="modulo">
       <button type="button" class="modulo-cab cab-cfg" (click)="sedesAbierto.set(!sedesAbierto())">

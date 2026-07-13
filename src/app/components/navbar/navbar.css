@@ -248,24 +248,27 @@
    Cápsulas e íconos más grandes: el notch se ve y se toca mejor en celular. */
 @media (max-width: 620px) {
   .notch {
-    gap: 11px;
-    padding: 9px 15px;
+    gap: 6px;
+    padding: 7px 11px;
     top: 12px;
+  }
+  .links {
+    gap: 6px;
   }
   .brand-name {
     display: none;
   }
   .brand-logo {
+    width: 34px;
+    height: 34px;
+  }
+  .gitem {
     width: 38px;
     height: 38px;
   }
-  .gitem {
-    width: 46px;
-    height: 46px;
-  }
   .gitem:hover,
   .gitem.activa {
-    width: 46px;
+    width: 38px;
   }
   .gitem:hover .gicon,
   .gitem.activa .gicon {
@@ -275,30 +278,50 @@
     display: none;
   }
   .gicon {
-    width: 24px;
-    height: 24px;
+    width: 21px;
+    height: 21px;
   }
-  .carrito-notch {
-    width: 46px;
-    height: 46px;
+  .carrito-notch,
+  .cuenta-notch,
+  .login-notch {
+    width: 38px;
+    height: 38px;
+    margin-left: 0;
   }
-  .carrito-notch svg {
-    width: 23px;
-    height: 23px;
+  .carrito-notch svg,
+  .login-notch svg {
+    width: 20px;
+    height: 20px;
+  }
+  .cuenta-ini {
+    font-size: 0.95rem;
   }
 }
 
 /* Teléfonos muy angostos: bajar un punto para que no se desborde. */
 @media (max-width: 360px) {
   .notch {
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 5px;
+    padding: 7px 9px;
+  }
+  .links {
+    gap: 5px;
+  }
+  .brand-logo {
+    width: 30px;
+    height: 30px;
   }
   .gitem,
   .gitem:hover,
   .gitem.activa,
-  .carrito-notch {
-    width: 42px;
-    height: 42px;
+  .carrito-notch,
+  .cuenta-notch,
+  .login-notch {
+    width: 33px;
+    height: 33px;
+  }
+  .gicon {
+    width: 19px;
+    height: 19px;
   }
 }

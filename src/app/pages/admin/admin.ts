@@ -97,6 +97,11 @@ export class Admin {
   readonly fidGenerando = signal(false);
   readonly fidMsg = signal('');
 
+  // ---- Canjes de premios ----
+  readonly canjesAbierto = signal(false);
+  readonly canjes = signal<any[]>([]);
+  readonly canjesMsg = signal('');
+
   private copiaSedes(base: SedeCfg[], guardadas?: SedeCfg[]): SedeCfg[] {
     return base.map((d) => {
       const s = Array.isArray(guardadas) ? guardadas.find((x) => x?.id === d.id) : undefined;
@@ -114,6 +119,7 @@ export class Admin {
       void this.cargar();
       void this.cargarConfig();
       void this.cargarFidelidad();
+      void this.cargarCanjes();
     }
   }
 
@@ -218,6 +224,43 @@ export class Admin {
       );
     } catch {
       this.fidQr.set('');
+    }
+  }
+
+  // ---- Canjes ----
+  async cargarCanjes(): Promise<void> {
+    try {
+      const r = await fetch('/api/premios', { headers: this.cabeceras() });
+      if (!r.ok) return;
+      this.canjes.set((await r.json()) as any[]);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  async confirmarCanje(c: any): Promise<void> {
+    this.canjesMsg.set('');
+    let r: Response;
+    try {
+      r = await fetch('/api/premios', {
+        method: 'PUT',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ codigo: c.codigo, entregado: true }),
+      });
+    } catch {
+      this.canjesMsg.set('⚠ Sin conexión');
+      return;
+    }
+    if (r.status === 401) {
+      this.salir();
+      return;
+    }
+    if (r.ok) {
+      c.entregado = true;
+      this.canjes.update((l) => [...l]);
+      this.canjesMsg.set('✓ Entregado');
+    } else {
+      this.canjesMsg.set('⚠ Error');
     }
   }
 
@@ -403,6 +446,7 @@ export class Admin {
     this.productos.set(((await r.json()) as any[]).map(mapDoc));
     void this.cargarConfig();
     void this.cargarFidelidad();
+    void this.cargarCanjes();
   }
 
   salir(): void {

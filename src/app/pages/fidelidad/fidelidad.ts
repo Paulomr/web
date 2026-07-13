@@ -23,9 +23,19 @@ export class Fidelidad implements OnInit {
   readonly exito = signal(false);
   readonly cargando = signal(false);
 
+  // Premios
+  readonly premioMsg = signal('');
+  readonly premioCodigo = signal('');
+  readonly reclamando = signal(false);
+
   /** Un slot por cada sello de la meta; true = sello lleno. */
   readonly slots = computed(() =>
     Array.from({ length: this.cuenta.metaSellos() }, (_, i) => i < this.cuenta.sellos()),
+  );
+
+  /** Progreso (0–100) hacia el premio maestro de estrellas. */
+  readonly estrellasPct = computed(() =>
+    Math.min(100, Math.round((this.cuenta.puntos() / this.cuenta.metaEstrellas) * 100)),
   );
 
   ngOnInit(): void {
@@ -68,4 +78,20 @@ export class Fidelidad implements OnInit {
     this.cuenta.agregarInstagram(this.igInput());
     this.igInput.set('');
   }
+
+  async reclamar(tipo: 'sellos' | 'estrellas'): Promise<void> {
+    if (this.reclamando()) return;
+    this.reclamando.set(true);
+    this.premioMsg.set('');
+    this.premioCodigo.set('');
+    const r = await this.cuenta.reclamar(tipo);
+    this.reclamando.set(false);
+    if (!r.ok) {
+      this.premioMsg.set(r.error ?? 'No se pudo reclamar.');
+      return;
+    }
+    this.premioCodigo.set(r.codigo ?? '');
+    this.premioMsg.set('¡Premio reclamado! Muestra este código en tienda:');
+  }
 }
+
