@@ -5,6 +5,7 @@ import { Galeria } from './pages/galeria/galeria';
 import { Catalogo } from './pages/catalogo/catalogo';
 import { Sedes } from './pages/sedes/sedes';
 import { Fidelidad } from './pages/fidelidad/fidelidad';
+import { Privacidad } from './pages/privacidad/privacidad';
 import { Admin } from './pages/admin/admin';
 import { NoEncontrada } from './pages/no-encontrada/no-encontrada';
 
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'galeria', component: Galeria },
   { path: 'minijuegos', component: Minijuegos },
   { path: 'fidelidad', component: Fidelidad },
+  { path: 'privacidad', component: Privacidad },
   { path: 'admin', component: Admin },
   { path: '**', component: NoEncontrada },
 ];

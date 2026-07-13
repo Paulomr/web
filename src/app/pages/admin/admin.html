@@ -92,6 +92,18 @@
               <img class="fid-admin-qr" [src]="fidQr()" alt="QR del código del día" />
             }
           </div>
+          <div class="fila fid-ajustes">
+            <label class="campo chico">
+              <span>COMPRA MÍNIMA PARA SELLO ($)</span>
+              <input type="number" [(ngModel)]="fidUmbral" min="0" step="1000" />
+            </label>
+            <label class="campo mini">
+              <span>SELLOS POR TARJETA</span>
+              <input type="number" [(ngModel)]="fidMeta" min="1" max="30" />
+            </label>
+            <button class="ocultar" (click)="guardarAjustesFidelidad()">GUARDAR AJUSTES</button>
+          </div>
+
           <div class="fila pie">
             <button class="guardar" (click)="generarCodigo()" [disabled]="fidGenerando()">
               {{ fidGenerando() ? 'GENERANDO…' : (fidCodigo() ? 'GENERAR NUEVO CÓDIGO' : 'GENERAR CÓDIGO DEL DÍA') }}

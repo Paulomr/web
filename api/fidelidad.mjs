@@ -69,10 +69,14 @@ export default async function handler(req, res) {
 
     if (req.method === 'PUT') {
       if (!requiereAdmin(req, res)) return;
-      cfg.codigoDia = nuevoCodigo();
-      cfg.fecha = hoyBogota();
-      if (req.body?.umbral) cfg.umbral = Math.max(0, Math.round(Number(req.body.umbral) || 0));
-      if (req.body?.meta) cfg.meta = Math.max(1, Math.round(Number(req.body.meta) || 10));
+      // Ajustes (no tocan el código).
+      if (req.body?.umbral !== undefined) cfg.umbral = Math.max(0, Math.round(Number(req.body.umbral) || 0));
+      if (req.body?.meta !== undefined) cfg.meta = Math.max(1, Math.min(30, Math.round(Number(req.body.meta) || 10)));
+      // Solo genera un nuevo código del día si se pide explícitamente.
+      if (req.body?.generar) {
+        cfg.codigoDia = nuevoCodigo();
+        cfg.fecha = hoyBogota();
+      }
       await cfg.save();
       res.status(200).json({ codigoDia: cfg.codigoDia, fecha: cfg.fecha, meta: cfg.meta, umbral: cfg.umbral });
       return;

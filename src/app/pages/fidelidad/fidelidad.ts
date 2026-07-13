@@ -38,6 +38,9 @@ export class Fidelidad implements OnInit {
     Math.min(100, Math.round((this.cuenta.puntos() / this.cuenta.metaEstrellas) * 100)),
   );
 
+  /** Umbral de compra formateado en pesos ("25.000"). */
+  readonly umbralTexto = computed(() => this.cuenta.umbralCompra().toLocaleString('es-CO'));
+
   ngOnInit(): void {
     void this.cuenta.sincronizarFidelidad();
     const c = this.route.snapshot.queryParamMap.get('c');

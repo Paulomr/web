@@ -90,7 +90,9 @@
             <label class="reg-consent">
               <input type="checkbox" [ngModel]="acepta()" (ngModelChange)="acepta.set($event)" name="acepta" />
               <span class="reg-check" aria-hidden="true"></span>
-              <span class="reg-consent-txt">Acepto el uso de mis datos para pedidos y premios.</span>
+              <span class="reg-consent-txt">Acepto la
+                <a routerLink="/privacidad" target="_blank" rel="noopener" (click)="$event.stopPropagation()">política de tratamiento de datos</a>
+                para pedidos y premios.</span>
             </label>
 
             @if (error()) {

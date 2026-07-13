@@ -96,6 +96,8 @@ export class Admin {
   readonly fidQr = signal('');
   readonly fidGenerando = signal(false);
   readonly fidMsg = signal('');
+  fidUmbral = 25000;
+  fidMeta = 10;
 
   // ---- Canjes de premios ----
   readonly canjesAbierto = signal(false);
@@ -171,9 +173,11 @@ export class Admin {
       const r = await fetch('/api/fidelidad', { headers: this.cabeceras() });
       if (r.status === 401) return;
       if (!r.ok) return;
-      const d = (await r.json()) as { codigoDia?: string; fecha?: string };
+      const d = (await r.json()) as { codigoDia?: string; fecha?: string; umbral?: number; meta?: number };
       this.fidCodigo.set(d.codigoDia ?? '');
       this.fidFecha.set(d.fecha ?? '');
+      if (typeof d.umbral === 'number') this.fidUmbral = d.umbral;
+      if (typeof d.meta === 'number') this.fidMeta = d.meta;
       if (d.codigoDia) void this.generarQr(d.codigoDia);
     } catch {
       /* ignore */
@@ -188,7 +192,7 @@ export class Admin {
       r = await fetch('/api/fidelidad', {
         method: 'PUT',
         headers: this.cabeceras({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({}),
+        body: JSON.stringify({ generar: true }),
       });
     } catch {
       this.fidGenerando.set(false);
@@ -209,6 +213,33 @@ export class Admin {
     this.fidFecha.set(d.fecha ?? '');
     this.fidMsg.set('✓ Código del día listo');
     void this.generarQr(d.codigoDia ?? '');
+  }
+
+  async guardarAjustesFidelidad(): Promise<void> {
+    this.fidMsg.set('');
+    let r: Response;
+    try {
+      r = await fetch('/api/fidelidad', {
+        method: 'PUT',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ umbral: Number(this.fidUmbral) || 0, meta: Number(this.fidMeta) || 10 }),
+      });
+    } catch {
+      this.fidMsg.set('⚠ Sin conexión');
+      return;
+    }
+    if (r.status === 401) {
+      this.salir();
+      return;
+    }
+    if (!r.ok) {
+      this.fidMsg.set('⚠ Error al guardar');
+      return;
+    }
+    const d = (await r.json()) as { umbral?: number; meta?: number };
+    if (typeof d.umbral === 'number') this.fidUmbral = d.umbral;
+    if (typeof d.meta === 'number') this.fidMeta = d.meta;
+    this.fidMsg.set('✓ Ajustes guardados');
   }
 
   private async generarQr(code: string): Promise<void> {

@@ -71,6 +71,8 @@ export class CuentaService {
   readonly sellos = computed(() => this.cuenta()?.sellos ?? 0);
   readonly tarjetas = computed(() => this.cuenta()?.tarjetas ?? 0);
   readonly metaSellos = signal(10);
+  /** Compra mínima (COP) para ganar un sello (configurable desde /admin). */
+  readonly umbralCompra = signal(25000);
 
   /** Premio maestro de estrellas. */
   readonly metaEstrellas = META_ESTRELLAS;
@@ -264,9 +266,11 @@ export class CuentaService {
       const r = await fetch(`/api/fidelidad?ig=${encodeURIComponent(c.instagram)}`);
       if (!r.ok) return;
       const d = (await r.json()) as {
-        sellos?: number; tarjetas?: number; estrellas?: number; premioEstrellas?: boolean; meta?: number;
+        sellos?: number; tarjetas?: number; estrellas?: number; premioEstrellas?: boolean;
+        meta?: number; umbral?: number;
       };
       if (typeof d.meta === 'number') this.metaSellos.set(d.meta);
+      if (typeof d.umbral === 'number') this.umbralCompra.set(d.umbral);
       const actual = this.cuenta();
       if (actual) {
         this.cuenta.set({
