@@ -46,6 +46,9 @@ export class CuentaService {
   /** Modal de registro/sesión visible. */
   readonly abierto = signal(false);
 
+  /** Modo con el que se pidió abrir el modal ('registro' | 'login'). */
+  readonly modoSolicitado = signal<'registro' | 'login'>('registro');
+
   readonly registrado = computed(() => this.cuenta() !== null);
 
   /** Primer nombre en mayúsculas para el saludo del hero ("HOLA PAULO"). */
@@ -95,7 +98,8 @@ export class CuentaService {
     void this.sincronizarFidelidad();
   }
 
-  abrir(): void {
+  abrir(modo: 'registro' | 'login' = 'registro'): void {
+    this.modoSolicitado.set(modo);
     this.abierto.set(true);
   }
 
@@ -103,24 +107,70 @@ export class CuentaService {
     this.abierto.set(false);
   }
 
-  registrar(c: { nombre: string; edad: string; instagram: string; direccion: string; acepta: boolean }): void {
-    const previos = this.cuenta()?.puntos ?? 0;
-    const limpio: Cuenta = {
-      nombre: c.nombre.trim(),
-      edad: c.edad.trim(),
-      instagram: this.normalizarIg(c.instagram),
-      direccion: c.direccion.trim(),
+  /** Fija la sesión local a partir de una cuenta del servidor. */
+  private setSesion(c: Partial<Cuenta> | null | undefined): void {
+    if (!c) return;
+    this.cuenta.set({
+      nombre: (c.nombre ?? '').toString(),
+      edad: (c.edad ?? '').toString(),
+      instagram: (c.instagram ?? '').toString(),
+      direccion: (c.direccion ?? '').toString(),
       acepta: !!c.acepta,
-      // Estrellas del perfil (vienen de los juegos; se sincronizan del servidor).
-      puntos: previos,
-      sellos: this.cuenta()?.sellos ?? 0,
-      tarjetas: this.cuenta()?.tarjetas ?? 0,
-      ultimoSello: this.cuenta()?.ultimoSello ?? '',
+      puntos: Number(c.puntos) || 0,
+      sellos: Number(c.sellos) || 0,
+      tarjetas: Number(c.tarjetas) || 0,
+      ultimoSello: (c.ultimoSello ?? '').toString(),
+    });
+  }
+
+  /** Crea la cuenta con código de 4 dígitos. No cierra el modal (muestra cuenta). */
+  async registrar(
+    c: { nombre: string; edad: string; instagram: string; direccion: string; acepta: boolean },
+    pin: string,
+  ): Promise<{ ok: boolean; error?: string }> {
+    const ig = this.normalizarIg(c.instagram);
+    const cuerpo = {
+      nombre: c.nombre.trim(),
+      edad: String(c.edad ?? '').trim(),
+      instagram: ig,
+      direccion: String(c.direccion ?? '').trim(),
+      acepta: !!c.acepta,
+      pin,
     };
-    // No cerramos el modal: pasa a la vista de cuenta ("HOLA X"), que es la
-    // confirmación visible de "cuenta creada". El usuario cierra con el botón.
-    this.cuenta.set(limpio);
-    void this.sincronizar(limpio);
+    try {
+      const r = await fetch('/api/cuentas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cuerpo),
+      });
+      const d = (await r.json()) as { cuenta?: Partial<Cuenta>; error?: string };
+      if (!r.ok) return { ok: false, error: d.error || 'No se pudo crear la cuenta.' };
+      this.setSesion(d.cuenta);
+      void this.sincronizarFidelidad();
+      return { ok: true };
+    } catch {
+      // Sin conexión: crea sesión local para no bloquear (el código se guarda al reconectar).
+      this.setSesion({ ...cuerpo, puntos: 0, sellos: 0, tarjetas: 0, ultimoSello: '' });
+      return { ok: true };
+    }
+  }
+
+  /** Inicia sesión con @instagram + código de 4 dígitos. */
+  async iniciarSesion(instagram: string, pin: string): Promise<{ ok: boolean; error?: string }> {
+    const ig = this.normalizarIg(instagram);
+    try {
+      const r = await fetch('/api/cuentas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accion: 'login', instagram: ig, pin }),
+      });
+      const d = (await r.json()) as { cuenta?: Partial<Cuenta>; error?: string };
+      if (!r.ok) return { ok: false, error: d.error || 'No se pudo iniciar sesión.' };
+      this.setSesion(d.cuenta);
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Sin conexión. Intenta de nuevo.' };
+    }
   }
 
   salir(): void {

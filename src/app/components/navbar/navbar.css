@@ -191,6 +191,26 @@
   text-transform: uppercase;
 }
 
+/* Botón "Entrar" (sin sesión). */
+.login-notch {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(20, 14, 22, 0.94);
+  color: #f7d9ea;
+  cursor: pointer;
+  margin-left: 2px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.login-notch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -6px rgba(90, 55, 85, 0.5);
+}
+.login-notch svg { width: 21px; height: 21px; }
+
 .carrito-notch:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px -6px rgba(90, 55, 85, 0.5);

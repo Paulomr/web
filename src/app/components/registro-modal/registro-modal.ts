@@ -3,9 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CuentaService } from '../../cuenta.service';
 
-// Modal global de sesión. Se abre al agregar la primera galleta al carrito
-// (registro) o desde el chip de cuenta del notch (resumen + cerrar sesión).
-// Vive una sola vez en la app (montado en app.html).
+// Modal global de sesión: registrar (con código de 4 dígitos) o iniciar sesión
+// (@instagram + código). Se abre al agregar la primera galleta, desde el botón
+// "Entrar" del notch, o desde el chip de cuenta. Vive una sola vez (app.html).
 @Component({
   selector: 'app-registro-modal',
   imports: [FormsModule, RouterLink],
@@ -15,24 +15,52 @@ import { CuentaService } from '../../cuenta.service';
 export class RegistroModal {
   readonly cuenta = inject(CuentaService);
 
+  readonly modo = signal<'registro' | 'login'>('registro');
+
+  // Registro
   readonly nombre = signal('');
   readonly edad = signal('');
   readonly instagram = signal('');
   readonly direccion = signal('');
+  readonly pin = signal('');
   readonly acepta = signal(false);
+
+  // Login
+  readonly loginIg = signal('');
+  readonly loginPin = signal('');
+
   readonly error = signal('');
+  readonly cargando = signal(false);
 
   constructor() {
-    // Bloquea el scroll del fondo mientras el modal está abierto.
     effect(() => {
-      document.body.style.overflow = this.cuenta.abierto() ? 'hidden' : '';
+      const abierto = this.cuenta.abierto();
+      document.body.style.overflow = abierto ? 'hidden' : '';
+      if (abierto) {
+        this.modo.set(this.cuenta.modoSolicitado());
+        this.error.set('');
+      }
     });
   }
 
-  registrar(): void {
+  cambiarModo(m: 'registro' | 'login'): void {
+    this.modo.set(m);
+    this.error.set('');
+  }
+
+  async registrar(): Promise<void> {
+    if (this.cargando()) return;
     const nombre = this.nombre().trim();
     if (nombre.length < 2) {
-      this.error.set('Escribe tu nombre para continuar.');
+      this.error.set('Escribe tu nombre.');
+      return;
+    }
+    if (!this.instagram().trim()) {
+      this.error.set('Pon tu Instagram: es tu usuario para volver a entrar.');
+      return;
+    }
+    if (!/^\d{4}$/.test(this.pin().trim())) {
+      this.error.set('Crea un código de 4 dígitos (tu contraseña).');
       return;
     }
     if (!this.acepta()) {
@@ -40,20 +68,55 @@ export class RegistroModal {
       return;
     }
     this.error.set('');
-    this.cuenta.registrar({
-      nombre,
-      // EDAD viene de un input number: puede llegar como número. Lo pasamos a
-      // texto de forma segura (evita "trim is not a function").
-      edad: String(this.edad() ?? '').trim(),
-      instagram: String(this.instagram() ?? '').trim(),
-      direccion: String(this.direccion() ?? '').trim(),
-      acepta: true,
-    });
+    this.cargando.set(true);
+    const r = await this.cuenta.registrar(
+      {
+        nombre,
+        edad: String(this.edad() ?? '').trim(),
+        instagram: this.instagram().trim(),
+        direccion: String(this.direccion() ?? '').trim(),
+        acepta: true,
+      },
+      this.pin().trim(),
+    );
+    this.cargando.set(false);
+    if (!r.ok) {
+      this.error.set(r.error ?? 'No se pudo crear la cuenta.');
+      return;
+    }
+    this.limpiar();
+  }
+
+  async iniciarSesion(): Promise<void> {
+    if (this.cargando()) return;
+    if (!this.loginIg().trim()) {
+      this.error.set('Pon tu Instagram.');
+      return;
+    }
+    if (!/^\d{4}$/.test(this.loginPin().trim())) {
+      this.error.set('Tu código es de 4 dígitos.');
+      return;
+    }
+    this.error.set('');
+    this.cargando.set(true);
+    const r = await this.cuenta.iniciarSesion(this.loginIg().trim(), this.loginPin().trim());
+    this.cargando.set(false);
+    if (!r.ok) {
+      this.error.set(r.error ?? 'No se pudo iniciar sesión.');
+      return;
+    }
+    this.limpiar();
+  }
+
+  private limpiar(): void {
     this.nombre.set('');
     this.edad.set('');
     this.instagram.set('');
     this.direccion.set('');
+    this.pin.set('');
     this.acepta.set(false);
+    this.loginIg.set('');
+    this.loginPin.set('');
   }
 
   @HostListener('document:keydown.escape')

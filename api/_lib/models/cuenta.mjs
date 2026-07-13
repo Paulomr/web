@@ -15,6 +15,8 @@ const CuentaSchema = new mongoose.Schema(
     direccion: { type: String, default: '' },
     // Consentimiento de tratamiento de datos (obligatorio para registrarse).
     acepta: { type: Boolean, default: false },
+    // Hash del código de 4 dígitos (contraseña para volver a entrar). No es el PIN.
+    pinHash: { type: String, default: '' },
     // Trofeos de juegos (gamificación, aparte de la fidelidad).
     puntos: { type: Number, default: 0 },
     // Tarjeta de fidelidad: sellos actuales (0..meta) y tarjetas completadas.

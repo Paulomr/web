@@ -8,7 +8,11 @@
     <aside class="reg-aside">
       <span class="reg-eyebrow">THE CRUNCHY CLUB</span>
       @if (!cuenta.registrado()) {
-        <h2 class="reg-titulo">GANA GALLETAS<br />DE VERDAD</h2>
+        @if (modo() === 'login') {
+          <h2 class="reg-titulo">BIENVENIDO<br />DE VUELTA</h2>
+        } @else {
+          <h2 class="reg-titulo">GANA GALLETAS<br />DE VERDAD</h2>
+        }
       } @else {
         <h2 class="reg-titulo">HOLA {{ cuenta.primerNombre() }}</h2>
       }
@@ -18,49 +22,87 @@
     <!-- Panel del formulario / cuenta -->
     <div class="reg-main">
       @if (!cuenta.registrado()) {
-        <form class="reg-form" (submit)="$event.preventDefault(); registrar()">
-          <label class="reg-campo">
-            <span>NOMBRE</span>
-            <input
-              [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" name="nombre"
-              placeholder="TU NOMBRE" autocomplete="name" (keyup.enter)="registrar()" />
-          </label>
-
-          <label class="reg-campo">
-            <span>INSTAGRAM</span>
-            <input
-              [ngModel]="instagram()" (ngModelChange)="instagram.set($event)" name="instagram"
-              placeholder="@tuusuario" autocapitalize="none" autocomplete="off" spellcheck="false" />
-          </label>
-
-          <div class="reg-fila">
-            <label class="reg-campo reg-edad">
-              <span>EDAD</span>
+        @if (modo() === 'login') {
+          <!-- INICIAR SESIÓN -->
+          <form class="reg-form" (submit)="$event.preventDefault(); iniciarSesion()">
+            <label class="reg-campo">
+              <span>INSTAGRAM</span>
               <input
-                type="number" [ngModel]="edad()" (ngModelChange)="edad.set($event)" name="edad"
-                placeholder="18" min="1" max="120" inputmode="numeric" />
+                [ngModel]="loginIg()" (ngModelChange)="loginIg.set($event)" name="loginIg"
+                placeholder="@tuusuario" autocapitalize="none" autocomplete="off" spellcheck="false" />
             </label>
+            <label class="reg-campo">
+              <span>CÓDIGO (4 DÍGITOS)</span>
+              <input
+                [ngModel]="loginPin()" (ngModelChange)="loginPin.set($event)" name="loginPin"
+                type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off"
+                (keyup.enter)="iniciarSesion()" />
+            </label>
+
+            @if (error()) {
+              <p class="reg-error">{{ error() }}</p>
+            }
+
+            <button type="submit" class="reg-cta" [disabled]="cargando()">
+              {{ cargando() ? 'ENTRANDO…' : 'INICIAR SESIÓN' }}
+            </button>
+            <button type="button" class="reg-skip" (click)="cambiarModo('registro')">¿No tienes cuenta? Regístrate</button>
+          </form>
+        } @else {
+          <!-- REGISTRO -->
+          <form class="reg-form" (submit)="$event.preventDefault(); registrar()">
+            <label class="reg-campo">
+              <span>NOMBRE</span>
+              <input
+                [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" name="nombre"
+                placeholder="TU NOMBRE" autocomplete="name" />
+            </label>
+
+            <label class="reg-campo">
+              <span>INSTAGRAM</span>
+              <input
+                [ngModel]="instagram()" (ngModelChange)="instagram.set($event)" name="instagram"
+                placeholder="@tuusuario" autocapitalize="none" autocomplete="off" spellcheck="false" />
+            </label>
+
+            <div class="reg-fila">
+              <label class="reg-campo reg-edad">
+                <span>EDAD</span>
+                <input
+                  type="number" [ngModel]="edad()" (ngModelChange)="edad.set($event)" name="edad"
+                  placeholder="18" min="1" max="120" inputmode="numeric" />
+              </label>
+              <label class="reg-campo">
+                <span>CÓDIGO (4 DÍGITOS)</span>
+                <input
+                  [ngModel]="pin()" (ngModelChange)="pin.set($event)" name="pin"
+                  inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off" />
+              </label>
+            </div>
+
             <label class="reg-campo">
               <span>DIRECCIÓN PREFERIDA</span>
               <input
                 [ngModel]="direccion()" (ngModelChange)="direccion.set($event)" name="dir"
                 placeholder="BARRIO, CIUDAD" autocomplete="street-address" />
             </label>
-          </div>
 
-          <label class="reg-consent">
-            <input type="checkbox" [ngModel]="acepta()" (ngModelChange)="acepta.set($event)" name="acepta" />
-            <span class="reg-check" aria-hidden="true"></span>
-            <span class="reg-consent-txt">Acepto el uso de mis datos para pedidos y premios.</span>
-          </label>
+            <label class="reg-consent">
+              <input type="checkbox" [ngModel]="acepta()" (ngModelChange)="acepta.set($event)" name="acepta" />
+              <span class="reg-check" aria-hidden="true"></span>
+              <span class="reg-consent-txt">Acepto el uso de mis datos para pedidos y premios.</span>
+            </label>
 
-          @if (error()) {
-            <p class="reg-error">{{ error() }}</p>
-          }
+            @if (error()) {
+              <p class="reg-error">{{ error() }}</p>
+            }
 
-          <button type="submit" class="reg-cta">CREAR MI CUENTA</button>
-          <button type="button" class="reg-skip" (click)="cerrar()">Ahora no</button>
-        </form>
+            <button type="submit" class="reg-cta" [disabled]="cargando()">
+              {{ cargando() ? 'CREANDO…' : 'CREAR MI CUENTA' }}
+            </button>
+            <button type="button" class="reg-skip" (click)="cambiarModo('login')">¿Ya tienes cuenta? Inicia sesión</button>
+          </form>
+        }
       } @else {
         <!-- Resumen: fidelidad y trofeos, con accesos -->
         <div class="acc-stats">
