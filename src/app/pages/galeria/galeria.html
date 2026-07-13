@@ -6,9 +6,9 @@
 
   <!-- Masonry con columnas CSS: respeta la orientación de cada foto. -->
   <div class="masonry">
-    @for (foto of fotos; track foto) {
+    @for (foto of fotos(); track foto) {
       <button type="button" class="pic" (click)="abrir(foto)">
-        <img [src]="'fotos/' + foto" [alt]="'Foto Crunchy Munch ' + foto" loading="lazy" draggable="false" />
+        <img [src]="urlFoto(foto)" alt="Foto Crunchy Munch" loading="lazy" draggable="false" />
         <!-- Notch con el logo: marca de agua visible en cada foto. -->
         <span class="sello" aria-hidden="true">
           <img src="fotos/logo-crunchy.webp" alt="" draggable="false" />
@@ -27,7 +27,7 @@
     <!-- Visor: clic en cualquier parte para cerrar. -->
     <div class="lightbox" (click)="cerrar()">
       <div class="marco">
-        <img [src]="'fotos/' + foto" [alt]="'Foto ampliada ' + foto" draggable="false" />
+        <img [src]="urlFoto(foto)" alt="Foto ampliada Crunchy Munch" draggable="false" />
         <span class="sello grande" aria-hidden="true">
           <img src="fotos/logo-crunchy.webp" alt="" draggable="false" />
           <em>© CRUNCHY MUNCH</em>

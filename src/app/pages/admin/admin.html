@@ -70,6 +70,44 @@
       }
     </div>
 
+    <!-- Galería: agregar / quitar fotos -->
+    <div class="modulo">
+      <button type="button" class="modulo-cab cab-cfg" (click)="galAbierto.set(!galAbierto())">
+        <span class="modulo-nombre">GALERÍA DE FOTOS</span>
+        <span class="cuenta">{{ cfgGaleria.length }}</span>
+        <span class="chev" [class.rot]="galAbierto()" aria-hidden="true">⌄</span>
+      </button>
+      @if (galAbierto()) {
+        <div class="modulo-cuerpo cfg-cuerpo">
+          <p class="fid-admin-ayuda">
+            Arrastra o toca <strong>+ Foto</strong> para subir imágenes (se optimizan solas). La <strong>✕</strong> quita una foto.
+            Los cambios se aplican al dar <strong>GUARDAR GALERÍA</strong>.
+          </p>
+          <div class="fotos-editor gal-editor" (drop)="onSoltarGaleria($event)" (dragover)="$event.preventDefault()">
+            @for (f of cfgGaleria; track $index) {
+              <div class="fx">
+                <img [src]="urlFoto(f)" alt="" />
+                <div class="fx-acciones">
+                  <button type="button" (click)="quitarGaleria($index)" title="Quitar">✕</button>
+                </div>
+              </div>
+            }
+            <label class="fx-add">
+              <input type="file" accept="image/*" (change)="onSeleccionarGaleria($event)" hidden />
+              <span>{{ galSubiendo() ? 'Subiendo…' : '+ Foto' }}</span>
+            </label>
+          </div>
+          <div class="fila pie">
+            <button class="guardar" (click)="guardarConfig()" [disabled]="cfgGuardando()">
+              {{ cfgGuardando() ? 'GUARDANDO…' : 'GUARDAR GALERÍA' }}
+            </button>
+            @if (galMsg()) { <span class="msg">{{ galMsg() }}</span> }
+            @if (cfgMsg()) { <span class="msg">{{ cfgMsg() }}</span> }
+          </div>
+        </div>
+      }
+    </div>
+
     <!-- Fidelidad: código del día + QR -->
     <div class="modulo">
       <button type="button" class="modulo-cab cab-cfg" (click)="fidAbierto.set(!fidAbierto())">

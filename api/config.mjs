@@ -17,11 +17,12 @@ export default async function handler(req, res) {
 
     if (req.method === 'PUT') {
       if (!requiereAdmin(req, res)) return;
-      const { textos, juegos, sedes } = req.body ?? {};
+      const { textos, juegos, sedes, galeria } = req.body ?? {};
       const set = {};
       if (textos !== undefined) set.textos = textos;
       if (juegos !== undefined) set.juegos = juegos;
       if (sedes !== undefined) set.sedes = sedes;
+      if (galeria !== undefined) set.galeria = Array.isArray(galeria) ? galeria.slice(0, 200) : [];
       const cfg = await Configuracion.findOneAndUpdate(
         { clave: 'site' },
         { $set: set },

@@ -709,3 +709,6 @@
 
 /* Fila de ajustes de fidelidad (umbral/meta). */
 .fid-ajustes { flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 8px; }
+
+/* Galería en el panel: grilla con scroll (puede haber muchas fotos). */
+.gal-editor { max-height: 360px; overflow-y: auto; }

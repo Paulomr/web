@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CATEGORIAS, urlFoto } from '../../productos';
+import { FOTOS } from '../../fotos';
 import { GAMES } from '../../games';
 import { ProductosService } from '../../productos.service';
 import { CAMPOS_TEXTO, DEFAULT_TEXTOS, DEFAULT_SEDES, SedeCfg } from '../../configuracion.service';
@@ -104,6 +105,12 @@ export class Admin {
   readonly canjes = signal<any[]>([]);
   readonly canjesMsg = signal('');
 
+  // ---- Galería de fotos ----
+  readonly galAbierto = signal(false);
+  readonly galSubiendo = signal(false);
+  readonly galMsg = signal('');
+  cfgGaleria: string[] = [];
+
   private copiaSedes(base: SedeCfg[], guardadas?: SedeCfg[]): SedeCfg[] {
     return base.map((d) => {
       const s = Array.isArray(guardadas) ? guardadas.find((x) => x?.id === d.id) : undefined;
@@ -133,12 +140,16 @@ export class Admin {
         textos?: Record<string, string>;
         juegos?: Record<string, boolean>;
         sedes?: SedeCfg[];
+        galeria?: string[];
       };
       this.cfgTextos = { ...DEFAULT_TEXTOS, ...(c?.textos ?? {}) };
       const jg: Record<string, boolean> = {};
       for (const g of GAMES) jg[g.id] = c?.juegos?.[g.id] !== false;
       this.cfgJuegos = jg;
       this.cfgSedes = this.copiaSedes(DEFAULT_SEDES, c?.sedes);
+      // Si no hay galería propia guardada, arranca con las fotos por defecto
+      // para que puedas ver y quitar las actuales.
+      this.cfgGaleria = Array.isArray(c?.galeria) && c.galeria.length ? [...c.galeria] : [...FOTOS];
     } catch {
       /* deja los valores por defecto */
     }
@@ -152,7 +163,7 @@ export class Admin {
       r = await fetch('/api/config', {
         method: 'PUT',
         headers: this.cabeceras({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ textos: this.cfgTextos, juegos: this.cfgJuegos, sedes: this.cfgSedes }),
+        body: JSON.stringify({ textos: this.cfgTextos, juegos: this.cfgJuegos, sedes: this.cfgSedes, galeria: this.cfgGaleria }),
       });
     } catch {
       this.cfgGuardando.set(false);
@@ -292,6 +303,57 @@ export class Admin {
       this.canjesMsg.set('✓ Entregado');
     } else {
       this.canjesMsg.set('⚠ Error');
+    }
+  }
+
+  // ---- Galería ----
+  onSoltarGaleria(ev: DragEvent): void {
+    ev.preventDefault();
+    const file = ev.dataTransfer?.files?.[0];
+    if (file) void this.subirGaleria(file);
+  }
+
+  onSeleccionarGaleria(ev: Event): void {
+    const input = ev.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) void this.subirGaleria(file);
+    input.value = '';
+  }
+
+  quitarGaleria(i: number): void {
+    this.cfgGaleria.splice(i, 1);
+    this.cfgGaleria = [...this.cfgGaleria];
+  }
+
+  private async subirGaleria(file: File): Promise<void> {
+    if (!file.type.startsWith('image/')) {
+      this.galMsg.set('⚠ Solo imágenes');
+      return;
+    }
+    this.galSubiendo.set(true);
+    this.galMsg.set('');
+    try {
+      const { base64, tipo, nombre } = await this.optimizar(file);
+      const r = await fetch('/api/upload', {
+        method: 'POST',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ nombre, tipo, data: base64 }),
+      });
+      if (r.status === 401) {
+        this.salir();
+        return;
+      }
+      if (!r.ok) {
+        this.galMsg.set('⚠ No se pudo subir (¿configuraste Vercel Blob?)');
+        return;
+      }
+      const { url } = (await r.json()) as { url: string };
+      this.cfgGaleria = [url, ...this.cfgGaleria]; // la nueva aparece primero
+      this.galMsg.set('✓ Foto agregada — recuerda GUARDAR');
+    } catch {
+      this.galMsg.set('⚠ Error al procesar la foto');
+    } finally {
+      this.galSubiendo.set(false);
     }
   }
 

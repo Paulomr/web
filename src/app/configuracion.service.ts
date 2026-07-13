@@ -66,6 +66,8 @@ export class ConfiguracionService {
   readonly textos = signal<Record<string, string>>({ ...DEFAULT_TEXTOS });
   readonly juegos = signal<Record<string, boolean>>({});
   readonly sedes = signal<SedeCfg[]>(DEFAULT_SEDES);
+  /** Fotos de la galería (vacío = usa las fotos por defecto). */
+  readonly galeria = signal<string[]>([]);
 
   constructor() {
     void this.cargar();
@@ -79,10 +81,12 @@ export class ConfiguracionService {
         textos?: Record<string, string>;
         juegos?: Record<string, boolean>;
         sedes?: SedeCfg[];
+        galeria?: string[];
       };
       if (c && typeof c === 'object') {
         if (c.textos) this.textos.set({ ...DEFAULT_TEXTOS, ...c.textos });
         if (c.juegos) this.juegos.set(c.juegos);
+        if (Array.isArray(c.galeria)) this.galeria.set(c.galeria);
         if (Array.isArray(c.sedes) && c.sedes.length) {
           // Toma lo guardado por sede; si falta una, usa su valor por defecto.
           this.sedes.set(

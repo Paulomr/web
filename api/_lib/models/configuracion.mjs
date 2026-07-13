@@ -9,6 +9,8 @@ const ConfiguracionSchema = new mongoose.Schema(
     textos: { type: mongoose.Schema.Types.Mixed, default: {} },
     juegos: { type: mongoose.Schema.Types.Mixed, default: {} },
     sedes: { type: mongoose.Schema.Types.Mixed, default: [] },
+    // Fotos de la galería (URLs de Blob o nombres de archivo en /fotos).
+    galeria: { type: mongoose.Schema.Types.Mixed, default: [] },
   },
   { timestamps: true, minimize: false },
 );
