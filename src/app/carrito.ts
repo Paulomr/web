@@ -132,42 +132,94 @@ export class Carrito {
     return true;
   }
 
-  /** Enlace de WhatsApp con el pedido completo formateado. */
+  /** Enlace de WhatsApp con el pedido formateado, decorado y con sello. */
   linkPedido(): string {
     const d = this.datos();
-    const lineas: string[] = ['*NUEVO PEDIDO — CRUNCHY MUNCH*', ''];
+    const c = this.cuenta.cuenta();
+    const reg = this.cuenta.registrado();
+    const folio = this.nuevoFolio();
+    const barra = '━━━━━━━━━━━━━━━';
+    const L: string[] = [];
 
+    L.push('🍪🍪🍪 *CRUNCHY MUNCH* 🍪🍪🍪');
+    L.push(`🧾 *PEDIDO*  ·  Folio *${folio}*`);
+
+    // ── Bloque 1: el pedido ──
+    L.push(barra);
+    L.push('🛒 *TU PEDIDO*');
     for (const i of this.items()) {
       const p = this.producto(i.id);
       if (!p) continue;
       const precio = precioNumero(p);
-      const sub = precio > 0 ? ` — ${formatoCOP(precio * i.cantidad)}` : ' — (CONSULTAR)';
-      lineas.push(`• ${i.cantidad} x ${p.nombre}${sub}`);
+      const sub = precio > 0 ? `— ${formatoCOP(precio * i.cantidad)}` : '— (a consultar)';
+      L.push(`• ${i.cantidad}×  ${p.nombre}  ${sub}`);
     }
-
-    lineas.push('');
+    L.push('');
     if (this.cuponAplicado()) {
-      lineas.push(`Subtotal: ${formatoCOP(this.total())}`);
-      lineas.push(`🎁 CUPÓN BIENVENIDA (-20%): -${formatoCOP(this.descuento())}`);
-      lineas.push(`TOTAL: ${formatoCOP(this.totalFinal())}${this.hayConsultar() ? ' + ÍTEMS POR CONSULTAR' : ''}`);
+      L.push(`🧮 Subtotal: ${formatoCOP(this.total())}`);
+      L.push(`🎁 Cupón bienvenida −20%: -${formatoCOP(this.descuento())}`);
+      L.push(`💰 *TOTAL: ${formatoCOP(this.totalFinal())}*${this.hayConsultar() ? ' + ítems a consultar' : ''}`);
     } else {
-      lineas.push(`TOTAL: ${formatoCOP(this.total())}${this.hayConsultar() ? ' + ÍTEMS POR CONSULTAR' : ''}`);
+      L.push(`💰 *TOTAL: ${formatoCOP(this.total())}*${this.hayConsultar() ? ' + ítems a consultar' : ''}`);
     }
-    lineas.push('');
-    lineas.push(`SEDE: ${SEDES[d.sede]}`);
-    if (d.entrega === 'domicilio') {
-      lineas.push('ENTREGA: A DOMICILIO');
-      lineas.push(`DIRECCIÓN: ${d.direccion.trim()}`);
-    } else {
-      lineas.push('ENTREGA: RECOGER EN TIENDA');
-    }
-    lineas.push(`PAGO: ${d.pago === 'efectivo' ? 'EFECTIVO' : 'TRANSFERENCIA'}`);
-    lineas.push('');
-    lineas.push(`NOMBRE: ${d.nombre.trim()}`);
-    lineas.push(`TELÉFONO: ${d.telefono.trim()}`);
-    if (d.notas.trim()) lineas.push(`NOTAS: ${d.notas.trim()}`);
 
-    return `https://wa.me/${WHATSAPP_SEDES[d.sede]}?text=${encodeURIComponent(lineas.join('\n'))}`;
+    // ── Bloque 2: datos del cliente + fidelidad ──
+    L.push(barra);
+    L.push('👤 *TUS DATOS*');
+    L.push(`• Nombre: ${d.nombre.trim()}`);
+    L.push(`• 📱 Teléfono: ${d.telefono.trim()}`);
+    if (reg && c?.instagram) L.push(`• 📸 Instagram: ${c.instagram}`);
+    if (reg) L.push(`• ⭐ Estrellas: ${this.cuenta.puntos()}`);
+    L.push(
+      `• 🎟️ Cupón bienvenida: ${
+        this.cuponAplicado() ? 'ACTIVO ✅ (−20% aplicado)' : reg ? 'ya usado' : 'sin cuenta'
+      }`,
+    );
+
+    // ── Bloque 3: entrega y pago ──
+    L.push(barra);
+    L.push(`📍 Sede: ${SEDES[d.sede]}`);
+    if (d.entrega === 'domicilio') {
+      L.push('🚚 Entrega: A DOMICILIO');
+      L.push(`🏠 Dirección: ${d.direccion.trim()}`);
+    } else {
+      L.push('🏬 Entrega: RECOGER EN TIENDA');
+    }
+    L.push(`💳 Pago: ${d.pago === 'efectivo' ? 'EFECTIVO' : 'TRANSFERENCIA'}`);
+    if (d.notas.trim()) L.push(`📝 Notas: ${d.notas.trim()}`);
+
+    // ── Sello de autenticidad (cambia con los datos; verificable en el panel) ──
+    L.push(barra);
+    const sello = this.sello(
+      `${c?.instagram ?? '-'}|${this.totalFinal()}|${this.cuenta.puntos()}|${this.cuponAplicado() ? 1 : 0}|${folio}`,
+    );
+    L.push(`🔒 Sello: *${sello}*  ·  verifica @usuario y estrellas en el panel`);
+
+    return `https://wa.me/${WHATSAPP_SEDES[d.sede]}?text=${encodeURIComponent(L.join('\n'))}`;
+  }
+
+  /** Folio único legible del pedido: CM-AAMMDD-XXXX. */
+  private nuevoFolio(): string {
+    const d = new Date();
+    const p = (n: number) => String(n).padStart(2, '0');
+    const fecha = `${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}`;
+    const r = (Math.random().toString(36) + Math.random().toString(36))
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 4)
+      .padEnd(4, 'X');
+    return `CM-${fecha}-${r}`;
+  }
+
+  /** Sello (hash FNV-1a) atado a los datos del pedido: si alguien edita el
+      total, el cupón o las estrellas, el sello ya no cuadra. */
+  private sello(s: string): string {
+    let h = 0x811c9dc5 >>> 0;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h.toString(36).toUpperCase().padStart(7, '0').slice(-7);
   }
 
   /** Tras enviar el pedido: consume el cupón de bienvenida (una vez por cuenta). */

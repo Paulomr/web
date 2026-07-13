@@ -540,3 +540,19 @@
   .velo, .reg, .reg-bear, .cc-rfill.oro { animation: none; }
   .reg-cerrar:hover { transform: none; }
 }
+
+/* Nota de promo 20% en el registro. */
+.reg-promo {
+  display: block;
+  text-align: center;
+  font-family: var(--font-body, sans-serif);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #7a5b00;
+  background: linear-gradient(135deg, #fff2d6, #ffe1a8);
+  border: 1.5px solid #f4c66a;
+  border-radius: 12px;
+  padding: 9px 12px;
+  margin-bottom: 2px;
+}
+.reg-promo b { color: #b8860b; font-weight: 800; }

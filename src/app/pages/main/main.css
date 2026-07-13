@@ -711,28 +711,39 @@
   }
 }
 
-/* Banda de cupón cruzando la osa que corre (sobre "NUESTRO MENÚ"). */
-.osa-promo { position: relative; display: inline-flex; }
-.promo-sash {
-  position: absolute;
-  top: 54%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-10deg);
+/* Cinta de cupón: banda que cruza toda la pantalla, sobre "NUESTRO MENÚ". */
+.promo-banda {
+  display: block;
+  width: 100%;
+  align-self: stretch;
+  overflow: hidden;
+  margin: 0 0 14px;
+  padding: 11px 0;
+  text-decoration: none;
+  background: linear-gradient(90deg, #f472b6, #e0559f, #f472b6);
+  border-top: 2px solid rgba(255, 255, 255, 0.55);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 10px 24px -12px rgba(224, 85, 159, 0.7);
+}
+.promo-track {
+  display: inline-flex;
+  gap: 46px;
+  padding-left: 46px;
   white-space: nowrap;
+  will-change: transform;
+  animation: promo-scroll 16s linear infinite;
+}
+.promo-track > span {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.72rem;
-  letter-spacing: 0.4px;
+  font-size: 1rem;
+  letter-spacing: 1px;
   color: #fff;
-  background: linear-gradient(135deg, #f472b6, #e0559f);
-  padding: 5px 14px;
-  border-radius: 5px;
-  box-shadow: 0 8px 18px -6px rgba(224, 85, 159, 0.75);
-  border: 1.5px solid rgba(255, 255, 255, 0.7);
-  pointer-events: none;
-  z-index: 2;
+  text-shadow: 0 1px 0 rgba(180, 55, 120, 0.35);
 }
-@media (prefers-reduced-motion: no-preference) {
-  .promo-sash { animation: sash-pop 420ms cubic-bezier(0.2, 1.6, 0.4, 1) both; }
-  @keyframes sash-pop { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(0.7); } }
+@keyframes promo-scroll {
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promo-track { animation: none; justify-content: center; padding-left: 0; }
 }

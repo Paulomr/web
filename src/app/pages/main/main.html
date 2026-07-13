@@ -33,12 +33,18 @@
   <!-- Menú en movimiento: filas de productos que se deslizan desde los lados.
        Tocar un producto lo agrega al carrito. -->
   <section class="menu-vivo">
-    <div class="osa-promo">
-      <img class="osa-deco corre" src="fotos/bernie-corriendo.webp" alt="" aria-hidden="true" />
-      @if (mostrarCupon()) {
-        <span class="promo-sash" aria-hidden="true">20% OFF · PRIMERA COMPRA</span>
-      }
-    </div>
+    @if (mostrarCupon()) {
+      <a class="promo-banda" routerLink="/catalogo" aria-label="20% de descuento en tu primera compra">
+        <span class="promo-track" aria-hidden="true">
+          <span>🍪 20% OFF · TU PRIMERA COMPRA</span>
+          <span>🍪 20% OFF · TU PRIMERA COMPRA</span>
+          <span>🍪 20% OFF · TU PRIMERA COMPRA</span>
+          <span>🍪 20% OFF · TU PRIMERA COMPRA</span>
+          <span>🍪 20% OFF · TU PRIMERA COMPRA</span>
+          <span>🍪 20% OFF · TU PRIMERA COMPRA</span>
+        </span>
+      </a>
+    }
     <h2>{{ cfg.texto('menuTitulo') }}</h2>
 
     <div class="fila" aria-label="Productos destacados">
