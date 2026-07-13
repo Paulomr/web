@@ -22,8 +22,8 @@ export interface Cuenta {
   premioEstrellas: boolean;
 }
 
-/** Estrellas para el premio maestro: 5 juegos × 3 estrellas. */
-export const META_ESTRELLAS = 15;
+/** Estrellas para el premio maestro: todos los niveles al 100% (30+30+15+3+3). */
+export const META_ESTRELLAS = 81;
 /** COP que vale cada tarjeta de sellos completa. */
 export const VALOR_TARJETA = 60000;
 

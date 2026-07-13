@@ -529,7 +529,7 @@ async function finish(){
   if(hits>0){let n=0;const t=setInterval(()=>{n++;$('resScore').textContent=n;if(n>=hits)clearInterval(t);},45);}
   const row={nombre:player.name,instagram:player.ig,aciertos:hits,tiempo_ms:elapsed};myEntry=row;
   // Ranking global de estrellas: 3 (>=17 aciertos), 2 (>=10), 1 (>=1), 0 reintento.
-  if(window.CrunchyScores){const _est=hits>=17?3:hits>=10?2:hits>=1?1:0;window.CrunchyScores.submit('trivia',hits,_est);}
+  if(window.CrunchyScores){const _est=hits>=17?3:hits>=10?2:hits>=1?1:0;window.CrunchyScores.submit('trivia','quiz',_est,hits);}
   let dupMsg='';
   try{ if(!FREEPLAY && USE_DB){await dbInsert(row);}else{demoRows.push(row);} }catch(e){ if(e.status===409||e.status===400)dupMsg=e.message; }
   if(dupMsg){

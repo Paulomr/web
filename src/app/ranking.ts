@@ -1,6 +1,6 @@
 // Ranking del juego. Regla de la marca: BEARNIE siempre es #1, con su barra
-// dorada brillante al 98%. Debajo, los jugadores reales (por @instagram) con su
-// mejor cantidad de estrellas.
+// dorada brillante al 98%. Debajo, los jugadores reales (por @instagram) con la
+// suma de sus mejores estrellas en ese juego.
 
 export interface FilaRanking {
   /** @instagram del jugador, 'Bearnie' o el tuyo. */
@@ -16,18 +16,20 @@ export interface FilaRanking {
 
 /**
  * Construye el ranking con Bearnie fija en el #1 (98%, dorado) y debajo las
- * filas reales del servidor. `miIg` resalta la fila propia.
+ * filas reales. `maxEstrellas` normaliza la barra (estrellas máximas del juego).
  */
 export function rankingConBernie(
   rows: { instagram: string; estrellas: number }[],
   miIg: string | null,
+  maxEstrellas = 3,
 ): FilaRanking[] {
-  const bernie: FilaRanking = { nombre: 'Bearnie', estrellas: 3, pct: 98, bernie: true };
+  const max = Math.max(1, maxEstrellas);
+  const bernie: FilaRanking = { nombre: 'Bearnie', estrellas: max, pct: 98, bernie: true };
   const mi = (miIg || '').toLowerCase();
   const filas: FilaRanking[] = rows.map((r) => ({
     nombre: r.instagram,
     estrellas: r.estrellas,
-    pct: Math.max(8, Math.min(96, Math.round((r.estrellas / 3) * 96))),
+    pct: Math.max(8, Math.min(96, Math.round((r.estrellas / max) * 96))),
     tu: mi !== '' && r.instagram.toLowerCase() === mi,
   }));
   return [bernie, ...filas];

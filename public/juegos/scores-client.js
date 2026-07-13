@@ -1,7 +1,7 @@
 /* Puente de estrellas de Crunchy Munch para los minijuegos.
  *
- * Al terminar una ronda, el juego reporta 0..3 estrellas:
- *   CrunchyScores.submit('head-soccer', puntos, estrellas);
+ * Al terminar un NIVEL, el juego reporta 0..3 estrellas de ese nivel:
+ *   CrunchyScores.submit('head-soccer', 'm3', estrellas, puntos);
  *
  * La identidad es el @instagram de la cuenta (se lee del mismo dominio, sin
  * pedir nada). Sin cuenta con Instagram no se rankea. Todo falla en silencio:
@@ -20,7 +20,7 @@
     }
   }
 
-  async function submit(gameId, puntos, estrellas) {
+  async function submit(gameId, nivel, estrellas, puntos) {
     const instagram = getIg();
     const est = Math.max(0, Math.min(3, Math.round(Number(estrellas) || 0)));
     // Avisa a la página padre (minijuegos) para refrescar ranking/perfil.
@@ -37,6 +37,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           gameId: gameId,
+          nivel: (nivel || 'u').toString(),
           instagram: instagram,
           estrellas: est,
           puntos: Math.max(0, Math.round(Number(puntos) || 0)),

@@ -112,7 +112,7 @@ on('matchEnded', e=>{
     const win=sP>sC, tie=sP===sC;
     // Estrellas: ganar con valla en cero = 3; ganar = 2; empate = 1; perder = 0.
     const estrellasHS = win ? (sC===0 ? 3 : 2) : (tie ? 1 : 0);
-    if (window.CrunchyScores && estrellasHS>0) window.CrunchyScores.submit('head-soccer', (mision?mision*100:0)+sP, estrellasHS);
+    if (window.CrunchyScores && mision && estrellasHS>0) window.CrunchyScores.submit('head-soccer', 'm'+mision, estrellasHS, sP);
     const again=document.getElementById("again");
     if (mision){ // resultado del modo misiones (vs Bearnie malvada)
       const m=MISIONES[mision-1];

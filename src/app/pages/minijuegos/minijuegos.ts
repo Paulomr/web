@@ -26,7 +26,11 @@ export class Minijuegos {
 
   /** Filas del ranking con Bearnie fija en #1 (98%, dorado). */
   readonly ranking = computed(() =>
-    rankingConBernie(this.rankingGlobal().rows, this.cuenta.cuenta()?.instagram ?? null),
+    rankingConBernie(
+      this.rankingGlobal().rows,
+      this.cuenta.cuenta()?.instagram ?? null,
+      this.selected()?.maxEstrellas ?? 3,
+    ),
   );
 
   /** Cuántos jugadores hay en el global de este juego. */

@@ -293,8 +293,8 @@ function finalizar() {
   const r = resumen();
   // Ranking global de Crunchy Munch: monedas + propinas del turno.
   // Silencioso si el backend está apagado; el juego nunca se rompe.
-  if (typeof window !== 'undefined' && window.CrunchyScores) {
-    window.CrunchyScores.submit('pasteleria', r.monedas + r.propinas, r.estrellas);
+  if (typeof window !== 'undefined' && window.CrunchyScores && r.modo === 'dia') {
+    window.CrunchyScores.submit('pasteleria', 'd' + r.dia, r.estrellas, r.monedas + r.propinas);
   }
   emit('fin', r);
 }

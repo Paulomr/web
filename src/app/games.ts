@@ -29,6 +29,8 @@ export interface Game {
   trailer?: string;
   /** Nota opcional (por ejemplo, requisitos para ejecutarlo). */
   note?: string;
+  /** Estrellas máximas del juego (niveles × 3). Suma total = 81. */
+  maxEstrellas: number;
 }
 
 export const GAMES: Game[] = [
@@ -41,6 +43,7 @@ export const GAMES: Game[] = [
     icon: '👻',
     cover: 'linear-gradient(135deg, #f9e6b8 0%, #f9d1e5 100%)',
     trailer: 'juegos/trailers/pacman.webm',
+    maxEstrellas: 3,
   },
   {
     id: 'pasteleria',
@@ -51,6 +54,7 @@ export const GAMES: Game[] = [
     icon: '🧁',
     cover: 'linear-gradient(135deg, #f9d1e5 0%, #e6d9f6 100%)',
     trailer: 'juegos/trailers/pasteleria.webm',
+    maxEstrellas: 15,
   },
   {
     id: 'head-soccer',
@@ -62,6 +66,7 @@ export const GAMES: Game[] = [
     cover: 'linear-gradient(135deg, #cdeef5 0%, #d8f2dc 100%)',
     trailer: 'juegos/trailers/head-soccer.webm',
     note: 'Requiere conexión a internet (carga Phaser desde CDN).',
+    maxEstrellas: 30,
   },
   {
     id: 'catapulta',
@@ -72,6 +77,7 @@ export const GAMES: Game[] = [
     icon: '🎯',
     cover: 'linear-gradient(135deg, #e6d9f6 0%, #cdeef5 100%)',
     trailer: 'juegos/trailers/catapulta.webm',
+    maxEstrellas: 30,
   },
   {
     id: 'trivia',
@@ -82,6 +88,7 @@ export const GAMES: Game[] = [
     icon: '🧠',
     cover: 'linear-gradient(135deg, #f9d1e5 0%, #f9e6b8 100%)',
     trailer: 'juegos/trailers/trivia.webm',
+    maxEstrellas: 3,
   },
 ];
 

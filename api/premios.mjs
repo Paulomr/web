@@ -12,7 +12,7 @@ import { Cuenta } from './_lib/models/cuenta.mjs';
 import { Canje } from './_lib/models/canje.mjs';
 import { requiereAdmin } from './_lib/auth.mjs';
 
-const META_ESTRELLAS = 15;
+const META_ESTRELLAS = 81; // 5 juegos, todos sus niveles al 100% (30+30+15+3+3)
 const VALOR_SELLOS = 60000;
 const SIN_AMBIGUOS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
         valor = VALOR_SELLOS;
       } else if (tipo === 'estrellas') {
         if ((c.puntos ?? 0) < META_ESTRELLAS) {
-          res.status(400).json({ error: 'Completa los 5 juegos al 100% (15 estrellas).' });
+          res.status(400).json({ error: 'Completa todos los niveles al 100% (81 estrellas).' });
           return;
         }
         if (c.premioEstrellas) {

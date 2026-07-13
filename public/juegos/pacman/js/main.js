@@ -353,7 +353,7 @@ function gameOver() {
   // Estrellas por desempeño (nivel y puntaje): 3 perfecto, 2 medio, 1 bajo.
   const est = (juego.level >= 3 || juego.score >= 3000) ? 3
     : (juego.level >= 2 || juego.score >= 1200) ? 2 : 1;
-  if (window.CrunchyScores) window.CrunchyScores.submit('pacman', juego.score, est);
+  if (window.CrunchyScores) window.CrunchyScores.submit('pacman', 'u', est, juego.score);
   // Pinta las estrellas ganadas en la pantalla de fin.
   document.querySelectorAll('#go-stars .go-star').forEach((s, i) => {
     s.classList.remove('on');
