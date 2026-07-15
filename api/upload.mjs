@@ -43,6 +43,13 @@ export default async function handler(req, res) {
     res.status(200).json({ url: blob.url });
   } catch (err) {
     console.error('Error en /api/upload:', err);
-    res.status(500).json({ error: 'No se pudo subir la imagen (¿configuraste Vercel Blob?)' });
+    // Diagnóstico temporal: devolvemos el motivo real para verlo en el navegador.
+    const detalle = err instanceof Error ? err.message : String(err);
+    const hayToken = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+    res.status(500).json({
+      error: 'No se pudo subir la imagen',
+      detalle,
+      hayToken,
+    });
   }
 }
