@@ -10,6 +10,8 @@
       @if (!cuenta.registrado()) {
         @if (modo() === 'login') {
           <h2 class="reg-titulo">BIENVENIDO<br />DE VUELTA</h2>
+        } @else if (modo() === 'recuperar') {
+          <h2 class="reg-titulo">RECUPERA<br />TU CÓDIGO</h2>
         } @else {
           <h2 class="reg-titulo">GANA GALLETAS<br />DE VERDAD</h2>
         }
@@ -46,12 +48,46 @@
             <button type="submit" class="reg-cta" [disabled]="cargando()">
               {{ cargando() ? 'ENTRANDO…' : 'INICIAR SESIÓN' }}
             </button>
+            <button type="button" class="reg-skip" (click)="cambiarModo('recuperar')">¿Olvidaste tu código?</button>
             <button type="button" class="reg-skip" (click)="cambiarModo('registro')">¿No tienes cuenta? Regístrate</button>
+          </form>
+        } @else if (modo() === 'recuperar') {
+          <!-- RECUPERAR CÓDIGO (pregunta de seguridad) -->
+          <form class="reg-form" (submit)="$event.preventDefault(); recuperar()">
+            <div class="reg-promo">🔐 Verifica que la cuenta es tuya y crea un código nuevo.</div>
+            <label class="reg-campo">
+              <span>INSTAGRAM</span>
+              <input
+                [ngModel]="recIg()" (ngModelChange)="recIg.set($event)" name="recIg"
+                placeholder="@tuusuario" autocapitalize="none" autocomplete="off" spellcheck="false" />
+            </label>
+            <label class="reg-campo">
+              <span>NOMBRE COMPLETO (COMO LO REGISTRASTE)</span>
+              <input
+                [ngModel]="recNombre()" (ngModelChange)="recNombre.set($event)" name="recNombre"
+                placeholder="TU NOMBRE COMPLETO" autocomplete="name" />
+            </label>
+            <label class="reg-campo">
+              <span>NUEVO CÓDIGO (4 DÍGITOS)</span>
+              <input
+                [ngModel]="recPin()" (ngModelChange)="recPin.set($event)" name="recPin"
+                type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off"
+                (keyup.enter)="recuperar()" />
+            </label>
+
+            @if (error()) {
+              <p class="reg-error">{{ error() }}</p>
+            }
+
+            <button type="submit" class="reg-cta" [disabled]="cargando()">
+              {{ cargando() ? 'VERIFICANDO…' : 'VERIFICAR Y CAMBIAR CÓDIGO' }}
+            </button>
+            <button type="button" class="reg-skip" (click)="cambiarModo('login')">Volver a iniciar sesión</button>
           </form>
         } @else {
           <!-- REGISTRO -->
           <form class="reg-form" (submit)="$event.preventDefault(); registrar()">
-            <div class="reg-promo">🎁 Haz tu primer pedido y obtén <b>20% de descuento</b></div>
+            <div class="reg-promo">🎁 Haz tu primer pedido y obtén <b>18% de descuento</b></div>
             <label class="reg-campo">
               <span>NOMBRE</span>
               <input

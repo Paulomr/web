@@ -38,7 +38,7 @@
 
       @if (carrito.cuponAplicado()) {
         <div class="cupon-linea">
-          <span>🎁 Cupón bienvenida −20%</span>
+          <span>🎁 Cupón bienvenida −18%</span>
           <span class="cupon-desc">−{{ descuentoTexto() }}</span>
         </div>
       }
@@ -76,6 +76,11 @@
             <input type="text" [value]="carrito.datos().direccion" (input)="onInput('direccion', $event)"
               placeholder="CALLE, NÚMERO, BARRIO, CIUDAD" />
           </label>
+          <label>
+            PUNTO DE REFERENCIA / SECTOR
+            <input type="text" [value]="carrito.datos().referencia" (input)="onInput('referencia', $event)"
+              placeholder="NOMBRE DEL LUGAR, SECTOR, CERCA DE…" />
+          </label>
         }
 
         <fieldset>
@@ -105,10 +110,17 @@
             placeholder="SIN MANÍ, VELITAS, DEDICATORIA…" />
         </label>
 
-        <button type="submit" class="enviar" [disabled]="!carrito.puedeEnviar()">
-          ENVIAR PEDIDO POR WHATSAPP
-        </button>
-        <p class="aviso">AL ENVIAR SE ABRE WHATSAPP CON TU PEDIDO LISTO: SOLO CONFIRMAS Y LISTO.</p>
+        @if (!cuenta.registrado()) {
+          <div class="sesion-aviso">
+            <p>🔒 INICIA SESIÓN PARA HACER TU PEDIDO Y OBTENER TU <b>18% DE DESCUENTO</b> DE BIENVENIDA.</p>
+            <button type="button" class="enviar" (click)="pedirSesion()">INICIAR SESIÓN / CREAR CUENTA</button>
+          </div>
+        } @else {
+          <button type="submit" class="enviar" [disabled]="!carrito.puedeEnviar()">
+            ENVIAR PEDIDO POR WHATSAPP
+          </button>
+          <p class="aviso">AL ENVIAR SE ABRE WHATSAPP CON TU PEDIDO LISTO: SOLO CONFIRMAS Y LISTO.</p>
+        }
         <button type="button" class="vaciar" (click)="carrito.vaciar()">VACIAR CARRITO</button>
       </form>
     }

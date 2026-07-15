@@ -354,6 +354,25 @@ input:focus {
   text-decoration: underline;
 }
 
+/* Aviso de sesión obligatoria para pedir. */
+.sesion-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fde4f0, #fbd0e6);
+  border: 1px solid #f4b6d5;
+}
+.sesion-aviso p {
+  margin: 0;
+  color: #b83a77;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
+
 /* Línea del cupón de bienvenida en los totales. */
 .cupon-linea {
   display: flex;

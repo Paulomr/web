@@ -111,7 +111,24 @@
 .acciones {
   display: flex;
   gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
+
+.stats-link {
+  padding: 11px 16px;
+  border-radius: var(--r-pill);
+  background: #14171f;
+  color: #37e0c8;
+  border: 1px solid #37e0c8;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.stats-link:hover { background: #1c2029; }
 
 .add {
   padding: 11px 18px;

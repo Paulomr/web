@@ -1,0 +1,192 @@
+@if (!token()) {
+  <section class="gate">
+    <h1>CENTRO DE CONTROL</h1>
+    <p>Necesitas la sesión de administrador para ver las estadísticas.</p>
+    <a routerLink="/admin" class="gate-btn">IR AL PANEL PARA ENTRAR →</a>
+    @if (error()) { <p class="gate-err">{{ error() }}</p> }
+  </section>
+} @else {
+  <div class="dash">
+    <!-- Encabezado -->
+    <header class="dash-top">
+      <div class="dash-title">
+        <span class="eyebrow">CRUNCHY MUNCH · ANALÍTICA</span>
+        <h1>CENTRO DE CONTROL</h1>
+      </div>
+      <div class="dash-tools">
+        <span class="live"><span class="dot"></span> {{ stats()?.trafico?.enVivo ?? 0 }} EN VIVO</span>
+        @if (actualizado()) { <span class="upd">actualizado {{ actualizado() }}</span> }
+        <button class="refresh" (click)="cargar()" [disabled]="cargando()">↻</button>
+        <a routerLink="/admin" class="volver">← Panel</a>
+      </div>
+    </header>
+
+    @if (error()) { <p class="dash-err">{{ error() }}</p> }
+    @if (cargando() && !stats()) { <p class="dash-load">Cargando estadísticas…</p> }
+
+    @if (stats(); as s) {
+      <!-- KPIs -->
+      <section class="kpis">
+        <div class="kpi accent-live">
+          <span class="kpi-ico">🟢</span>
+          <span class="kpi-num">{{ s.trafico.enVivo }}</span>
+          <span class="kpi-lbl">Visitantes ahora</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-ico">👀</span>
+          <span class="kpi-num">{{ s.trafico.visitasHoy }}</span>
+          <span class="kpi-lbl">Visitas hoy · {{ s.trafico.visitantesHoy }} personas</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-ico">👥</span>
+          <span class="kpi-num">{{ s.usuarios.total }}</span>
+          <span class="kpi-lbl">Usuarios registrados</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-ico">🎮</span>
+          <span class="kpi-num">{{ s.jugadores.total }}</span>
+          <span class="kpi-lbl">Han jugado</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-ico">🧾</span>
+          <span class="kpi-num">{{ s.pedidos.total }}</span>
+          <span class="kpi-lbl">Pedidos · {{ s.pedidos.hoy }} hoy</span>
+        </div>
+        <div class="kpi accent-money">
+          <span class="kpi-ico">💰</span>
+          <span class="kpi-num">{{ formatoCOP(s.pedidos.ingresos) }}</span>
+          <span class="kpi-lbl">Ingresos · ticket {{ formatoCOP(s.pedidos.ticketPromedio) }}</span>
+        </div>
+      </section>
+
+      <!-- Tráfico -->
+      <section class="card">
+        <div class="card-head">
+          <h2>FLUJO DE LA PÁGINA</h2>
+          <div class="segs">
+            <button [class.on]="rango() === 'dia'" (click)="rango.set('dia')">DÍA</button>
+            <button [class.on]="rango() === 'mes'" (click)="rango.set('mes')">MES</button>
+            <button [class.on]="rango() === 'anio'" (click)="rango.set('anio')">AÑO</button>
+          </div>
+        </div>
+        @if (barras().length) {
+          <div class="chart">
+            @for (b of barras(); track $index) {
+              <div class="bar-col" [title]="b.valor + ' visitas · ' + b.sub">
+                <span class="bar-val">{{ b.valor }}</span>
+                <div class="bar" [style.height.%]="b.alto"></div>
+                <span class="bar-lbl">{{ b.etiqueta }}</span>
+              </div>
+            }
+          </div>
+          <p class="chart-foot">Total histórico: {{ s.trafico.totalVisitas }} visitas</p>
+        } @else {
+          <p class="vacio">Aún no hay visitas registradas. Aparecerán aquí en cuanto la gente navegue por la web.</p>
+        }
+      </section>
+
+      <!-- Juegos -->
+      <section class="card">
+        <div class="card-head"><h2>MINIJUEGOS</h2></div>
+        @if (s.juegos.length) {
+          <div class="juegos-grid">
+            @for (j of s.juegos; track j.gameId) {
+              <div class="juego">
+                <div class="juego-top">
+                  <span class="juego-ico">{{ iconoJuego(j.gameId) }}</span>
+                  <span class="juego-nom">{{ nombreJuego(j.gameId) }}</span>
+                </div>
+                <div class="juego-stats">
+                  <span><b>{{ j.jugadores }}</b> jugadores</span>
+                  <span><b>{{ j.partidas }}</b> partidas</span>
+                  <span><b>⭐ {{ j.estrellas }}</b>@if (maxEstrellas(j.gameId)) { <em> / {{ maxEstrellas(j.gameId) }} máx</em> }</span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="vacio">Todavía nadie ha registrado partidas.</p>
+        }
+      </section>
+
+      <!-- Ventas -->
+      <section class="card">
+        <div class="card-head"><h2>INGRESOS POR DÍA <span class="hint">(últimos 14)</span></h2></div>
+        @if (barrasPedidos().length) {
+          <div class="chart chart-money">
+            @for (b of barrasPedidos(); track $index) {
+              <div class="bar-col" [title]="formatoCOP(b.valor) + ' · ' + b.sub">
+                <div class="bar bar-m" [style.height.%]="b.alto"></div>
+                <span class="bar-lbl">{{ b.etiqueta }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="vacio">Aún no hay pedidos registrados desde la web.</p>
+        }
+      </section>
+    }
+
+    <!-- Buscador por código de pedido -->
+    <section class="card lookup">
+      <div class="card-head"><h2>BUSCAR PEDIDO POR CÓDIGO</h2></div>
+      <form class="lookup-form" (submit)="$event.preventDefault(); buscar()">
+        <input
+          [ngModel]="codigoInput()" (ngModelChange)="codigoInput.set($event)" name="codigo"
+          placeholder="CM-260715-AB12" autocapitalize="characters" autocomplete="off" spellcheck="false" />
+        <button type="submit" [disabled]="buscando()">{{ buscando() ? 'BUSCANDO…' : 'BUSCAR' }}</button>
+      </form>
+      @if (lookupError()) { <p class="lookup-err">{{ lookupError() }}</p> }
+
+      @if (resultado(); as res) {
+        <!-- Cliente -->
+        <div class="cliente">
+          <h3>CLIENTE</h3>
+          @if (res.cuenta; as cu) {
+            <div class="cliente-grid">
+              <div><span>Nombre</span><b>{{ cu.nombre || '—' }}</b></div>
+              <div><span>Instagram</span><b>{{ cu.instagram || '—' }}</b></div>
+              <div><span>Edad</span><b>{{ cu.edad || '—' }}</b></div>
+              <div><span>⭐ Estrellas</span><b>{{ cu.puntos }}</b></div>
+              <div><span>🎟️ Sellos</span><b>{{ cu.sellos }} · {{ cu.tarjetas }} tarjetas</b></div>
+              <div><span>Cupón</span><b>{{ cu.cuponUsado ? 'usado' : 'disponible' }}</b></div>
+              <div><span>Dirección</span><b>{{ cu.direccion || '—' }}</b></div>
+              <div><span>Cuenta creada</span><b>{{ fecha(cu.creada) }}</b></div>
+            </div>
+          } @else {
+            <p class="vacio">Este pedido se hizo con estos datos: <b>{{ res.pedido.nombre }}</b> · {{ res.pedido.telefono }} (sin cuenta enlazada).</p>
+          }
+        </div>
+
+        <!-- Historial de pedidos de la cuenta -->
+        <div class="historial">
+          <h3>PEDIDOS DE ESTA CUENTA ({{ res.totalPedidos }})</h3>
+          @for (p of res.historial; track p.codigo) {
+            <details class="pedido" [open]="p.codigo === res.pedido.codigo">
+              <summary>
+                <span class="ped-cod">{{ p.codigo }}</span>
+                <span class="ped-fecha">{{ fecha(p.createdAt) }}</span>
+                <span class="ped-total">{{ formatoCOP(p.total) }}</span>
+              </summary>
+              <div class="ped-cuerpo">
+                <ul class="ped-items">
+                  @for (it of p.items; track $index) {
+                    <li>{{ it.cantidad }}× {{ it.nombre }} @if (it.precioUnit) { <em>· {{ formatoCOP(it.precioUnit * it.cantidad) }}</em> }</li>
+                  }
+                </ul>
+                <div class="ped-meta">
+                  <span>{{ p.entrega === 'domicilio' ? '🚚 Domicilio' : '🏬 Recoger' }} · {{ p.sede }}</span>
+                  <span>💳 {{ p.pago }}</span>
+                  @if (p.cupon) { <span>🎁 Cupón −{{ formatoCOP(p.descuento) }}</span> }
+                  @if (p.direccion) { <span>🏠 {{ p.direccion }}</span> }
+                  @if (p.referencia) { <span>📌 {{ p.referencia }}</span> }
+                  @if (p.notas) { <span>📝 {{ p.notas }}</span> }
+                </div>
+              </div>
+            </details>
+          }
+        </div>
+      }
+    </section>
+  </div>
+}

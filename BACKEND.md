@@ -21,9 +21,21 @@ api/
   productos/
     index.mjs           <- GET lista | POST crear (admin)
     [id].mjs            <- GET uno | PUT editar | DELETE ocultar (admin)
+    models/
+      pedido.mjs        <- pedidos enviados por WhatsApp (código, cliente, ítems)
+      visita.mjs        <- pageviews para las estadísticas de tráfico
+  productos/
+    index.mjs           <- GET lista | POST crear (admin)
+    [id].mjs            <- GET uno | PUT editar | DELETE ocultar (admin)
+  pedidos.mjs           <- POST registra pedido | GET admin busca por código
+  estadisticas.mjs      <- POST registra visita | GET admin métricas del negocio
   chat.mjs              <- IA de Bearnie (ya existía)
 scripts/                <- utilidades (semilla de datos, etc.)
 ```
+
+> Nota Vercel: cada archivo de `api/*.mjs` es una función serverless. Hoy hay 11
+> (el plan Hobby permite 12). Si se agregan más, conviene agrupar acciones dentro
+> de un mismo endpoint.
 
 ## Fases
 
@@ -37,9 +49,13 @@ scripts/                <- utilidades (semilla de datos, etc.)
       · [x] Activar/desactivar minijuegos.
       · [x] Horarios y fechas especiales de las sedes.
       · [ ] Arrastrar y subir fotos (producto, hero, galería) → necesita **Vercel Blob**.
-- [ ] **Fase 3 — Guardar pedidos**
-      Cada pedido se guarda en la base (además de enviarse por WhatsApp): historial,
-      estados, búsqueda.
+- [x] **Fase 3 — Guardar pedidos** ✅
+      Cada pedido se guarda en la base (además de enviarse por WhatsApp) con su
+      "código del pedido". El panel `/admin/estadisticas` busca por código y muestra
+      los datos del cliente y su historial de pedidos.
+- [x] **Fase 3.5 — Estadísticas del negocio** ✅
+      Página `/admin/estadisticas` (diseño propio): tráfico en vivo / por día / mes /
+      año, usuarios registrados, jugadores por juego, pedidos e ingresos.
 - [ ] **Fase 4 — Pagos en línea**
       Cobro con tarjeta/PSE (proveedor colombiano: Wompi o MercadoPago).
 - [ ] **Fase 5 — Cuentas y fidelidad**

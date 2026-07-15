@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Carrito, formatoCOP, precioNumero } from '../../carrito';
+import { CuentaService } from '../../cuenta.service';
 import { Producto, urlFoto } from '../../productos';
 
 @Component({
@@ -10,6 +11,7 @@ import { Producto, urlFoto } from '../../productos';
 })
 export class CarritoPanel {
   readonly carrito = inject(Carrito);
+  readonly cuenta = inject(CuentaService);
   readonly urlFoto = urlFoto;
 
   precioLinea(p: Producto | undefined, cantidad: number): string {
@@ -32,7 +34,12 @@ export class CarritoPanel {
     this.carrito.confirmarEnvio();
   }
 
-  onInput(campo: 'nombre' | 'telefono' | 'direccion' | 'notas', ev: Event): void {
+  onInput(campo: 'nombre' | 'telefono' | 'direccion' | 'referencia' | 'notas', ev: Event): void {
     this.carrito.actualizarDatos({ [campo]: (ev.target as HTMLInputElement).value });
+  }
+
+  /** Abre el modal de sesión para poder completar el pedido. */
+  pedirSesion(): void {
+    this.cuenta.abrir('login');
   }
 }

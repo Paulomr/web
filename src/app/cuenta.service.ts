@@ -20,7 +20,7 @@ export interface Cuenta {
   ultimoSello: string;
   /** Premio de estrellas (todos los juegos al 100%) ya reclamado. */
   premioEstrellas: boolean;
-  /** Cupón de bienvenida (20% primera compra) ya usado. */
+  /** Cupón de bienvenida (18% primera compra) ya usado. */
   cuponUsado: boolean;
 }
 
@@ -80,7 +80,7 @@ export class CuentaService {
   readonly metaEstrellas = META_ESTRELLAS;
   readonly premioEstrellasReclamado = computed(() => !!this.cuenta()?.premioEstrellas);
 
-  /** ¿Tiene el cupón de bienvenida disponible (20% primera compra)? */
+  /** ¿Tiene el cupón de bienvenida disponible (18% primera compra)? */
   readonly cuponDisponible = computed(() => this.registrado() && !this.cuenta()?.cuponUsado);
 
   /** Próximo premio por alcanzar (o el mayor si ya los tiene todos). */
@@ -222,6 +222,32 @@ export class CuentaService {
       });
       const d = (await r.json()) as { cuenta?: Partial<Cuenta>; error?: string };
       if (!r.ok) return { ok: false, error: d.error || 'No se pudo iniciar sesión.' };
+      this.setSesion(d.cuenta);
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Sin conexión. Intenta de nuevo.' };
+    }
+  }
+
+  /**
+   * Recupera el acceso cuando se olvidó el código: verifica identidad con
+   * @instagram + nombre completo (pregunta de seguridad) y fija un código nuevo.
+   * Si coincide, deja la sesión iniciada.
+   */
+  async recuperar(
+    instagram: string,
+    nombre: string,
+    pinNuevo: string,
+  ): Promise<{ ok: boolean; error?: string }> {
+    const ig = this.normalizarIg(instagram);
+    try {
+      const r = await fetch('/api/cuentas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accion: 'recuperar', instagram: ig, nombre: nombre.trim(), pin: pinNuevo }),
+      });
+      const d = (await r.json()) as { cuenta?: Partial<Cuenta>; error?: string };
+      if (!r.ok) return { ok: false, error: d.error || 'No se pudo recuperar la cuenta.' };
       this.setSesion(d.cuenta);
       return { ok: true };
     } catch {

@@ -18,5 +18,9 @@ export const routes: Routes = [
   { path: 'fidelidad', component: Fidelidad },
   { path: 'privacidad', component: Privacidad },
   { path: 'admin', component: Admin },
+  {
+    path: 'admin/estadisticas',
+    loadComponent: () => import('./pages/admin-stats/admin-stats').then((m) => m.AdminStats),
+  },
   { path: '**', component: NoEncontrada },
 ];

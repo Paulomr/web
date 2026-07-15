@@ -1,0 +1,245 @@
+/* Centro de control: tema oscuro tipo "dashboard", a propósito distinto del
+   resto del sitio (pastel). Autocontenido, no depende de variables globales. */
+:host {
+  --bg: #0e1017;
+  --panel: #171a24;
+  --panel-2: #1e2230;
+  --line: #2a2f40;
+  --txt: #e7e9f0;
+  --dim: #8b90a5;
+  --pink: #ff5fa2;
+  --teal: #37e0c8;
+  --amber: #ffcf5c;
+  display: block;
+  min-height: 100vh;
+  background: radial-gradient(120% 80% at 100% 0%, #1a1430 0%, rgba(26, 20, 48, 0) 55%),
+    radial-gradient(120% 80% at 0% 100%, #10202a 0%, rgba(16, 32, 42, 0) 55%), var(--bg);
+  color: var(--txt);
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* ---- Gate (sin sesión) ---- */
+.gate {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 24px;
+}
+.gate h1 { font-size: 2rem; letter-spacing: 0.08em; margin: 0; }
+.gate p { color: var(--dim); margin: 0; }
+.gate-btn {
+  margin-top: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--pink), #c23c86);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.gate-err { color: #ff8f8f; }
+
+/* ---- Layout ---- */
+.dash {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 22px clamp(14px, 4vw, 34px) 60px;
+}
+.dash-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.eyebrow { color: var(--teal); font-size: 0.72rem; letter-spacing: 0.22em; font-weight: 700; }
+.dash-title h1 { margin: 4px 0 0; font-size: clamp(1.6rem, 4vw, 2.4rem); letter-spacing: 0.06em; }
+.dash-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--teal);
+  background: rgba(55, 224, 200, 0.1);
+  border: 1px solid rgba(55, 224, 200, 0.3);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.live .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 0 0 rgba(55, 224, 200, 0.6);
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(55, 224, 200, 0.55); }
+  70% { box-shadow: 0 0 0 9px rgba(55, 224, 200, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(55, 224, 200, 0); }
+}
+.upd { color: var(--dim); font-size: 0.72rem; }
+.refresh {
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--txt);
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.refresh:hover { border-color: var(--teal); color: var(--teal); }
+.volver { color: var(--dim); text-decoration: none; font-size: 0.82rem; font-weight: 600; }
+.volver:hover { color: var(--txt); }
+
+.dash-err { color: #ff9a9a; background: rgba(255,90,90,.08); border: 1px solid rgba(255,90,90,.3); padding: 10px 14px; border-radius: 12px; }
+.dash-load { color: var(--dim); }
+
+/* ---- KPIs ---- */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kpi {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-ico { font-size: 1.1rem; }
+.kpi-num { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.1; }
+.kpi-lbl { color: var(--dim); font-size: 0.72rem; }
+.kpi.accent-live { border-color: rgba(55, 224, 200, 0.4); }
+.kpi.accent-live .kpi-num { color: var(--teal); }
+.kpi.accent-money .kpi-num { color: var(--amber); font-size: 1.3rem; }
+
+/* ---- Cards ---- */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.card-head h2 { margin: 0; font-size: 0.95rem; letter-spacing: 0.1em; color: var(--txt); }
+.card-head .hint { color: var(--dim); font-weight: 400; letter-spacing: 0; font-size: 0.78rem; }
+.segs { display: inline-flex; gap: 4px; background: var(--panel-2); padding: 4px; border-radius: 10px; }
+.segs button {
+  border: none; background: none; color: var(--dim);
+  font-weight: 700; font-size: 0.72rem; letter-spacing: 0.06em;
+  padding: 6px 12px; border-radius: 7px; cursor: pointer;
+}
+.segs button.on { background: var(--pink); color: #fff; }
+
+.vacio { color: var(--dim); font-size: 0.86rem; line-height: 1.5; margin: 6px 0; }
+
+/* ---- Bar chart ---- */
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 180px;
+  overflow-x: auto;
+  padding-top: 18px;
+}
+.bar-col {
+  flex: 1 0 18px;
+  min-width: 18px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  position: relative;
+}
+.bar-val { font-size: 0.6rem; color: var(--dim); }
+.bar {
+  width: 100%;
+  max-width: 34px;
+  min-height: 2px;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, var(--teal), #1c8f80);
+  transition: height 0.3s ease;
+}
+.bar-m { background: linear-gradient(180deg, var(--amber), #c79625); }
+.bar-lbl { font-size: 0.58rem; color: var(--dim); white-space: nowrap; }
+.chart-foot { color: var(--dim); font-size: 0.74rem; margin: 10px 0 0; }
+
+/* ---- Juegos ---- */
+.juegos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.juego { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 13px; }
+.juego-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.juego-ico { font-size: 1.3rem; }
+.juego-nom { font-weight: 700; font-size: 0.9rem; }
+.juego-stats { display: flex; flex-direction: column; gap: 3px; color: var(--dim); font-size: 0.8rem; }
+.juego-stats b { color: var(--txt); }
+.juego-stats em { color: var(--dim); font-style: normal; }
+
+/* ---- Lookup ---- */
+.lookup-form { display: flex; gap: 8px; flex-wrap: wrap; }
+.lookup-form input {
+  flex: 1 1 220px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 12px 14px;
+  color: var(--txt);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.lookup-form input:focus { outline: none; border-color: var(--pink); }
+.lookup-form button {
+  border: none;
+  background: linear-gradient(135deg, var(--pink), #c23c86);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 12px 22px;
+  border-radius: 11px;
+  cursor: pointer;
+}
+.lookup-form button:disabled { opacity: 0.6; cursor: default; }
+.lookup-err { color: #ff9a9a; font-size: 0.85rem; margin: 10px 0 0; }
+
+.cliente, .historial { margin-top: 18px; }
+.cliente h3, .historial h3 { font-size: 0.78rem; letter-spacing: 0.1em; color: var(--teal); margin: 0 0 10px; }
+.cliente-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.cliente-grid > div { background: var(--panel-2); border: 1px solid var(--line); border-radius: 11px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.cliente-grid span { color: var(--dim); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.cliente-grid b { font-size: 0.9rem; word-break: break-word; }
+
+.pedido { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+.pedido summary {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; cursor: pointer; list-style: none;
+  font-size: 0.86rem;
+}
+.pedido summary::-webkit-details-marker { display: none; }
+.ped-cod { font-weight: 700; letter-spacing: 0.04em; color: var(--pink); }
+.ped-fecha { color: var(--dim); flex: 1; font-size: 0.78rem; }
+.ped-total { font-weight: 700; color: var(--amber); }
+.ped-cuerpo { padding: 0 14px 14px; border-top: 1px solid var(--line); }
+.ped-items { list-style: none; margin: 10px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 0.84rem; }
+.ped-items em { color: var(--dim); font-style: normal; }
+.ped-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--dim); font-size: 0.78rem; }
+
+@media (max-width: 560px) {
+  .kpi-num { font-size: 1.4rem; }
+  .chart { height: 150px; }
+}

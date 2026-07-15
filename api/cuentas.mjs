@@ -60,6 +60,33 @@ export default async function handler(req, res) {
         return;
       }
 
+      // ── Recuperar el código olvidado (verificación por pregunta de seguridad) ──
+      //   Identidad: @instagram + nombre completo. Si coinciden con la cuenta,
+      //   fija un código nuevo. No hay envío de correo: el cambio es inmediato.
+      if (body.accion === 'recuperar') {
+        const ig = normalizarIg(body.instagram);
+        const nombre = (body.nombre ?? '').toString().trim();
+        const pin = (body.pin ?? '').toString().trim();
+        if (!ig || !nombre) {
+          res.status(400).json({ error: 'Instagram y nombre completo.' });
+          return;
+        }
+        if (!/^\d{4}$/.test(pin)) {
+          res.status(400).json({ error: 'El código nuevo debe ser de 4 dígitos.' });
+          return;
+        }
+        const c = await Cuenta.findOne({ instagram: ig });
+        const norm = (s) => (s || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
+        if (!c || norm(c.nombre) !== norm(nombre)) {
+          res.status(401).json({ error: 'Los datos no coinciden con ninguna cuenta.' });
+          return;
+        }
+        c.pinHash = hashPin(ig, pin);
+        await c.save();
+        res.status(200).json({ ok: true, cuenta: publica(c) });
+        return;
+      }
+
       // ── Usar el cupón de bienvenida (una vez por cuenta) ──
       if (body.accion === 'usar-cupon') {
         const ig = normalizarIg(body.instagram);

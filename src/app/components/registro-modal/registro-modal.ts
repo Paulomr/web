@@ -15,7 +15,7 @@ import { CuentaService } from '../../cuenta.service';
 export class RegistroModal {
   readonly cuenta = inject(CuentaService);
 
-  readonly modo = signal<'registro' | 'login'>('registro');
+  readonly modo = signal<'registro' | 'login' | 'recuperar'>('registro');
 
   // Registro
   readonly nombre = signal('');
@@ -28,6 +28,12 @@ export class RegistroModal {
   // Login
   readonly loginIg = signal('');
   readonly loginPin = signal('');
+
+  // Recuperar código (pregunta de seguridad: @instagram + nombre completo)
+  readonly recIg = signal('');
+  readonly recNombre = signal('');
+  readonly recPin = signal('');
+  readonly recOk = signal(false);
 
   readonly error = signal('');
   readonly cargando = signal(false);
@@ -43,9 +49,10 @@ export class RegistroModal {
     });
   }
 
-  cambiarModo(m: 'registro' | 'login'): void {
+  cambiarModo(m: 'registro' | 'login' | 'recuperar'): void {
     this.modo.set(m);
     this.error.set('');
+    this.recOk.set(false);
   }
 
   async registrar(): Promise<void> {
@@ -108,6 +115,33 @@ export class RegistroModal {
     this.limpiar();
   }
 
+  async recuperar(): Promise<void> {
+    if (this.cargando()) return;
+    if (!this.recIg().trim()) {
+      this.error.set('Pon tu Instagram.');
+      return;
+    }
+    if (this.recNombre().trim().length < 2) {
+      this.error.set('Escribe tu nombre completo (como lo registraste).');
+      return;
+    }
+    if (!/^\d{4}$/.test(this.recPin().trim())) {
+      this.error.set('Crea un código nuevo de 4 dígitos.');
+      return;
+    }
+    this.error.set('');
+    this.cargando.set(true);
+    const r = await this.cuenta.recuperar(this.recIg().trim(), this.recNombre().trim(), this.recPin().trim());
+    this.cargando.set(false);
+    if (!r.ok) {
+      this.error.set(r.error ?? 'No se pudo recuperar la cuenta.');
+      return;
+    }
+    // Verificación correcta: sesión iniciada con el código nuevo.
+    this.recOk.set(true);
+    this.limpiar();
+  }
+
   private limpiar(): void {
     this.nombre.set('');
     this.edad.set('');
@@ -117,6 +151,9 @@ export class RegistroModal {
     this.acepta.set(false);
     this.loginIg.set('');
     this.loginPin.set('');
+    this.recIg.set('');
+    this.recNombre.set('');
+    this.recPin.set('');
   }
 
   @HostListener('document:keydown.escape')
