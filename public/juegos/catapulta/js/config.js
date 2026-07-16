@@ -2,6 +2,9 @@
 export const W = 1280, H = 720;
 export const WORLD_W = 2560;          // mundo mas ancho que la pantalla
 export const GROUND_Y = 640;          // cota superior del suelo
+// Alto de la franja de suelo. Generosa a proposito: con el vistazo (zoom 0.56)
+// se ve muy por debajo de H y no puede asomar el vacio bajo la galleta.
+export const GROUND_H = 620;
 
 // Honda: anclaje, arrastre maximo y factor arrastre->velocidad (px/step Matter)
 // k mas bajo + gravedad mas baja => vuelo mas lento y legible SIN perder alcance
@@ -26,7 +29,9 @@ export const MATS = {
   ice  : { density:0.0007, hp:28,  threshold:6,  color:0xbfe9ff, dark:0x6fb7d8 },
 };
 
-export const PIG  = { hp:16, threshold:4, r:20 };
+// Lata de tomate (objetivo). Cuerpo rectangular: rueda mucho menos que el
+// cerdo redondo de antes, así que se queda donde la pone el nivel.
+export const CAN  = { hp:16, threshold:4, w:36, h:46 };
 export const PROJ = { r:17, density:0.0012 };
 // TNT: dano acumulado que la detona, y parametros de su explosion
 export const TNT  = { size:44, trigger:45, radius:200, power:0.05, damage:260 };
@@ -36,5 +41,13 @@ export const TNT  = { size:44, trigger:45, radius:200, power:0.05, damage:260 };
 // colapse de forma mas viva. Muy por debajo del TNT y escalada con el dano
 // del golpe (clamp). minDmg filtra roces/asentamiento; throttle limita cuantas
 // ondas por ms para no gastar CPU en cascadas.
-export const IMPACT_SHOCK = { radius:95, power:0.021, upBias:0.14,
-                              minDmg:20, refDmg:150, throttle:45 };
+export const IMPACT_SHOCK = { radius:130, power:0.034, upBias:0.14,
+                              minDmg:16, refDmg:150, throttle:38 };
+
+// El oso no "toca" la estructura: se ESTAMPA. En un impacto directo del
+// proyectil, además del impulso que ya calcula Matter, empujamos el cuerpo
+// golpeado en la dirección del vuelo. Sin esto un oso rápido rebota y deja la
+// torre casi en pie, porque Matter reparte la energía entre muchos contactos.
+// power se escala con la velocidad (clamp en refSpeed) y squash es cuánto se
+// achata el oso al reventar contra el muro.
+export const SLAM = { minSpeed:5, power:0.06, refSpeed:22, squash:0.45 };

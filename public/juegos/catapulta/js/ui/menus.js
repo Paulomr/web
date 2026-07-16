@@ -16,13 +16,14 @@ const MUTE_KEY='catapulta_mute';
 
 function startLevel(i){
   current=i; playing=true;
-  hideAll(); show('hud'); show('pauseBtn');
+  hideAll(); show('hud'); show('pauseBtn'); show('zoomBtn');
+  el('zoomBtn').classList.remove('on');
   SFX.click();
   emit('ui:play',{ level:i });
 }
 function toMenu(){
   playing=false;
-  hideAll(); hide('pauseBtn'); show('start');
+  hideAll(); hide('pauseBtn'); hide('zoomBtn'); show('start');
   SFX.click();
   emit('ui:menu');
 }
@@ -56,6 +57,10 @@ export function initUI(){
   el('btnMenuW').addEventListener('click',toMenu);
   el('btnMenuL').addEventListener('click',toMenu);
 
+  // vistazo a la estructura: la escena responde con game:peek segun si lo acepta
+  el('zoomBtn').addEventListener('click',()=>{ SFX.click(); emit('ui:peek'); });
+  on('game:peek', e=>el('zoomBtn').classList.toggle('on',!!e.detail.on));
+
   // pausa: boton, overlay y teclas Esc/P
   el('pauseBtn').addEventListener('click',pauseGame);
   el('btnResume').addEventListener('click',resumeGame);
@@ -87,7 +92,7 @@ export function initUI(){
     playing=false;
     saveStars(level,stars);
     if (window.CrunchyScores) window.CrunchyScores.submit('catapulta', 'n'+level, stars, (level+1)*100 + stars*10);
-    hide('hud'); hide('pauseBtn');
+    hide('hud'); hide('pauseBtn'); hide('zoomBtn');
     // estrellas escalonadas: pop una a una con "ding" ascendente
     document.querySelectorAll('#winStars span').forEach((s,i)=>{
       s.classList.remove('on');
@@ -99,5 +104,5 @@ export function initUI(){
       last?'¡JUEGO COMPLETADO! RECUPERASTE TODA LA MERIENDA':'GALLETAS RECUPERADAS';
     show('win');
   });
-  on('game:lose', ()=>{ playing=false; hide('hud'); hide('pauseBtn'); show('lose'); });
+  on('game:lose', ()=>{ playing=false; hide('hud'); hide('pauseBtn'); hide('zoomBtn'); show('lose'); });
 }

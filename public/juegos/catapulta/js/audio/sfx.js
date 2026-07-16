@@ -50,14 +50,16 @@ export const SFX=(()=>{
       if(mat==="wood") tone("triangle",170,60,0.1,0.2);
       else if(mat==="stone"){ tone("sine",85,38,0.13,0.26); tone("square",240,90,0.04,0.08); }
       else if(mat==="ice") tone("square",1000,1500,0.07,0.09);
-      else if(mat==="pig") tone("triangle",520,190,0.11,0.14);
+      else if(mat==="can"){ tone("square",900,620,0.06,0.1); tone("triangle",1400,900,0.05,0.06); } // clonk de hojalata
     },
     breakMat(mat){
       if(mat==="ice"){ tone("square",1300,2400,0.09,0.1); tone("square",900,1800,0.09,0.08,0.05); }
       else if(mat==="stone") noise(0.28,300,70,0.4,"lowpass");
       else noise(0.2,900,250,0.35); // crack madera
     },
-    pig(){ tone("triangle",600,140,0.22,0.2); tone("square",300,80,0.12,0.1,0.08); },
+    // lata reventada: chapa que se abolla + el "chof" húmedo del tomate
+    can(){ tone("square",820,180,0.1,0.16); tone("triangle",420,90,0.14,0.12,0.03);
+           noise(0.26,900,180,0.3,"lowpass"); },
     explosion(){ noise(0.6,400,50,0.85,"lowpass"); tone("sine",110,28,0.55,0.5); },
     win(){ [392,494,587,784].forEach((f,i)=>tone("triangle",f,f,0.16,0.16,i*0.11)); },
     star(i){ tone("triangle",660+i*160,880+i*160,0.12,0.14); }, // ding por estrella

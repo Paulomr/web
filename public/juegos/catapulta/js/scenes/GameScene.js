@@ -2,7 +2,7 @@
    Escena principal. level:null = telon de fondo para los menus DOM.
    Nunca toca el DOM: emite por core/events.js (game:hud/win/lose).
    ===================================================================== */
-import { W, H, WORLD_W, GROUND_Y, TNT, DMG_SCALE, IMPACT_SHOCK } from '../config.js';
+import { W, H, WORLD_W, GROUND_Y, GROUND_H, TNT, DMG_SCALE, IMPACT_SHOCK, SLAM } from '../config.js';
 import { shockwave } from '../physics/explosion.js';
 import { LEVELS } from '../data/levels.js';
 import { emit } from '../core/events.js';
@@ -11,6 +11,7 @@ import { makeBlock } from '../entities/block.js';
 import { makeTarget } from '../entities/target.js';
 import { makeTNT } from '../entities/tnt.js';
 import { Slingshot } from '../entities/slingshot.js';
+import { BearQueue } from '../entities/bearqueue.js';
 import { setupSlingInput } from '../core/input.js';
 import { GameCam } from '../core/camera.js';
 
@@ -20,9 +21,14 @@ export class GameScene extends Phaser.Scene{
   init(d){ this.levelIdx=(d && Number.isInteger(d.level)) ? d.level : null; }
 
   create(){
-    this.cameras.main.setBounds(0,0,WORLD_W,H);
+    // Limites con MUCHO aire vertical. Con los limites pegados a H (720) y la
+    // camara alejada (seguimiento 0.88 o vistazo), la vista era mas alta que los
+    // limites y Phaser la recolocaba sola: el suelo se comia media pantalla. Con
+    // holgura la camara va donde se le pide, y de paso los globos altos ya no se
+    // salen por arriba. El cielo y el suelo cubren de sobra este rango.
+    this.cameras.main.setBounds(0,-500,WORLD_W,1500);
     this.buildScenery();
-    this.toKill=[]; this.blocks=[]; this.targets=[]; this.tnts=[];
+    this.toKill=[]; this.blocks=[]; this.targets=[]; this.tnts=[]; this.splats=[];
     this.emitters={}; this.over=false; this.proj=null; this.projState='idle';
     this.lastHitSfx=0; this.shockT=0; this.hitStopUntil=0; this.trailT=0;
     // defensivo: si se reinicio en pleno hit-stop, que no quede el slow-mo pegado
@@ -32,7 +38,7 @@ export class GameScene extends Phaser.Scene{
 
     const L=LEVELS[this.levelIdx];
     this.shotsLeft=L.shots;
-    this.cam=new GameCam(this);
+    this.cam=new GameCam(this, on=>emit('game:peek',{ on }));
 
     // estaticos: suelo + muros laterales
     const st={ isStatic:true, friction:0.9 };
@@ -45,19 +51,36 @@ export class GameScene extends Phaser.Scene{
     L.targets.forEach(t=>this.targets.push(makeTarget(this,t)));
 
     this.sling=new Slingshot(this);
+    this.fila=new BearQueue(this);   // osos esperando turno = tiros restantes
+    this.syncFila();
     setupSlingInput(this,this.sling);
     this.matter.world.on('collisionstart',this.onCollisions,this);
     this.hud();
 
-    // intro: ensenar la estructura y volver; luego cargar el primer proyectil
-    const fx=Phaser.Math.Clamp(
-      L.targets.reduce((s,t)=>s+t.x,0)/L.targets.length, W/2, WORLD_W-W/2);
-    this.cam.intro(fx);
+    // intro: ensenar la estructura y volver; luego cargar el primer proyectil.
+    // Punto medio del ANCHO ocupado por las latas (no la media: esa se iria
+    // hacia donde haya mas latas juntas y dejaria fuera la de la punta).
+    const txs=L.targets.map(t=>t.x);
+    this.focusX=Phaser.Math.Clamp(
+      (Math.min(...txs)+Math.max(...txs))/2, W/2, WORLD_W-W/2);
+    this.cam.intro(this.focusX);
     this.time.delayedCall(2500,()=>this.sling.loadNext());
   }
 
+  /* Osos en el suelo = tiros que quedan, sin contar el que ya está en la honda. */
+  syncFila(){
+    if(this.fila) this.fila.sync(this.shotsLeft-(this.sling && this.sling.proj?1:0));
+  }
+
+  /* Vistazo a la estructura. Se ignora en pleno vuelo: la camara ya sigue al oso. */
+  togglePeek(){
+    if(this.over || this.levelIdx===null || this.projState==='flying' || !this.cam) return;
+    this.cam.peek(this.focusX);
+  }
+
   buildScenery(){
-    this.add.image(WORLD_W/2,210,'sky').setDisplaySize(WORLD_W,1030).setDepth(-2);
+    // cielo con holgura por arriba: con el vistazo la camara ve hasta y=-280
+    this.add.image(WORLD_W/2,110,'sky').setDisplaySize(WORLD_W,1290).setDepth(-2);
     // sol blanco amplio: parallax lento, respiracion sutil de escala
     const sun=this.add.image(860,155,'sun').setScrollFactor(0.15).setDepth(-1.9).setScale(1.25);
     this.tweens.add({ targets:sun, scale:1.32, duration:2600, yoyo:true, repeat:-1, ease:'Sine.easeInOut' });
@@ -66,7 +89,7 @@ export class GameScene extends Phaser.Scene{
     [150,600,1100,1600,2100,2500].forEach((x,i)=>
       this.add.image(x,GROUND_Y-10+(i%2)*14, i%2?'hillMint':'hill')
         .setScrollFactor(0.6).setDepth(0).setAlpha(0.85));
-    this.add.tileSprite(WORLD_W/2,GROUND_Y+80,WORLD_W,160,'groundTex').setDepth(2);
+    this.add.tileSprite(WORLD_W/2,GROUND_Y+GROUND_H/2,WORLD_W,GROUND_H,'groundTex').setDepth(2);
   }
 
   hud(){ emit('game:hud',{ level:this.levelIdx, name:LEVELS[this.levelIdx].name,
@@ -76,6 +99,8 @@ export class GameScene extends Phaser.Scene{
   onLaunched(go){
     this.proj=go; this.projState='flying'; this.stillFrames=0; this.shotT=this.time.now;
     this.shotsLeft--; this.hud();
+    if(this.cam) this.cam.endPeek();  // si estabas mirando, el disparo manda
+    this.syncFila();
     this.cam.follow(go);
     SFX.launch();
   }
@@ -109,8 +134,17 @@ export class GameScene extends Phaser.Scene{
     for(const { bodyA:a, bodyB:b } of ev.pairs){
       const rel=Math.hypot(a.velocity.x-b.velocity.x, a.velocity.y-b.velocity.y);
       const dmg=Math.max(this.applyHit(a,b,rel), this.applyHit(b,a,rel));
-      if((a.label==='proj'||b.label==='proj') && rel>8)
-        this.cam && this.cam.shake(Math.min(0.012,rel*0.0006));
+      if(a.label==='proj'||b.label==='proj'){
+        const pb=a.label==='proj'?a:b;
+        // El oso vuela SIN rozamiento para que la prediccion de la honda sea
+        // exacta, pero eso solo importa hasta el primer contacto. A partir de ahi
+        // le metemos drag: sin el, un circulo sobre suelo plano en Matter no
+        // pierde apenas velocidad (no hay resistencia a la rodadura) y se iba
+        // rodando hasta agotar el timeout de 9s antes de dejarte tirar otra vez.
+        if(pb.frictionAir===0) pb.frictionAir=0.022;
+        if(rel>8) this.cam && this.cam.shake(Math.min(0.012,rel*0.0006));
+        this.estamparse(pb, pb===a?b:a, rel);
+      }
       // Onda expansiva: Matter solo empuja lo que toca; un impulso radial extra
       // en el punto de contacto propaga el golpe a los vecinos y vuelca mejor la
       // estructura. Solo en golpes que ya danan, y throttled contra cascadas.
@@ -123,6 +157,32 @@ export class GameScene extends Phaser.Scene{
         this.burst(mx, my, 0xfff2c8, 4+((s*7)|0));           // chispa del impacto
         this.cam && this.cam.shake(Math.min(0.01,0.006*s));  // enfasis proporcional
       }
+    }
+  }
+
+  /* El oso se ESTAMPA contra lo que golpea. Matter reparte la energía entre
+     todos los contactos, así que un impacto directo a toda velocidad movía la
+     torre mucho menos de lo que el golpe aparenta. Aquí le metemos al cuerpo
+     golpeado un empujón extra en la dirección del vuelo, y achatamos al oso un
+     instante contra la superficie. */
+  estamparse(pb, otro, rel){
+    if(rel<SLAM.minSpeed || otro.isStatic || !otro.entRef) return;
+    const v=pb.velocity, sp=Math.hypot(v.x,v.y);
+    if(sp<0.001) return;
+    const f=Phaser.Math.Clamp(rel/SLAM.refSpeed,0,1)*SLAM.power;
+    Phaser.Physics.Matter.Matter.Body.applyForce(otro, otro.position, {
+      x:(v.x/sp)*f*otro.mass, y:(v.y/sp)*f*otro.mass,
+    });
+    // Achatado del oso contra la superficie. Solo escala del sprite: rotarlo
+    // giraría también el cuerpo de Matter (setRotation escribe en body.angle) y
+    // estaríamos tocando la física en pleno callback de colisión.
+    const go=this.proj;
+    if(go && this.time.now-(this.squashT||0)>120){
+      this.squashT=this.time.now;
+      const k=Phaser.Math.Clamp(rel/SLAM.refSpeed,0,1)*SLAM.squash;
+      const horiz=Math.abs(v.x)>=Math.abs(v.y);   // ¿se estampa contra un muro o contra el suelo?
+      go.setScale(horiz?1-k*0.55:1+k*0.45, horiz?1+k*0.45:1-k*0.55);
+      this.tweens.add({ targets:go, scaleX:1, scaleY:1, duration:200, ease:'Back.easeOut' });
     }
   }
 
@@ -147,12 +207,44 @@ export class GameScene extends Phaser.Scene{
   killEnt(ent){
     const { go, kind }=ent;
     if(kind==='block'){ this.burst(go.x,go.y,ent.color,12); SFX.breakMat(ent.sfxKey); this.blocks=this.blocks.filter(b=>b!==ent); }
-    else if(kind==='pig'){ this.burst(go.x,go.y,0x7ed957,16); SFX.pig(); this.targets=this.targets.filter(t=>t!==ent); }
+    else if(kind==='can'){ this.reventarLata(go.x,go.y); this.targets=this.targets.filter(t=>t!==ent); }
     else if(kind==='tnt'){ this.tnts=this.tnts.filter(t=>t!==ent); }
     go.setVisible(false);
     this.wakeNear(go.x, go.y, 190); // el apoyo desaparece: despierta la torre para que colapse
     this.toKill.push(ent); // destruir fuera del callback de colision
-    if(kind==='pig') this.checkWin();
+    if(kind==='can') this.checkWin();
+  }
+
+  /* La lata revienta: pulpa por el aire y tomate salpicado en el piso. */
+  reventarLata(x,y){
+    SFX.can();
+    this.burst(x,y,0xc4241c,20);   // pulpa
+    this.burst(x,y,0xf7e8b0,5);    // pepitas
+    this.burst(x,y,0x9a947c,4);    // metal de la lata
+    this.cam && this.cam.shake(0.008);
+    this.salpicar(x,y);
+  }
+
+  /* Mancha de tomate en el suelo, justo debajo de donde reventó la lata.
+     Cae desde la altura de la lata para que se vea "chorrear" hasta el piso. */
+  salpicar(x,y){
+    const v=Phaser.Math.Between(0,2);
+    const ex=Phaser.Math.FloatBetween(0.75,1.15);
+    const sp=this.add.image(Phaser.Math.Clamp(x,40,WORLD_W-40), GROUND_Y-4, 'splat'+v)
+      .setDepth(2.5)                              // sobre el suelo, bajo los bloques
+      .setOrigin(0.5,0.72)
+      .setFlipX(Math.random()<0.5)
+      .setScale(ex,0.1)
+      .setAlpha(0.95);
+    // cuanto más alta reventó, más tarda el tomate en llegar al piso
+    const t=Phaser.Math.Clamp((GROUND_Y-y)/400,0,1)*160;
+    // la mancha se "abre" al aterrizar
+    this.tweens.add({ targets:sp, scaleY:ex, duration:190, delay:t, ease:'Back.easeOut' });
+    // gotas que saltan al reventar contra el piso
+    this.time.delayedCall(t,()=>this.burst(sp.x,GROUND_Y-8,0xc4241c,7));
+    this.splats.push(sp);
+    // el suelo no se llena hasta arriba: se limpian las manchas más viejas
+    if(this.splats.length>26) this.splats.shift().destroy();
   }
 
   // Matter no sabe que un cuerpo en reposo perdio su apoyo al destruir un vecino:
@@ -213,7 +305,11 @@ export class GameScene extends Phaser.Scene{
       const speed=Math.hypot(b.velocity.x,b.velocity.y);
       // estela de migas mientras vuela rapido (juice barato: reusa burst)
       if(speed>3 && ++this.trailT%4===0) this.burst(b.position.x,b.position.y,0xffe3b8,1);
-      if(speed<0.35 && Math.abs(b.angularVelocity)<0.05) this.stillFrames++;
+      // Solo cuenta la velocidad LINEAL: el oso es un circulo y sigue girando
+      // mientras rueda, asi que exigir tambien angularVelocity baja hacia que casi
+      // nunca se diera por parado y cada tiro agotase el timeout de 9s. Un oso a
+      // <0.35 durante ~0.8s ya no va a tirar nada aunque siga girando.
+      if(speed<0.35) this.stillFrames++;
       else this.stillFrames=0;
       const out=b.position.x>WORLD_W-30 || b.position.x<10 || b.position.y>H+120;
       const rest=age>400 && (b.isSleeping || this.stillFrames>50);

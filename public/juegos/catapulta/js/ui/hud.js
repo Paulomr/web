@@ -1,12 +1,12 @@
-/* HUD in-game: nivel, proyectiles restantes y cerdos vivos. */
+/* HUD in-game: nivel y latas vivas. Los tiros restantes NO se cuentan aquí:
+   se ven en el suelo, en la fila de osos esperando turno (entities/bearqueue). */
 import { on } from '../core/events.js';
 import { setText } from './dom.js';
 
 export function initHUD(){
   on('game:hud', e=>{
-    const { level, name, shots, targets }=e.detail;
+    const { level, name, targets }=e.detail;
     setText('hudLvl',`NIVEL ${level+1} · ${name}`);
-    setText('hudShots','●'.repeat(Math.max(0,shots)));
-    setText('hudPigs',`CERDOS ${targets}`);
+    setText('hudPigs',`LATAS ${targets}`);
   });
 }

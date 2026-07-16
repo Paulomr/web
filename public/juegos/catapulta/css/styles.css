@@ -104,18 +104,20 @@ html,body{height:100%;margin:0;background:var(--ink);
 
 /* ---- HUD ---- */
 #hud{position:absolute;top:0;left:0;right:0;z-index:4;display:flex;justify-content:space-between;
-  padding:14px 148px 0 16px;font-size:clamp(9px,1.8vw,14px);pointer-events:none;
+  padding:14px 200px 0 16px;font-size:clamp(9px,1.8vw,14px);pointer-events:none;
   text-shadow:2px 2px 0 rgba(0,0,0,.55)}
-#hudShots{color:#ffb26e;letter-spacing:4px}
-#hudPigs{color:#93de8b}
+#hudPigs{color:#ff8a7a}
 
-#mute,#pauseBtn{position:absolute;top:10px;z-index:8;font-size:20px;width:52px;height:52px;
+#mute,#pauseBtn,#zoomBtn{position:absolute;top:10px;z-index:8;font-size:20px;width:52px;height:52px;
   background:var(--glass);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;cursor:pointer}
 #mute{right:10px}
 #pauseBtn{right:72px}
-#mute:hover,#pauseBtn:hover{background:rgba(48,20,38,.85)}
-#mute:active,#pauseBtn:active{transform:translateY(2px)}
+#zoomBtn{right:134px;font-size:26px} /* la lupa dibuja mas pequena que el resto de emojis */
+#mute:hover,#pauseBtn:hover,#zoomBtn:hover{background:rgba(48,20,38,.85)}
+#mute:active,#pauseBtn:active,#zoomBtn:active{transform:translateY(2px)}
+/* mientras dura el vistazo el botón queda encendido */
+#zoomBtn.on{background:rgba(255,178,110,.85);border-color:#ffd3a0}
 
 /* accesibilidad: sin animaciones decorativas si el usuario lo pide */
 @media (prefers-reduced-motion:reduce){

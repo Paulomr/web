@@ -31,5 +31,6 @@ on('ui:play',  e=>{ gs().scene.resume(); gs().scene.restart({ level:e.detail.lev
 on('ui:menu',  ()=>{ gs().scene.resume(); gs().scene.restart({ level:null }); });
 on('ui:pause', ()=>gs().scene.pause());
 on('ui:resume',()=>gs().scene.resume());
+on('ui:peek',  ()=>gs().togglePeek());
 
 initUI();

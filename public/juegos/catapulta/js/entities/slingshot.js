@@ -9,7 +9,11 @@ export class Slingshot{
   constructor(scene){
     this.scene=scene;
     this.ax=SLING.x; this.ay=SLING.anchorY;
-    scene.add.image(SLING.x, GROUND_Y-85, 'sling').setDepth(4); // base apoyada en el suelo
+    // El brazo trasero de la goma va POR DETRAS de la horquilla (depth 3.7 < 4) y
+    // el delantero por delante (6): con una sola capa la goma "trasera" cruzaba
+    // por encima del tronco y la honda se veia plana.
+    this.bandBack=scene.add.graphics().setDepth(3.7);
+    scene.add.image(SLING.x, GROUND_Y-91, 'sling').setDepth(4); // base apoyada en el suelo
     this.band=scene.add.graphics().setDepth(6);
     this.dots=scene.add.graphics().setDepth(3);
     this.proj=null; this.state='empty';
@@ -24,6 +28,7 @@ export class Slingshot{
     });
     go.setStatic(true).setDepth(7);
     this.proj=go; this.state='loaded';
+    this.scene.syncFila(); // este oso deja la fila: ya está en la honda
     SFX.click();
   }
 
@@ -72,18 +77,21 @@ export class Slingshot{
   }
 
   update(){ // banda elastica con volumen (doble pasada) + bolsa de cuero
-    this.band.clear();
+    this.band.clear(); this.bandBack.clear();
     if(this.proj && this.state!=='empty'){
       const px=this.proj.x, py=this.proj.y, r=PROJ.r;
-      // brazo trasero (mas oscuro, queda "detras"); anclado a las puntas de la horquilla
-      this.band.lineStyle(10,0x2e1a0c,1).lineBetween(this.ax+24,this.ay-33,px,py);
-      this.band.lineStyle(5,0x54301a,1).lineBetween(this.ax+24,this.ay-33,px,py);
+      // anclajes = puntas de la horquilla de la textura 'sling' (ver textures.js)
+      const TX=28, TY=37;
+      // brazo trasero (mas oscuro, cruza por detras del tronco)
+      this.bandBack.lineStyle(10,0x2e1a0c,1).lineBetween(this.ax+TX,this.ay-TY,px,py);
+      this.bandBack.lineStyle(5,0x54301a,1).lineBetween(this.ax+TX,this.ay-TY,px,py);
       // bolsa de cuero bajo el proyectil (depth banda < depth bola)
-      this.band.fillStyle(0x4a2c14,1).fillEllipse(px,py+3,r*2.5,r*1.5);
+      this.band.fillStyle(0x2b170a,1).fillEllipse(px,py+3,r*2.5,r*1.5);
       this.band.fillStyle(0x7a4c28,1).fillEllipse(px,py+2,r*2.1,r*1.15);
+      this.band.fillStyle(0xa9744a,0.5).fillEllipse(px-3,py,r*1.1,r*0.5); // luz del cuero
       // brazo delantero (mas claro, con luz)
-      this.band.lineStyle(10,0x3a2210,1).lineBetween(this.ax-24,this.ay-33,px,py);
-      this.band.lineStyle(5,0x8a5a33,1).lineBetween(this.ax-24,this.ay-33,px,py);
+      this.band.lineStyle(10,0x3a2210,1).lineBetween(this.ax-TX,this.ay-TY,px,py);
+      this.band.lineStyle(5,0x8a5a33,1).lineBetween(this.ax-TX,this.ay-TY,px,py);
     }
   }
 }
