@@ -65,6 +65,7 @@
           <h2>FLUJO DE LA PÁGINA</h2>
           <div class="segs">
             <button [class.on]="rango() === 'dia'" (click)="rango.set('dia')">DÍA</button>
+            <button [class.on]="rango() === 'semana'" (click)="rango.set('semana')">SEMANA</button>
             <button [class.on]="rango() === 'mes'" (click)="rango.set('mes')">MES</button>
             <button [class.on]="rango() === 'anio'" (click)="rango.set('anio')">AÑO</button>
           </div>
@@ -106,6 +107,28 @@
           </div>
         } @else {
           <p class="vacio">Todavía nadie ha registrado partidas.</p>
+        }
+      </section>
+
+      <!-- Ranking de estrellas por persona -->
+      <section class="card">
+        <div class="card-head">
+          <h2>RANKING DE ESTRELLAS</h2>
+          @if (s.ranking.length) { <span class="hint">{{ s.ranking.length }} con estrellas</span> }
+        </div>
+        @if (s.ranking.length) {
+          <ol class="ranking">
+            @for (u of s.ranking; track u.instagram; let i = $index) {
+              <li class="rk" [class.top]="i < 3">
+                <span class="rk-pos">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1 }}</span>
+                <span class="rk-user">{{ u.instagram }}</span>
+                <span class="rk-juegos">{{ u.juegos }} juego{{ u.juegos === 1 ? '' : 's' }}</span>
+                <span class="rk-estrellas">⭐ {{ u.estrellas }}</span>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="vacio">Todavía nadie ha ganado estrellas.</p>
         }
       </section>
 

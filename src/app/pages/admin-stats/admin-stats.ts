@@ -9,7 +9,7 @@ import { formatoCOP } from '../../carrito';
 // Reutiliza la misma clave de admin guardada por la pantalla de /admin.
 const KEY_TOKEN = 'cm-admin-token';
 
-type Rango = 'dia' | 'mes' | 'anio';
+type Rango = 'dia' | 'semana' | 'mes' | 'anio';
 
 interface Barra {
   etiqueta: string;
@@ -63,12 +63,14 @@ interface Stats {
   usuarios: { total: number; conInstagram: number };
   jugadores: { total: number };
   juegos: { gameId: string; jugadores: number; estrellas: number; partidas: number }[];
+  ranking: { instagram: string; estrellas: number; juegos: number }[];
   trafico: {
     totalVisitas: number;
     enVivo: number;
     visitasHoy: number;
     visitantesHoy: number;
     porDia: { dia: string; n: number; sesiones: number }[];
+    porSemana: { semana: string; n: number; sesiones: number }[];
     porMes: { mes: string; n: number; sesiones: number }[];
     porAnio: { anio: string; n: number; sesiones: number }[];
   };
@@ -139,9 +141,11 @@ export class AdminStats implements OnDestroy {
     const fuente =
       r === 'dia'
         ? s.trafico.porDia.slice(-30).map((d) => ({ k: d.dia, v: d.n, s: d.sesiones }))
-        : r === 'mes'
-          ? s.trafico.porMes.slice(-12).map((d) => ({ k: d.mes, v: d.n, s: d.sesiones }))
-          : s.trafico.porAnio.map((d) => ({ k: d.anio, v: d.n, s: d.sesiones }));
+        : r === 'semana'
+          ? s.trafico.porSemana.slice(-12).map((d) => ({ k: d.semana, v: d.n, s: d.sesiones }))
+          : r === 'mes'
+            ? s.trafico.porMes.slice(-12).map((d) => ({ k: d.mes, v: d.n, s: d.sesiones }))
+            : s.trafico.porAnio.map((d) => ({ k: d.anio, v: d.n, s: d.sesiones }));
     const max = Math.max(1, ...fuente.map((f) => f.v));
     return fuente.map((f) => ({
       etiqueta: this.etiqueta(f.k, r),
@@ -167,6 +171,11 @@ export class AdminStats implements OnDestroy {
 
   private etiqueta(clave: string, r: Rango): string {
     if (r === 'anio') return clave;
+    if (r === 'semana') {
+      // clave "2026-28" (año-semana ISO) -> "S28"
+      const [, w] = clave.split('-');
+      return w ? `S${Number(w)}` : clave;
+    }
     if (r === 'mes') {
       const [, m] = clave.split('-');
       const meses = ['', 'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];

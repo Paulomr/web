@@ -190,6 +190,29 @@
 .juego-stats b { color: var(--txt); }
 .juego-stats em { color: var(--dim); font-style: normal; }
 
+/* ---- Ranking de estrellas ---- */
+.ranking { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rk {
+  display: grid;
+  grid-template-columns: 34px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 13px;
+}
+.rk.top { border-color: rgba(255, 207, 92, 0.4); background: rgba(255, 207, 92, 0.06); }
+.rk-pos { font-size: 0.95rem; font-weight: 700; color: var(--dim); text-align: center; }
+.rk.top .rk-pos { font-size: 1.25rem; }
+.rk-user { font-weight: 700; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rk-juegos { color: var(--dim); font-size: 0.76rem; white-space: nowrap; }
+.rk-estrellas { color: var(--amber); font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+@media (max-width: 520px) {
+  .rk { grid-template-columns: 28px 1fr auto; gap: 8px; }
+  .rk-juegos { display: none; }
+}
+
 /* ---- Lookup ---- */
 .lookup-form { display: flex; gap: 8px; flex-wrap: wrap; }
 .lookup-form input {

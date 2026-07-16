@@ -52,6 +52,7 @@ export default async function handler(req, res) {
 
       const ahora = new Date();
       const hace30 = new Date(ahora.getTime() - 30 * 864e5);
+      const hace12sem = new Date(ahora.getTime() - 84 * 864e5); // 12 semanas
       const hace12m = new Date(ahora.getFullYear(), ahora.getMonth() - 11, 1);
       const hace5min = new Date(ahora.getTime() - 5 * 60000);
       const hoyStr = new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(ahora);
@@ -61,7 +62,9 @@ export default async function handler(req, res) {
         usuariosConIg,
         jugadoresIg,
         porJuego,
+        rankingEstrellas,
         visitasPorDia,
+        visitasPorSemana,
         visitasPorMes,
         visitasPorAnio,
         enVivoSesiones,
@@ -83,7 +86,22 @@ export default async function handler(req, res) {
           },
           { $project: { _id: 0, gameId: '$_id', jugadores: { $size: '$jugadores' }, estrellas: 1, partidas: 1 } },
         ]),
+        // Ranking de estrellas por persona (suma de todos los juegos/niveles).
+        Score.aggregate([
+          {
+            $group: {
+              _id: '$instagram',
+              estrellas: { $sum: '$estrellas' },
+              juegos: { $addToSet: '$gameId' },
+            },
+          },
+          { $project: { _id: 0, instagram: '$_id', estrellas: 1, juegos: { $size: '$juegos' } } },
+          { $match: { estrellas: { $gt: 0 } } },
+          { $sort: { estrellas: -1, juegos: -1 } },
+          { $limit: 100 },
+        ]),
         agrupar(Visita, '%Y-%m-%d', 'dia', { createdAt: { $gte: hace30 } }),
+        agrupar(Visita, '%G-%V', 'semana', { createdAt: { $gte: hace12sem } }),
         agrupar(Visita, '%Y-%m', 'mes', { createdAt: { $gte: hace12m } }),
         agrupar(Visita, '%Y', 'anio', null),
         Visita.distinct('sessionId', { createdAt: { $gte: hace5min } }),
@@ -112,12 +130,14 @@ export default async function handler(req, res) {
         usuarios: { total: usuariosTotal, conInstagram: usuariosConIg },
         jugadores: { total: jugadoresIg.length },
         juegos: porJuego,
+        ranking: rankingEstrellas,
         trafico: {
           totalVisitas,
           enVivo: enVivoSesiones.length,
           visitasHoy: hoyDia?.n ?? 0,
           visitantesHoy: hoyDia?.sesiones ?? 0,
           porDia: visitasPorDia,
+          porSemana: visitasPorSemana,
           porMes: visitasPorMes,
           porAnio: visitasPorAnio,
         },

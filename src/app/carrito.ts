@@ -151,11 +151,11 @@ export class Carrito {
     const L: string[] = [];
 
     L.push('🍪🍪🍪 *CRUNCHY MUNCH* 🍪🍪🍪');
-    L.push(`🧾 *PEDIDO*  ·  Código del pedido: *${codigo}*`);
+    L.push(`📋 *PEDIDO*  ·  Código del pedido: *${codigo}*`);
 
     // ── Bloque 1: el pedido ──
     L.push(barra);
-    L.push('🛒 *TU PEDIDO*');
+    L.push('📦 *TU PEDIDO*');
     for (const i of this.items()) {
       const p = this.producto(i.id);
       if (!p) continue;
@@ -165,7 +165,7 @@ export class Carrito {
     }
     L.push('');
     if (this.cuponAplicado()) {
-      L.push(`🧮 Subtotal: ${formatoCOP(this.total())}`);
+      L.push(`💵 Subtotal: ${formatoCOP(this.total())}`);
       L.push(`🎁 Cupón bienvenida −18%: -${formatoCOP(this.descuento())}`);
       L.push(`💰 *TOTAL: ${formatoCOP(this.totalFinal())}*${this.hayConsultar() ? ' + ítems a consultar' : ''}`);
     } else {
@@ -177,10 +177,10 @@ export class Carrito {
     L.push('👤 *TUS DATOS*');
     L.push(`• Nombre: ${d.nombre.trim()}`);
     L.push(`• 📱 Teléfono: ${d.telefono.trim()}`);
-    if (reg && c?.instagram) L.push(`• 📸 Instagram: ${c.instagram}`);
+    if (reg && c?.instagram) L.push(`• 📷 Instagram: ${c.instagram}`);
     if (reg) L.push(`• ⭐ Estrellas: ${this.cuenta.puntos()}`);
     L.push(
-      `• 🎟️ Cupón bienvenida: ${
+      `• 🎫 Cupón bienvenida: ${
         this.cuponAplicado() ? 'ACTIVO ✅ (−18% aplicado)' : reg ? 'ya usado' : 'sin cuenta'
       }`,
     );
