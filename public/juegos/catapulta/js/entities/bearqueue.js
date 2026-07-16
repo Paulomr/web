@@ -6,7 +6,8 @@
 import { SLING, GROUND_Y } from '../config.js';
 
 const X0 = SLING.x - 74;   // el primero, justo detrás de la horquilla
-const SEP = 40;            // separación entre osos
+const SEP_MAX = 40;        // separación entre osos cuando caben holgados
+const BORDE = 26;          // margen mínimo hasta el canto izquierdo de la pantalla
 const ESC = 0.7;
 
 export class BearQueue{
@@ -14,19 +15,24 @@ export class BearQueue{
     this.s=scene;
     this.osos=[];   // {go, sombra, tw}
     this.n=-1;
+    this.sep=SEP_MAX;
   }
 
   /** Deja exactamente n osos esperando (recicla los que ya están). */
   sync(n){
     n=Math.max(0,n);
     if(n===this.n) return;
+    // Con muchos tiros la fila se aprieta para no salirse por la izquierda
+    // (con 6 esperando y separación fija, el último caía fuera de pantalla).
+    const sep=n>1 ? Math.min(SEP_MAX,(X0-BORDE)/(n-1)) : SEP_MAX;
+    if(sep!==this.sep){ this.sep=sep; this.destroy(); } // recolocar de cero
     while(this.osos.length>n) this.quitar();
     while(this.osos.length<n) this.anadir(this.osos.length);
     this.n=n;
   }
 
   anadir(i){
-    const x=X0-i*SEP, y=GROUND_Y-15;
+    const x=X0-i*this.sep, y=GROUND_Y-15;
     const sombra=this.s.add.ellipse(x,GROUND_Y-3,30,8,0x000000,0.22).setDepth(3);
     const go=this.s.add.image(x,y,'ball').setScale(ESC).setDepth(3.5);
     // Saltito nervioso: cada oso a su propio ritmo (delay por posición) para que

@@ -30,6 +30,7 @@ export class GameScene extends Phaser.Scene{
     this.buildScenery();
     this.toKill=[]; this.blocks=[]; this.targets=[]; this.tnts=[]; this.splats=[];
     this.emitters={}; this.over=false; this.proj=null; this.projState='idle';
+    this.primerTiro=false; // hasta el primer lanzamiento las latas son intocables
     this.lastHitSfx=0; this.shockT=0; this.hitStopUntil=0; this.trailT=0;
     // defensivo: si se reinicio en pleno hit-stop, que no quede el slow-mo pegado
     this.matter.world.engine.timing.timeScale=1;
@@ -98,6 +99,7 @@ export class GameScene extends Phaser.Scene{
   /* ---------- disparo ---------- */
   onLaunched(go){
     this.proj=go; this.projState='flying'; this.stillFrames=0; this.shotT=this.time.now;
+    this.primerTiro=true;   // a partir de aqui las latas ya se pueden reventar
     this.shotsLeft--; this.hud();
     if(this.cam) this.cam.endPeek();  // si estabas mirando, el disparo manda
     this.syncFila();
@@ -192,6 +194,12 @@ export class GameScene extends Phaser.Scene{
   applyHit(self,other,rel){
     const ent=self.entRef;
     if(!ent||ent.dead) return 0;
+    // Ninguna lata puede morir antes de que dispares: lo unico que pasa hasta
+    // entonces es la estructura asentandose, y con hp:1 un simple roce las mataba
+    // solas. Ademas era intermitente (los roces dependen de los deltas de Matter,
+    // o sea de la carga de la maquina), que es la peor forma de fallar. Una
+    // ventana por tiempo no bastaba: las torres altas siguen moviendose despues.
+    if(ent.kind==='can' && !this.primerTiro) return 0;
     const mB=Math.min(other.isStatic?1000:other.mass,1000);
     const mu=(self.mass*mB)/(self.mass+mB);
     const dmg=0.5*rel*rel*mu*DMG_SCALE;
