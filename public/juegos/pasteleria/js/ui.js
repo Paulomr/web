@@ -31,49 +31,174 @@ const MANO_SVG = `<svg viewBox="0 0 48 48" width="46" height="46"><path d="M18 4
 const NUBE_SVG = `<svg viewBox="0 0 60 36" width="52" height="32"><path d="M14 30a8 8 0 0 1 1.6-15.8A11 11 0 0 1 37 10a9 9 0 0 1 9 9 8 8 0 0 1 0 11z" fill="#cfd4dd" stroke="#1b2233" stroke-width="2" opacity=".9"/></svg>`;
 
 /* ══════════════ COMPONENTE GALLETA ══════════════ */
-const ANCLAS_CHOC = [[26, 30], [52, 22], [70, 40], [38, 48], [20, 60], [56, 62], [72, 70], [42, 78]];
-const ANCLAS_COL = [[34, 24], [62, 32], [24, 46], [48, 56], [72, 52], [32, 70], [58, 76], [78, 28]];
-const ANCLAS_PERLA = [[30, 26], [58, 24], [72, 44], [22, 48], [46, 44], [66, 64], [36, 66], [54, 78]];
-const ANCLAS_FRESA = [[40, 22], [64, 38], [26, 38], [50, 56], [74, 60], [30, 62], [56, 72], [44, 40]];
 const PASTELES = ['#f2a7c0', '#8fd0f0', '#f7e3a1', '#bfe3d0', '#d9c7ee', '#ce6969'];
-const PERLA_COLS = ['#fff7ea', '#ffeccf', '#fdf6ef'];
+const PERLA_COLS = ['#fff7ea', '#ffe9c4', '#fdf6ef'];
 const FRESA_COLS = ['#f7a8c0', '#e56a8a', '#f28ba8'];
-const BLOB_GLASEADO = 'M10 36 C10 16 28 8 48 8 C68 8 86 16 86 36 C86 42 84 47 81 48 C84 58 77 63 73 54 C73 65 65 68 61 58 C59 70 49 72 45 60 C43 70 33 70 31 57 C27 66 19 63 20 51 C14 52 10 44 10 36 Z';
-const SPRINKLES_POS = [[30, 18, 20], [46, 15, -15], [62, 19, 40], [72, 30, -30], [24, 30, 55], [40, 28, -40], [54, 32, 10], [68, 42, 25], [32, 42, -20], [48, 44, 60], [60, 50, -45], [38, 54, 30]];
-
-function chipsHTML(anclas, colores, extraClase = '') {
-  return anclas
-    .map(([x, y], i) => {
-      const rot = ((i * 47) % 70) - 35;
-      const extra = colores ? `background:${colores[i % colores.length]};` : '';
-      return `<span class="chip ${colores ? 'chip-color' : ''} ${extraClase}" style="left:${x}%;top:${y}%;transform:rotate(${rot}deg);${extra}"></span>`;
-    })
-    .join('');
+/* PRNG con semilla: todo lo "aleatorio" de la galleta se calcula una vez al
+   cargar, así todas las galletas salen iguales entre partidas. */
+function prng(semilla) {
+  let s = semilla;
+  return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
 }
 
-/* Glaseado (crema): la base. Cada crema trae su degradado g1→g2 en recetas.js. */
+/* Contorno de la crema: antes era un glaseado con chorretones colgando, que en
+   una galleta vista desde arriba dejaba media galleta desnuda. Ahora es una capa
+   centrada y untada a mano: lóbulos irregulares alrededor de todo el borde. */
+function blobPath(cx, cy, n, rBase, amp, semilla) {
+  const rnd = prng(semilla);
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const r = rBase + (i % 2 ? -amp : amp) + (rnd() - 0.5) * 2.4;
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  // Catmull-Rom cerrado → cúbicas: lóbulos redondos, sin esquinas.
+  const f = (v) => v.toFixed(2);
+  let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C${f(c1[0])} ${f(c1[1])} ${f(c2[0])} ${f(c2[1])} ${f(p2[0])} ${f(p2[1])}`;
+  }
+  return d + 'Z';
+}
+const BLOB_GLASEADO = blobPath(48, 47.5, 13, 33.5, 1.6, 99173);
+
+/* ── Reparto de los toppings sobre la crema ──
+ *
+ * Antes cada topping traía sus propias anclas fijas, así que dos toppings en la
+ * misma galleta se pisaban y quedaban amontonados. Ahora hay UN solo juego de
+ * anclas compartido: se generan una vez con "mejor candidato" (Mitchell) dentro
+ * de la elipse que ocupa la crema, de modo que ningún punto cae encima de otro y
+ * la superficie queda cubierta pareja. Después cada topping toma sus puntos
+ * salteados (0, n, 2n…), y así los distintos toppings se entremezclan por toda
+ * la galleta en vez de agruparse cada uno en su zona.
+ */
+const ANCLAS_MAX = 12;
+const SEPARACION = 12; // separación mínima entre centros, en unidades del viewBox 96
+
+/* Elipse inscrita en la crema, con margen para que ninguna pieza se salga. */
+const CX = 48, CY = 47.5, RX = 23, RY = 23;
+
+function anclasCrema(n) {
+  const rnd = prng(20260716);
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    let mejor = null;
+    let mejorD = -1;
+    // De un puñado de candidatos al azar nos quedamos con el más lejano a lo ya puesto.
+    for (let k = 0; k < 20 + i * 8; k++) {
+      const a = rnd() * Math.PI * 2;
+      const r = Math.sqrt(rnd());
+      const p = [CX + Math.cos(a) * r * RX, CY + Math.sin(a) * r * RY];
+      let d = Infinity;
+      for (const q of pts) d = Math.min(d, (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2);
+      if (d > mejorD) { mejorD = d; mejor = p; }
+    }
+    pts.push(mejor);
+  }
+  // Relajación: separamos los pares que quedaron pegados y devolvemos a la
+  // elipse a los que se salieron. Converge a SEPARACION exacta entre vecinos.
+  for (let paso = 0; paso < 80; paso++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const dx = pts[j][0] - pts[i][0];
+        const dy = pts[j][1] - pts[i][1];
+        const d = Math.hypot(dx, dy) || 0.001;
+        if (d >= SEPARACION) continue;
+        const f = (SEPARACION - d) / d / 2;
+        pts[i][0] -= dx * f; pts[i][1] -= dy * f;
+        pts[j][0] += dx * f; pts[j][1] += dy * f;
+      }
+    }
+    for (const p of pts) {
+      const u = (p[0] - CX) / RX;
+      const v = (p[1] - CY) / RY;
+      const m = Math.hypot(u, v);
+      if (m > 1) { p[0] = CX + (u / m) * RX; p[1] = CY + (v / m) * RY; }
+    }
+  }
+  /* Orden final = por ángulo alrededor del centro (el punto más central queda de
+     último). Repartir "salteado" sobre ESTE orden hace que anclas vecinas caigan
+     en toppings distintos, así los toppings se entremezclan por toda la galleta
+     en vez de agruparse cada uno en su lado. */
+  const clave = (p) => ({
+    central: Math.hypot(p[0] - CX, p[1] - CY) < 9 ? 1 : 0,
+    ang: Math.atan2(p[1] - CY, p[0] - CX),
+  });
+  return pts.sort((a, b) => {
+    const ka = clave(a), kb = clave(b);
+    return ka.central - kb.central || ka.ang - kb.ang;
+  });
+}
+const ANCLAS = anclasCrema(ANCLAS_MAX);
+
+/* Cuántas piezas pone cada topping según cuántos compartan la galleta: entre
+   todos nunca pasan de ANCLAS_MAX, así la galleta no se satura. */
+const PIEZAS_POR_TOPPING = { 1: 7, 2: 5, 3: 4 };
+
+/* Forma de cada topping. `pieza(color, i)` devuelve el <span> ya colocado. */
+const FORMAS = {
+  chispas_choc: { clase: 'chip-choc', cols: null },
+  chispas_colores: { clase: 'chip-color', cols: PASTELES },
+  chispas_fresa: { clase: 'chip-color', cols: FRESA_COLS },
+  perlas: { clase: 'perla', cols: PERLA_COLS },
+  sprinkles: { clase: 'sprinkle', cols: PASTELES },
+};
+
+/**
+ * Capa de toppings de una galleta. Recibe la lista completa para poder repartir
+ * las anclas entre todos sin choques.
+ */
+function toppingsHTML(lista) {
+  const tops = lista.filter((id) => FORMAS[id]);
+  if (!tops.length) return '';
+  const piezas = PIEZAS_POR_TOPPING[Math.min(tops.length, 3)] ?? 4;
+  const total = tops.length * piezas;
+  let html = '';
+  /* Recorremos las anclas a zancadas por todo el anillo (no en bloque, que
+     dejaría media crema pelada) y vamos rotando de topping en cada paso: las
+     piezas quedan repartidas por toda la galleta y mezcladas entre sí. */
+  for (let j = 0; j < total; j++) {
+    const idx = Math.round((j * ANCLAS_MAX) / total) % ANCLAS_MAX;
+    const t = j % tops.length;
+    const { clase, cols } = FORMAS[tops[t]];
+    const [x, y] = ANCLAS[idx];
+    const rot = ((idx * 53 + t * 29) % 90) - 45;
+    const col = cols ? `background:${cols[(idx + t) % cols.length]};` : '';
+    html += `<span class="chip ${clase}" style="left:${(x / 96) * 100}%;top:${(y / 96) * 100}%;--rot:${rot}deg;${col}"></span>`;
+  }
+  return `<div class="toppings">${html}</div>`;
+}
+
+/* Glaseado (crema): la base. Cada crema trae su degradado g1→g2 en recetas.js.
+   Encima del color van un brillo especular y una sombra en el borde para que se
+   lea como una capa con volumen y no como una mancha plana. */
 function glaseadoSVG(decoId) {
   const d = decoPorId(decoId) || { id: decoId, g1: '#f7bcd0', g2: '#f2a7c0' };
-  const idGrad = 'gl_' + d.id;
-  return `<svg class="glaseado" viewBox="0 0 96 96" aria-hidden="true"><defs><linearGradient id="${idGrad}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${d.g1}"/><stop offset="1" stop-color="${d.g2}"/></linearGradient></defs><path d="${BLOB_GLASEADO}" fill="url(#${idGrad})" stroke="rgba(27,34,51,.3)" stroke-width="1.5"/><ellipse cx="35" cy="23" rx="13" ry="6" fill="rgba(255,255,255,.4)"/></svg>`;
-}
-
-/* Lluvia de colores como topping independiente (va ENCIMA de la crema). */
-function sprinklesSVG() {
-  const spr = SPRINKLES_POS.map(([x, y, r], i) => `<rect x="-4" y="-1.25" width="8" height="2.5" rx="1.25" fill="${PASTELES[i % 6]}" stroke="rgba(27,34,51,.35)" stroke-width=".6" transform="translate(${x} ${y}) rotate(${r})"/>`).join('');
-  return `<svg class="topping-cap" viewBox="0 0 96 96" aria-hidden="true">${spr}</svg>`;
-}
-
-/* Dibujo de cada topping (siempre encima de la crema). */
-function toppingHTML(id) {
-  switch (id) {
-    case 'chispas_choc': return chipsHTML(ANCLAS_CHOC, null);
-    case 'chispas_colores': return chipsHTML(ANCLAS_COL, PASTELES);
-    case 'perlas': return chipsHTML(ANCLAS_PERLA, PERLA_COLS, 'perla');
-    case 'chispas_fresa': return chipsHTML(ANCLAS_FRESA, FRESA_COLS);
-    case 'sprinkles': return sprinklesSVG();
-    default: return '';
-  }
+  const g = 'gl_' + d.id;
+  return `<svg class="glaseado" viewBox="0 0 96 96" aria-hidden="true">
+    <defs>
+      <linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${d.g1}"/>
+        <stop offset=".55" stop-color="${d.g1}"/>
+        <stop offset="1" stop-color="${d.g2}"/>
+      </linearGradient>
+      <radialGradient id="${g}_v" cx=".36" cy=".3" r=".82">
+        <stop offset="0" stop-color="#fff" stop-opacity=".42"/>
+        <stop offset=".55" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".18"/>
+      </radialGradient>
+      <clipPath id="${g}_c"><path d="${BLOB_GLASEADO}"/></clipPath>
+    </defs>
+    <path d="${BLOB_GLASEADO}" fill="url(#${g})" stroke="rgba(27,34,51,.34)" stroke-width="1.6" stroke-linejoin="round"/>
+    <g clip-path="url(#${g}_c)">
+      <path d="${BLOB_GLASEADO}" fill="url(#${g}_v)"/>
+      <ellipse cx="35" cy="26" rx="11" ry="4.4" fill="#fff" opacity=".5" transform="rotate(-16 35 26)"/>
+      <ellipse cx="51" cy="21" rx="3.6" ry="1.8" fill="#fff" opacity=".38" transform="rotate(-16 51 21)"/>
+    </g>
+  </svg>`;
 }
 
 /** Componente único de galleta. g = {masa, toppings, deco, coccion} */
@@ -84,7 +209,7 @@ export function galletaHTML(g, esc = 1, clase = '') {
   /* Orden de dibujo = orden de decoración: primero la CREMA (base), luego los TOPPINGS encima. */
   const glas = (g.deco || []).find((d) => GLASEADOS.includes(d));
   if (glas) dentro += glaseadoSVG(glas);
-  for (const t of g.toppings || []) dentro += toppingHTML(t);
+  dentro += toppingsHTML(g.toppings || []);
   const humo = g.coccion === 'quemada' ? '<div class="humo h1"></div><div class="humo h2"></div>' : '';
   return `<div class="galleta-wrap ${clase}" style="${st}"><div class="galleta coccion-${g.coccion}">${dentro}${humo}</div></div>`;
 }

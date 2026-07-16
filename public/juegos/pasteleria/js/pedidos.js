@@ -23,13 +23,27 @@ function probCon(base, id, debutIds) {
 }
 
 /**
+ * Elige `n` ítems DISTINTOS de `items`, sin repetir, respetando el peso de debut.
+ */
+function muestraSinRepetir(items, n, debutIds) {
+  const bolsa = [...items];
+  const elegidos = [];
+  for (let i = 0; i < n && bolsa.length; i++) {
+    const el = eleccionPonderada(bolsa, debutIds);
+    elegidos.push(el);
+    bolsa.splice(bolsa.indexOf(el), 1);
+  }
+  return elegidos;
+}
+
+/**
  * Genera un PEDIDO = { id, items:[{masa, toppings:[], decoraciones:[], servido:false}], valorBase }
- * opts: { diaMax, debutIds, itemsRango, primero, forzado }
+ * opts: { diaMax, debutIds, itemsRango, maxToppings, primero, forzado }
  * Reglas justas: solo ingredientes desbloqueados; debut con peso x3; sprinkles solo con glaseado;
  * el primer pedido del día es 1 galleta sin decoración.
  */
 export function generarPedido(opts) {
-  const { diaMax, debutIds = [], itemsRango = [1, 1], primero = false, forzado = null } = opts;
+  const { diaMax, debutIds = [], itemsRango = [1, 1], maxToppings = 2, primero = false, forzado = null } = opts;
   if (forzado) {
     const items = forzado.map((it) => ({ masa: it.masa, toppings: [...(it.toppings || [])], decoraciones: [...(it.decoraciones || [])], servido: false }));
     return { id: siguienteId++, items, valorBase: items.reduce((s, it) => s + valorItem(it), 0) };
@@ -44,12 +58,18 @@ export function generarPedido(opts) {
     const masa = eleccionPonderada(masas, debutIds).id;
     const dec = [];
     const tops = [];
-    /* Primero la crema (base). Solo si hay crema pueden ir toppings encima. */
+    /* Primero la crema (base): SIEMPRE una sola. Solo si hay crema pueden ir
+       toppings encima, y nunca más de los que permite el día: así la galleta se
+       lee de un vistazo en vez de quedar tapada de chispas. */
     if (!primero && cremas.length && Math.random() < probCon(0.72, cremas[0].id, debutIds)) {
       dec.push(eleccionPonderada(cremas, debutIds).id);
-      for (const t of toppings) {
-        if (Math.random() < probCon(0.4, t.id, debutIds)) tops.push(t.id);
+      const tope = Math.min(maxToppings, toppings.length);
+      let n = 0;
+      if (tope >= 1 && Math.random() < 0.82) {
+        // La mayoría lleva 1 topping; el resto sube hasta el tope del día.
+        n = tope === 1 || Math.random() < 0.62 ? 1 : enteroEntre(2, tope);
       }
+      for (const t of muestraSinRepetir(toppings, n, debutIds)) tops.push(t.id);
     }
     items.push({ masa, toppings: tops, decoraciones: dec, servido: false });
   }

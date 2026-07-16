@@ -180,6 +180,7 @@ function spawnCliente() {
     diaMax: P.modo === 'pico' ? 5 : P.cfg.dia,
     debutIds: P.modo === 'pico' ? [] : P.cfg.desbloqueos,
     itemsRango: P.cfg.itemsPorPedido,
+    maxToppings: P.cfg.maxToppings,
     primero,
     forzado: primero ? P.primerPedidoForzado : null,
   });
