@@ -31,6 +31,7 @@ export class Fidelidad implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   readonly expandido = signal(false);
+  readonly golden = signal(false);
   readonly codigo = signal('');
   readonly igInput = signal('');
   readonly mensaje = signal('');
@@ -82,8 +83,21 @@ export class Fidelidad implements OnInit {
     this.expandido.set(false);
   }
 
+  abrirGolden(): void {
+    this.golden.set(true);
+  }
+
+  cerrarGolden(): void {
+    this.golden.set(false);
+  }
+
+  /** Escape cierra primero el Golden Club (está por encima) y luego la tarjeta. */
   @HostListener('document:keydown.escape')
   onEscape(): void {
+    if (this.golden()) {
+      this.golden.set(false);
+      return;
+    }
     this.expandido.set(false);
   }
 

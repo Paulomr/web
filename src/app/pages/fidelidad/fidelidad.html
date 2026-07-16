@@ -1,6 +1,11 @@
 <main class="fid">
   <a class="fid-inicio" routerLink="/"><span aria-hidden="true">←</span> Inicio</a>
 
+  <!-- ══════ Botón dorado bajo el notch ══════ -->
+  <button type="button" class="vipbtn" (click)="abrirGolden()" aria-label="Conocer el Golden Club">
+    <span class="vipbtn-txt">VIP CLUB</span>
+  </button>
+
   <!-- ══════ Tarjeta colapsada (trigger) ══════ -->
   <button type="button" class="cardc" (click)="abrir()" [class.oculto]="expandido()"
     aria-label="Abrir tu tarjeta del club">
@@ -151,6 +156,25 @@
           </p>
         }
       </div>
+    </section>
+  </div>
+
+  <!-- ══════ Golden Club: doodles opacos + infografía dorada ══════ -->
+  <div class="golden" [class.abierto]="golden()" (click)="cerrarGolden()">
+    <section class="golden-info" (click)="$event.stopPropagation()"
+      role="dialog" aria-modal="true" aria-label="Golden Club">
+      <button type="button" class="golden-close" (click)="cerrarGolden()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+      </button>
+
+      <span class="golden-kicker">CRUNCHY MUNCH</span>
+      <h2 class="golden-tit" data-txt="GOLDEN CLUB">GOLDEN CLUB</h2>
+      <span class="golden-regla" aria-hidden="true"></span>
+
+      <img class="golden-bear" src="fotos/bearnie-vip.webp" alt="Bearnie de gala" />
+
+      <p class="golden-lead">Sorteos y promociones<br />solo para los más fieles</p>
+      <span class="golden-pronto">pronto más info</span>
     </section>
   </div>
 </main>
