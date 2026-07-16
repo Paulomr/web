@@ -1076,39 +1076,86 @@ body::after {
   border-radius: 5px;
   z-index: 2;
 }
+/* Contenido de los frascos: mismas formas y colores que los toppings de la
+   galleta (ver js/ui.js), para que reconozcas de un vistazo qué estás cogiendo. */
 .mini-chip {
   position: absolute;
-  width: 8px;
+  width: 8.5px;
   height: 11px;
-  border-radius: 45%;
-  background: linear-gradient(160deg, #4a2c17, #2e1a0c);
+  border-radius: 46% 46% 50% 50% / 38% 38% 62% 62%;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.5) 0 12%, transparent 44%),
+    linear-gradient(158deg, #6b452a 8%, #4a2c18 48%, #2b1809 92%);
+  border: 1px solid rgba(20, 12, 6, 0.45);
+  box-shadow: 0 1px 1.5px rgba(27, 34, 51, 0.3);
 }
 .mini-chip.c1 { left: 18%; bottom: 12%; transform: rotate(-16deg); }
 .mini-chip.c2 { left: 46%; bottom: 26%; transform: rotate(22deg); }
 .mini-chip.c3 { left: 62%; bottom: 8%; transform: rotate(-30deg); }
-.mini-chip.col1 { left: 18%; bottom: 12%; transform: rotate(-16deg); background: var(--rosa); }
-.mini-chip.col2 { left: 46%; bottom: 26%; transform: rotate(22deg); background: #8fd0f0; }
-.mini-chip.col3 { left: 62%; bottom: 8%; transform: rotate(-30deg); background: var(--menta); }
-.mini-chip.pe1 { left: 18%; bottom: 12%; transform: rotate(-16deg); background: #fff3da; border-radius: 50%; }
-.mini-chip.pe2 { left: 46%; bottom: 26%; transform: rotate(22deg); background: #ffe9c8; border-radius: 50%; }
-.mini-chip.pe3 { left: 62%; bottom: 8%; transform: rotate(-30deg); background: #fdf6ef; border-radius: 50%; }
-.mini-chip.fr1 { left: 18%; bottom: 12%; transform: rotate(-16deg); background: #f28ba8; }
-.mini-chip.fr2 { left: 46%; bottom: 26%; transform: rotate(22deg); background: #e56a8a; }
-.mini-chip.fr3 { left: 62%; bottom: 8%; transform: rotate(-30deg); background: #f7a8c0; }
+/* chispas de colores y de fresa: cilindro pastel con luz arriba */
+.mini-chip.col1, .mini-chip.col2, .mini-chip.col3,
+.mini-chip.fr1, .mini-chip.fr2, .mini-chip.fr3 {
+  width: 9px;
+  height: 5.5px;
+  border-radius: 3px;
+  border: 1px solid rgba(27, 34, 51, 0.3);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.6), 0 1px 1.5px rgba(27, 34, 51, 0.25);
+}
+.mini-chip.col1 { left: 16%; bottom: 12%; transform: rotate(-16deg); background: #f2a7c0; }
+.mini-chip.col2 { left: 44%; bottom: 28%; transform: rotate(22deg); background: #8fd0f0; }
+.mini-chip.col3 { left: 62%; bottom: 9%; transform: rotate(-30deg); background: #bfe3d0; }
+/* perlas: esfera con especular */
+.mini-chip.pe1, .mini-chip.pe2, .mini-chip.pe3 {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(27, 34, 51, 0.26);
+  box-shadow: inset -1px -1px 2px rgba(214, 160, 80, 0.5), 0 1px 1.5px rgba(27, 34, 51, 0.25);
+}
+.mini-chip.pe1 { left: 17%; bottom: 12%; background: radial-gradient(circle at 32% 28%, #fff 0 22%, #fff3da 70%); }
+.mini-chip.pe2 { left: 45%; bottom: 28%; background: radial-gradient(circle at 32% 28%, #fff 0 22%, #ffe9c4 70%); }
+.mini-chip.pe3 { left: 63%; bottom: 9%; background: radial-gradient(circle at 32% 28%, #fff 0 22%, #fdf6ef 70%); }
+.mini-chip.fr1 { left: 16%; bottom: 12%; transform: rotate(-16deg); background: #f7a8c0; }
+.mini-chip.fr2 { left: 44%; bottom: 28%; transform: rotate(22deg); background: #e56a8a; }
+.mini-chip.fr3 { left: 62%; bottom: 9%; transform: rotate(-30deg); background: #f28ba8; }
+/* La crema llena el tarro y se le ve el menisco: así el color canta y sabes cuál
+   es sin leer la etiqueta. Antes era un blob pequeño y apagado en el fondo. */
 .mini-glaseado {
   position: absolute;
-  inset: 30% 12% 14% 12%;
-  border-radius: 40% 44% 46% 42%;
+  inset: 22% 5% 3% 5%;
+  border-radius: 46% 46% 8px 8px / 22% 22% 8px 8px;
+  border: 1px solid rgba(27, 34, 51, 0.28);
+  box-shadow: inset 0 -3px 5px rgba(27, 34, 51, 0.16);
 }
-.mini-glaseado.rosa { background: linear-gradient(180deg, #f7bcd0, var(--rosa)); }
-.mini-glaseado.vainilla { background: linear-gradient(180deg, #fff0cf, #f4d99f); }
-.mini-glaseado.choco { background: linear-gradient(180deg, #7a4b2b, #5d3a20); }
-.mini-glaseado.menta { background: linear-gradient(180deg, #cdeede, #9fd4b8); }
-.mini-spr { position: absolute; width: 9px; height: 3px; border-radius: 2px; }
-.mini-spr.s1 { left: 18%; bottom: 30%; transform: rotate(24deg); background: var(--coral); }
-.mini-spr.s2 { left: 44%; bottom: 16%; transform: rotate(-32deg); background: #8fd0f0; }
-.mini-spr.s3 { left: 58%; bottom: 38%; transform: rotate(60deg); background: var(--dorado); }
+.mini-glaseado::after { /* brillo del menisco */
+  content: '';
+  position: absolute;
+  left: 16%;
+  top: 8%;
+  width: 34%;
+  height: 16%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+}
+.mini-glaseado.rosa { background: linear-gradient(180deg, #f9c6d8, #f2a7c0 60%, #e88fae); }
+.mini-glaseado.vainilla { background: linear-gradient(180deg, #fff4d9, #f7dfa8 60%, #eecf8c); }
+.mini-glaseado.choco { background: linear-gradient(180deg, #8a5738, #6b4022 60%, #4f2f18); }
+.mini-glaseado.menta { background: linear-gradient(180deg, #d8f3e6, #a9dcc2 60%, #8ccbac); }
+.mini-glaseado.choco::after { background: rgba(255, 255, 255, 0.35); }
+/* lluvia de colores: fideos finos */
+.mini-spr {
+  position: absolute;
+  width: 9px;
+  height: 3.5px;
+  border-radius: 2px;
+  border: 0.5px solid rgba(27, 34, 51, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.mini-spr.s1 { left: 16%; bottom: 30%; transform: rotate(24deg); background: #ff8f6e; }
+.mini-spr.s2 { left: 42%; bottom: 15%; transform: rotate(-32deg); background: #8fd0f0; }
+.mini-spr.s3 { left: 57%; bottom: 38%; transform: rotate(60deg); background: #f7d060; }
 
+/* BLOQUEADO = aún no lo has desbloqueado. Gris del todo + candado. */
 .bloqueado { filter: grayscale(1); opacity: 0.45; }
 .bloqueado .candado {
   position: absolute;
@@ -1118,7 +1165,12 @@ body::after {
   justify-content: center;
   opacity: 0.9;
 }
-.frasco.inactivo, .bola-masa.inactivo { opacity: 0.4; filter: grayscale(0.7); }
+/* INACTIVO = lo tienes, pero ahora no toca (aún no hay galleta, o falta la
+   crema debajo). Iba con grayscale(.7) y opacity .4, o sea casi igual que
+   .bloqueado: parecía que estuvieran todos con candado y no se veía de qué
+   color era cada crema. Ahora mantiene el color y solo se apaga un punto. */
+.frasco.inactivo, .bola-masa.inactivo { opacity: 0.82; filter: saturate(0.85) brightness(0.94); }
+.frasco.inactivo .etiqueta, .bola-masa.inactivo .etiqueta { opacity: 0.5; }
 
 /* fila de la tabla */
 #fila-tabla {
