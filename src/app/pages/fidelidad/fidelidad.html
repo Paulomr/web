@@ -46,8 +46,12 @@
 
           <!-- Sellos -->
           <div class="fid-sellos">
-            @for (lleno of slots(); track $index) {
-              <span class="fid-slot" [class.lleno]="lleno" aria-hidden="true">{{ lleno ? '🍪' : '' }}</span>
+            @for (s of sellosView(); track $index) {
+              <span class="fid-slot" [class.lleno]="s.lleno" aria-hidden="true">
+                @if (s.lleno) {
+                  <img class="fid-sticker" src="fotos/sticker-juanjose.png" alt="" [style.transform]="s.transform" />
+                }
+              </span>
             }
           </div>
           <p class="fid-prog">

@@ -3,6 +3,20 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CuentaService } from '../../cuenta.service';
 
+/** Ruido determinista 0..1 a partir de una semilla (para no re-aleatorizar en cada render). */
+function ruido(n: number): number {
+  const x = Math.sin(n) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+/** Transformación "mal pegada" y estable para el sello en la posición i. */
+function transformSello(i: number): string {
+  const rot = (ruido(i * 12.9898 + 1) - 0.5) * 42; // -21°..+21°
+  const dx = (ruido(i * 78.233 + 2) - 0.5) * 14; // -7..7 px
+  const dy = (ruido(i * 37.719 + 3) - 0.5) * 12; // -6..6 px
+  return `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) rotate(${rot.toFixed(1)}deg)`;
+}
+
 // Tarjeta de fidelidad como "expandable card": colapsada muestra el club;
 // al expandir aparecen los sellos y el canje. El QR del vendedor abre esta
 // página con ?c=CODIGO y, si hay sesión con Instagram, suma el sello.
@@ -28,9 +42,16 @@ export class Fidelidad implements OnInit {
   readonly premioCodigo = signal('');
   readonly reclamando = signal(false);
 
-  /** Un slot por cada sello de la meta; true = sello lleno. */
-  readonly slots = computed(() =>
-    Array.from({ length: this.cuenta.metaSellos() }, (_, i) => i < this.cuenta.sellos()),
+  /**
+   * Un slot por cada sello de la meta. Cada sello lleno lleva una transformación
+   * pseudo-aleatoria pero ESTABLE por posición: rotado y descuadrado como si se
+   * hubiera pegado a mano (unos más ladeados a un lado, otros al otro).
+   */
+  readonly sellosView = computed(() =>
+    Array.from({ length: this.cuenta.metaSellos() }, (_, i) => ({
+      lleno: i < this.cuenta.sellos(),
+      transform: transformSello(i),
+    })),
   );
 
   /** Progreso (0–100) hacia el premio maestro de estrellas. */
