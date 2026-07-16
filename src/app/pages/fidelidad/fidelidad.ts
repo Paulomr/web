@@ -11,9 +11,9 @@ function ruido(n: number): number {
 
 /** Transformación "mal pegada" y estable para el sello en la posición i. */
 function transformSello(i: number): string {
-  const rot = (ruido(i * 12.9898 + 1) - 0.5) * 42; // -21°..+21°
-  const dx = (ruido(i * 78.233 + 2) - 0.5) * 14; // -7..7 px
-  const dy = (ruido(i * 37.719 + 3) - 0.5) * 12; // -6..6 px
+  const rot = (ruido(i * 12.9898 + 1) - 0.5) * 34; // -17°..+17°
+  const dx = (ruido(i * 78.233 + 2) - 0.5) * 9; // -4.5..4.5 px
+  const dy = (ruido(i * 37.719 + 3) - 0.5) * 7; // -3.5..3.5 px
   return `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) rotate(${rot.toFixed(1)}deg)`;
 }
 

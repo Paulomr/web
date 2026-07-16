@@ -138,30 +138,37 @@
 }
 .carde-hero img {
   display: block;
-  width: min(220px, 60%);
+  width: min(132px, 38%);
   height: auto;
-  margin: 0 auto 6px;
-  filter: drop-shadow(0 12px 16px rgba(180, 40, 110, 0.3));
+  margin: 0 auto 4px;
+  filter: drop-shadow(0 10px 14px rgba(180, 40, 110, 0.3));
 }
 .carde-hero-tit { text-align: center; }
 .carde-kicker {
   font-family: var(--font-body, sans-serif);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2.4px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.95);
 }
 .carde-hero-tit h2 {
   font-family: var(--font-display, sans-serif);
   font-weight: 700;
-  font-size: clamp(20px, 5.6vw, 27px);
-  line-height: 1.04;
+  font-size: clamp(23px, 7vw, 34px);
+  line-height: 0.98;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   color: #fff;
   text-shadow: 0 2px 0 rgba(190, 55, 120, 0.4);
-  margin-top: 2px;
+  margin-top: 3px;
+}
+.carde-club {
+  display: inline-block;
+  font-size: 1.42em;
+  letter-spacing: 4px;
+  margin-top: 1px;
+  margin-left: 4px; /* compensa el letter-spacing para centrar */
 }
 .carde-close {
   position: absolute;
@@ -193,13 +200,51 @@
   margin-bottom: 16px;
 }
 
+/* ══════ Parte 2: sección de sellos con doodles de fondo ══════ */
+.fid-sellos-sec {
+  position: relative;
+  margin: 4px 0 20px;
+  padding: 34px 16px 18px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #fff2f8;
+  border: 2px solid #f7c6de;
+}
+.fid-sellos-sec::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/fotos/doodles-rosa.webp') 0 0 / 300px auto repeat;
+  opacity: 0.5;
+  z-index: 0;
+}
+.fid-sec-lbl {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-family: var(--font-body, sans-serif);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  color: #d0417a;
+  background: #fff;
+  border: 1.5px solid #f4bcd6;
+  padding: 4px 13px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px -6px rgba(200, 60, 130, 0.5);
+}
+
 /* Sellos */
 .fid-sellos {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin: 0 auto 12px;
-  max-width: 360px;
+  gap: 11px;
+  margin: 0 auto 14px;
+  max-width: 340px;
 }
 .fid-slot {
   aspect-ratio: 1;
@@ -217,7 +262,7 @@
   border: none;
 }
 .fid-sticker {
-  width: 122%; /* más grande que el hueco: rompe la grilla, no sigue el margen */
+  width: 102%; /* apenas mayor que el hueco: se descuadra sin taparse entre sí */
   height: auto;
   aspect-ratio: 1; /* siempre círculo perfecto, nunca óvalo */
   object-fit: cover;
@@ -228,7 +273,19 @@
   transition: transform 280ms cubic-bezier(0.2, 1.6, 0.4, 1);
 }
 
-.fid-prog { font-family: var(--font-body, sans-serif); font-size: 14px; color: #8a6579; margin-bottom: 16px; }
+.fid-prog {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-family: var(--font-body, sans-serif);
+  font-size: 14px;
+  color: #8a6579;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 6px 15px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px -7px rgba(200, 60, 130, 0.5);
+}
 .fid-prog strong { color: #e0559f; font-size: 17px; }
 .fid-completas { color: #c8920a; font-weight: 700; }
 
@@ -319,17 +376,75 @@
   margin-bottom: 12px;
 }
 .premio {
+  position: relative;
   background: #fff;
-  border: 1.5px solid #f2c3da;
-  border-radius: 16px;
-  padding: 12px 14px;
-  margin-bottom: 10px;
+  border: 1.5px solid #f4cbdf;
+  border-radius: 18px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 12px 26px -20px rgba(200, 60, 130, 0.5);
 }
 .premio-top { display: flex; align-items: center; gap: 12px; }
-.premio-ico { font-size: 24px; line-height: 1; flex: none; }
-.premio-info { display: flex; flex-direction: column; gap: 1px; }
-.premio-info strong { font-family: var(--font-body, sans-serif); font-size: 14.5px; color: var(--text, #4a3b47); }
+.premio-ico {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  line-height: 1;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #ffe1ef, #ffcfe5);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.85);
+}
+.premio-info { display: flex; flex-direction: column; gap: 2px; }
+.premio-info strong { font-family: var(--font-body, sans-serif); font-weight: 800; font-size: 15.5px; color: var(--text, #4a3b47); }
 .premio-info span { font-family: var(--font-body, sans-serif); font-size: 12px; color: #8a6579; }
+
+/* Premio VIP (tarjeta completa): look premium dorado/rosa */
+.premio-vip {
+  background: linear-gradient(155deg, #fff8e8 0%, #ffe9f3 58%, #ffe0ef 100%);
+  border: 1.6px solid #f1cd8a;
+  box-shadow: 0 16px 32px -20px rgba(210, 130, 40, 0.55);
+}
+.premio-vip .premio-ico {
+  background: linear-gradient(135deg, #ffe6a0, #f6c455);
+  color: #7a5b00;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.7);
+}
+.premio-badge {
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  font-family: var(--font-display, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  color: #7a5b00;
+  background: linear-gradient(135deg, #ffe89a, #f4c545);
+  border: 1.5px solid #fff;
+  padding: 4px 11px;
+  border-radius: 999px;
+  box-shadow: 0 7px 15px -6px rgba(217, 163, 0, 0.75);
+}
+.premio-perks {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.premio-perks li {
+  font-family: var(--font-body, sans-serif);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #8a5a00;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(240, 200, 120, 0.5);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
 
 .premio-barra {
   height: 8px;
@@ -366,6 +481,11 @@
 }
 .premio-btn:hover { transform: translateY(-2px); filter: brightness(1.04); }
 .premio-btn:disabled { opacity: 0.6; transform: none; }
+.premio-btn-vip {
+  color: #fff;
+  background: linear-gradient(135deg, #f7b24e, #ee8a28);
+  box-shadow: 0 10px 20px -10px rgba(230, 130, 30, 0.8);
+}
 .premio-listo {
   display: inline-block;
   margin-top: 8px;

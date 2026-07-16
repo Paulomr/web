@@ -32,8 +32,8 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
         </button>
         <div class="carde-hero-tit">
-          <span class="carde-kicker">TARJETA DE FIDELIDAD</span>
-          <h2>THE CRUNCHY MUNCH CLUB</h2>
+          <span class="carde-kicker">Fidelity Card</span>
+          <h2>CRUNCHY MUNCH<br /><span class="carde-club">CLUB</span></h2>
         </div>
       </div>
 
@@ -44,22 +44,25 @@
         } @else {
           <p class="carde-hola">HOLA {{ cuenta.primerNombre() }} 💗</p>
 
-          <!-- Sellos -->
-          <div class="fid-sellos">
-            @for (s of sellosView(); track $index) {
-              <span class="fid-slot" [class.lleno]="s.lleno" aria-hidden="true">
-                @if (s.lleno) {
-                  <img class="fid-sticker" src="fotos/sticker-juanjose.png" alt="" [style.transform]="s.transform" />
-                }
-              </span>
-            }
-          </div>
-          <p class="fid-prog">
-            <strong>{{ cuenta.sellos() }}</strong> / {{ cuenta.metaSellos() }} sellos
-            @if (cuenta.tarjetas() > 0) {
-              <span class="fid-completas">· {{ cuenta.tarjetas() }} completada(s) 🎉</span>
-            }
-          </p>
+          <!-- ══ Parte 2: Sellos (fondo de doodles) ══ -->
+          <section class="fid-sellos-sec">
+            <span class="fid-sec-lbl">TUS SELLOS</span>
+            <div class="fid-sellos">
+              @for (s of sellosView(); track $index) {
+                <span class="fid-slot" [class.lleno]="s.lleno" aria-hidden="true">
+                  @if (s.lleno) {
+                    <img class="fid-sticker" src="fotos/sticker-juanjose.png" alt="" [style.transform]="s.transform" />
+                  }
+                </span>
+              }
+            </div>
+            <p class="fid-prog">
+              <strong>{{ cuenta.sellos() }}</strong> / {{ cuenta.metaSellos() }} sellos
+              @if (cuenta.tarjetas() > 0) {
+                <span class="fid-completas">· {{ cuenta.tarjetas() }} completada(s) 🎉</span>
+              }
+            </p>
+          </section>
 
           @if (!cuenta.cuenta()?.instagram) {
             <div class="fid-ig">
@@ -87,20 +90,26 @@
             </div>
           }
 
-          <!-- Premios -->
+          <!-- ══ Parte 3: Premios ══ -->
           <div class="premios">
             <h3 class="premios-tit">PREMIOS</h3>
 
-            <div class="premio">
+            <!-- Premio estrella: tarjeta completa → $50.000 + VIP CLUB -->
+            <div class="premio premio-vip">
+              <span class="premio-badge">VIP CLUB</span>
               <div class="premio-top">
-                <span class="premio-ico">💵</span>
+                <span class="premio-ico">👑</span>
                 <div class="premio-info">
-                  <strong>$60.000 en Crunchy Munch</strong>
-                  <span>Por cada tarjeta de {{ cuenta.metaSellos() }} sellos completa</span>
+                  <strong>$50.000 + VIP CLUB</strong>
+                  <span>Al completar tu tarjeta de {{ cuenta.metaSellos() }} sellos</span>
                 </div>
               </div>
+              <ul class="premio-perks">
+                <li>💸 Descuentos exclusivos</li>
+                <li>🎁 Promos solo para los más fieles</li>
+              </ul>
               @if (cuenta.tarjetas() > 0) {
-                <button class="premio-btn" (click)="reclamar('sellos')" [disabled]="reclamando()">
+                <button class="premio-btn premio-btn-vip" (click)="reclamar('sellos')" [disabled]="reclamando()">
                   RECLAMAR ({{ cuenta.tarjetas() }} disponible{{ cuenta.tarjetas() === 1 ? '' : 's' }})
                 </button>
               } @else {
@@ -109,7 +118,8 @@
               }
             </div>
 
-            <div class="premio">
+            <!-- Premio campeón: 100% en los juegos -->
+            <div class="premio premio-champ">
               <div class="premio-top">
                 <span class="premio-ico">🏆</span>
                 <div class="premio-info">
