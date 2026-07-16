@@ -88,7 +88,7 @@ export function initUI(){
   el('mute').addEventListener('click',()=>applyMute(!SFX.isMuted()));
 
   on('game:win', e=>{
-    const { level, stars }=e.detail;
+    const { level, stars, usados, meta }=e.detail;
     playing=false;
     saveStars(level,stars);
     if (window.CrunchyScores) window.CrunchyScores.submit('catapulta', 'n'+level, stars, (level+1)*100 + stars*10);
@@ -100,8 +100,12 @@ export function initUI(){
     });
     const last=level+1>=LEVELS.length;
     el('btnNext').classList.toggle('hidden',last);
+    // Se dice en qué consiste la nota: si no, un 2★ parece arbitrario
+    const nota=stars===3
+      ? `${usados} TIROS PARA ${meta} LATAS · SIN FALLAR UNA`
+      : `${usados} TIROS PARA ${meta} LATAS · 3 ESTRELLAS CON ${meta}`;
     document.querySelector('#win .tag').textContent=
-      last?'¡JUEGO COMPLETADO! RECUPERASTE TODA LA MERIENDA':'GALLETAS RECUPERADAS';
+      last && stars===3 ? '¡JUEGO COMPLETADO! RECUPERASTE TODA LA MERIENDA' : nota;
     show('win');
   });
   on('game:lose', ()=>{ playing=false; hide('hud'); hide('pauseBtn'); hide('zoomBtn'); show('lose'); });

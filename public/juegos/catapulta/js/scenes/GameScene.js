@@ -266,12 +266,25 @@ export class GameScene extends Phaser.Scene{
     }
   }
 
+  /* Las estrellas miden PUNTERIA, no munición sobrante: comparan los tiros que
+     has gastado con las latas que tenía el nivel.
+       3★ = ni un tiro de más (un oso por lata, o menos si encadenas derrumbes)
+       2★ = hasta 2 de más
+       1★ = ganaste
+     Antes era "acaba con 2 osos en la mano"; al dar munición de sobra (latas+3)
+     eso salía solo, y se sacaban 3★ derrochando tiros. */
+  estrellas(){
+    const L=LEVELS[this.levelIdx];
+    const usados=L.shots-this.shotsLeft, n=L.targets.length;
+    return { stars: usados<=n ? 3 : usados<=n+2 ? 2 : 1, usados, meta:n };
+  }
+
   checkWin(){
     this.hud();
     if(this.over || this.targets.length) return;
     this.over=true;
-    const stars=this.shotsLeft>=2?3:this.shotsLeft===1?2:1;
-    this.time.delayedCall(700,()=>{ SFX.win(); emit('game:win',{ level:this.levelIdx, stars }); });
+    const { stars, usados, meta }=this.estrellas();
+    this.time.delayedCall(700,()=>{ SFX.win(); emit('game:win',{ level:this.levelIdx, stars, usados, meta }); });
   }
 
   /* ---------- FX ---------- */
