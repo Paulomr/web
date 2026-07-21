@@ -1,0 +1,171 @@
+/* ============ Reseñas (opiniones reales de Google, estilo de marca) ============ */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.rev {
+  width: 100%;
+  padding: 56px 20px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 100%);
+}
+
+/* ---- Encabezado ---- */
+.rev-head {
+  text-align: center;
+  max-width: 640px;
+}
+
+.rev-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  color: var(--text);
+}
+
+.rev-stars-mini {
+  color: #f6b73c;
+  letter-spacing: 1px;
+}
+
+.rev-title {
+  margin: 14px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 5.5vw, 2.6rem);
+  line-height: 1.05;
+  background: var(--grad-pink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Grilla de tarjetas ---- */
+.rev-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 18px;
+}
+
+.rev-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.rev-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-float);
+}
+
+.rev-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rev-avatar {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: #fff;
+  background: var(--grad-pink);
+}
+
+/* Variedad de color en los avatares (paleta de marca). */
+.rev-card:nth-child(2) .rev-avatar { background: linear-gradient(135deg, #9adbe8, #c9aee8); }
+.rev-card:nth-child(3) .rev-avatar { background: linear-gradient(135deg, #f6d8a8, #f2a9cd); }
+.rev-card:nth-child(4) .rev-avatar { background: linear-gradient(135deg, #c9aee8, #9adbe8); }
+.rev-card:nth-child(5) .rev-avatar { background: linear-gradient(135deg, #f2a9cd, #f6d8a8); }
+
+.rev-quien {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.rev-quien strong {
+  font-size: 0.98rem;
+  color: var(--text);
+}
+
+.rev-quien em {
+  font-style: normal;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.rev-g {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0.9;
+}
+
+.rev-stars {
+  color: #f6b73c;
+  letter-spacing: 2px;
+  font-size: 1rem;
+}
+
+.rev-texto {
+  margin: 0;
+  color: var(--text);
+  opacity: 0.92;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* ---- Botón a Google ---- */
+.rev-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.rev-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rev-card,
+  .rev-cta {
+    transition: none;
+  }
+}

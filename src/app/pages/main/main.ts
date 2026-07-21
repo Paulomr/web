@@ -7,10 +7,11 @@ import { ProductosService } from '../../productos.service';
 import { ConfiguracionService } from '../../configuracion.service';
 import { CuentaService } from '../../cuenta.service';
 import { HeroSelector } from '../../components/hero-selector/hero-selector';
+import { Resenas } from '../../components/resenas/resenas';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterLink, HeroSelector],
+  imports: [RouterLink, HeroSelector, Resenas],
   templateUrl: './main.html',
   styleUrl: './main.css',
 })
