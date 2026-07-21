@@ -1,5 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { CuentaService } from '../../cuenta.service';
+import { Component, signal } from '@angular/core';
 
 // Hero de la portada: selector "acordeón" de las más vendidas. Los paneles de
 // foto se expanden al tocarlos (el activo crece, los demás se encogen). Adaptado
@@ -18,13 +17,6 @@ interface Slide {
   styleUrl: './hero-selector.css',
 })
 export class HeroSelector {
-  private readonly cuenta = inject(CuentaService);
-
-  /** Saludo por nombre si hay sesión ("HOLA PAULO"); vacío si no. */
-  readonly saludo = computed(() =>
-    this.cuenta.registrado() ? `HOLA ${this.cuenta.primerNombre()}` : '',
-  );
-
   /** Las 5 más vendidas: foto + nombre (sin logos, el rótulo es el nombre). */
   readonly slides: Slide[] = [
     { img: 'fotos/bearnie-0630.webp', nombre: 'MILKSHAKE' },

@@ -2,12 +2,16 @@
   <!-- Hero: selector acordeón de las más vendidas (toca una foto y se expande). -->
   <app-hero-selector />
 
-  <!-- Único llamado a la acción: el catálogo. -->
+  <!-- Saludo por nombre si hay sesión; si no, el llamado a la acción al catálogo. -->
   <section class="cta">
-    <button type="button" class="btn-notch" routerLink="/catalogo">
-      <span>Ver catálogo</span>
-      <span class="btn-arrow" aria-hidden="true">▸</span>
-    </button>
+    @if (cuenta.registrado()) {
+      <p class="hero-saludo">HOLA {{ cuenta.primerNombre() }}</p>
+    } @else {
+      <button type="button" class="btn-notch" routerLink="/catalogo">
+        <span>Ver catálogo</span>
+        <span class="btn-arrow" aria-hidden="true">▸</span>
+      </button>
+    }
   </section>
 
   <!-- Menú en movimiento: filas de productos que se deslizan desde los lados.

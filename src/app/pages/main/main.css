@@ -12,6 +12,20 @@
   padding: 28px 24px 0;
 }
 
+/* Saludo por nombre: grande, centrado y elegante (reemplaza al CTA con sesión). */
+.hero-saludo {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 6.5vw, 2.8rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  background: var(--grad-pink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 /* Botón estilo notch: píldora blanca que se amplía lateralmente al pasar
    el mouse, con gradiente y brillo desenfocado (como los ítems del menú). */
 .btn-notch {

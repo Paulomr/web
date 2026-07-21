@@ -5,6 +5,7 @@ import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
 import { ConfiguracionService } from '../../configuracion.service';
+import { CuentaService } from '../../cuenta.service';
 import { HeroSelector } from '../../components/hero-selector/hero-selector';
 
 @Component({
@@ -17,6 +18,7 @@ export class Main {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
   readonly cfg = inject(ConfiguracionService);
+  readonly cuenta = inject(CuentaService);
   private readonly productosSvc = inject(ProductosService);
   readonly urlFoto = urlFoto;
 

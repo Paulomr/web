@@ -1,4 +1,9 @@
 /* ============ Hero: selector acordeón de las más vendidas ============ */
+:host {
+  display: block;
+  width: 100%;
+}
+
 .hs {
   position: relative;
   width: 100%;
@@ -9,29 +14,29 @@
   justify-content: center;
   gap: 34px;
   padding: 40px 16px 48px;
-  background: radial-gradient(120% 80% at 50% -10%, #3a2b34 0%, #201a1e 60%);
-  color: #fff;
+  background: linear-gradient(165deg, var(--cyan-soft) 0%, #a9dced 55%, var(--cyan-soft) 100%);
+  color: var(--text);
   overflow: hidden;
+}
+
+/* Doodles de la marca sobre el fondo azul cielo. */
+.hs::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/fotos/doodles-azul.webp');
+  background-size: 560px auto;
+  opacity: 0.4;
 }
 
 /* ---- Encabezado ---- */
 .hs-head {
+  position: relative;
+  z-index: 1;
   text-align: center;
   max-width: 640px;
-}
-
-.hs-eyebrow {
-  display: block;
-  margin-bottom: 10px;
-  font-family: var(--font-display);
-  font-size: clamp(0.72rem, 2.4vw, 0.9rem);
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  color: #f4a7c8;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  transform: translateY(-16px);
-  animation: hs-fade-top 0.8s ease forwards 0.1s;
 }
 
 .hs-title {
@@ -40,8 +45,8 @@
   font-size: clamp(2.3rem, 8vw, 3.6rem);
   line-height: 1.02;
   letter-spacing: 0.01em;
-  color: #fff;
-  text-shadow: 0 6px 26px rgba(0, 0, 0, 0.4);
+  color: var(--text);
+  text-shadow: 0 3px 16px rgba(255, 255, 255, 0.5);
   opacity: 0;
   transform: translateY(-20px);
   animation: hs-fade-top 0.8s ease forwards 0.25s;
@@ -49,7 +54,7 @@
 
 .hs-sub {
   margin: 0;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text-muted);
   font-size: clamp(0.95rem, 2.6vw, 1.15rem);
   font-weight: 500;
   opacity: 0;
@@ -59,6 +64,8 @@
 
 /* ---- Fila de paneles ---- */
 .hs-opts {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: stretch;
   gap: 10px;
@@ -77,7 +84,7 @@
   background-color: #18181b;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: auto 120%;
+  background-size: cover;
   color: #fff;
   cursor: pointer;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -86,7 +93,6 @@
   animation: hs-slide-in 0.6s ease forwards;
   transition:
     flex-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    background-size 0.7s ease,
     border-color 0.5s ease,
     box-shadow 0.5s ease;
   will-change: flex-grow;
@@ -94,7 +100,6 @@
 
 .hs-opt.active {
   flex-grow: 7;
-  background-size: auto 100%;
   border-color: #fff;
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.5);
 }
