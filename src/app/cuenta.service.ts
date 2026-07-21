@@ -20,8 +20,6 @@ export interface Cuenta {
   ultimoSello: string;
   /** Premio de estrellas (todos los juegos al 100%) ya reclamado. */
   premioEstrellas: boolean;
-  /** Cupón de bienvenida (18% primera compra) ya usado. */
-  cuponUsado: boolean;
 }
 
 /** Estrellas para el premio maestro: todos los niveles al 100% (30+30+15+3+3). */
@@ -80,9 +78,6 @@ export class CuentaService {
   readonly metaEstrellas = META_ESTRELLAS;
   readonly premioEstrellasReclamado = computed(() => !!this.cuenta()?.premioEstrellas);
 
-  /** ¿Tiene el cupón de bienvenida disponible (18% primera compra)? */
-  readonly cuponDisponible = computed(() => this.registrado() && !this.cuenta()?.cuponUsado);
-
   /** Próximo premio por alcanzar (o el mayor si ya los tiene todos). */
   readonly siguientePremio = computed<Premio>(() => {
     const p = this.puntos();
@@ -139,25 +134,7 @@ export class CuentaService {
       tarjetas: Number(c.tarjetas) || 0,
       ultimoSello: (c.ultimoSello ?? '').toString(),
       premioEstrellas: !!c.premioEstrellas,
-      cuponUsado: !!c.cuponUsado,
     });
-  }
-
-  /** Marca el cupón de bienvenida como usado (al enviar el pedido). */
-  async usarCupon(): Promise<void> {
-    const c = this.cuenta();
-    if (!c?.instagram || c.cuponUsado) return;
-    // Optimista: lo marca ya en local para que no se aplique dos veces.
-    this.cuenta.set({ ...c, cuponUsado: true });
-    try {
-      await fetch('/api/cuentas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accion: 'usar-cupon', instagram: c.instagram }),
-      });
-    } catch {
-      /* sin conexión: quedó marcado en local igual */
-    }
   }
 
   /** Reclama un premio (crea un código de un solo uso que el vendedor confirma). */
@@ -316,7 +293,7 @@ export class CuentaService {
       if (!r.ok) return;
       const d = (await r.json()) as {
         sellos?: number; tarjetas?: number; estrellas?: number; premioEstrellas?: boolean;
-        cuponUsado?: boolean; meta?: number; umbral?: number;
+        meta?: number; umbral?: number;
       };
       if (typeof d.meta === 'number') this.metaSellos.set(d.meta);
       if (typeof d.umbral === 'number') this.umbralCompra.set(d.umbral);
@@ -328,7 +305,6 @@ export class CuentaService {
           tarjetas: d.tarjetas ?? actual.tarjetas,
           puntos: d.estrellas ?? actual.puntos,
           premioEstrellas: d.premioEstrellas ?? actual.premioEstrellas,
-          cuponUsado: d.cuponUsado ?? actual.cuponUsado,
         });
       }
     } catch {
@@ -389,7 +365,6 @@ export class CuentaService {
       if (typeof obj.tarjetas !== 'number') obj.tarjetas = 0;
       if (typeof obj.ultimoSello !== 'string') obj.ultimoSello = '';
       if (typeof obj.premioEstrellas !== 'boolean') obj.premioEstrellas = false;
-      if (typeof obj.cuponUsado !== 'boolean') obj.cuponUsado = false;
       return obj;
     } catch {
       return null;

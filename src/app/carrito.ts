@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { PRODUCTOS, Producto, WHATSAPP_SEDES } from './productos';
+import { PRODUCTOS, Producto, WHATSAPP_SEDES, extraSabor } from './productos';
 import { ProductosService } from './productos.service';
 import { CuentaService } from './cuenta.service';
 
@@ -10,6 +10,8 @@ import { CuentaService } from './cuenta.service';
 export interface ItemCarrito {
   id: string;
   cantidad: number;
+  /** Sabor elegido (solo milkshakes): uno de los sabores de las New York Cookies. */
+  sabor?: string;
 }
 
 export type Entrega = 'domicilio' | 'recoger';
@@ -62,20 +64,19 @@ export class Carrito {
 
   /** Total en pesos de los productos con precio; los sin precio van aparte. */
   readonly total = computed(() =>
-    this.items().reduce((s, i) => s + precioNumero(this.producto(i.id)) * i.cantidad, 0),
+    this.items().reduce((s, i) => s + this.precioUnit(i) * i.cantidad, 0),
   );
 
   /** ¿Hay ítems sin precio definido (se cotizan por WhatsApp)? */
   readonly hayConsultar = computed(() =>
-    this.items().some((i) => precioNumero(this.producto(i.id)) === 0),
+    this.items().some((i) => this.precioUnit(i) === 0),
   );
 
-  /** Cupón de bienvenida 18% aplicable (cuenta con cupón disponible + hay total). */
-  readonly cuponAplicado = computed(() => this.cuenta.cuponDisponible() && this.total() > 0);
-  /** Descuento en pesos (18% del total con precio). */
-  readonly descuento = computed(() => (this.cuponAplicado() ? Math.round(this.total() * 0.18) : 0));
-  /** Total a pagar tras el cupón. */
-  readonly totalFinal = computed(() => Math.max(0, this.total() - this.descuento()));
+  /** Precio unitario de una línea: base del producto + recargo del sabor (milkshakes). */
+  precioUnit(item: ItemCarrito): number {
+    const base = precioNumero(this.producto(item.id));
+    return base + (item.sabor ? extraSabor(item.sabor) : 0);
+  }
 
   constructor() {
     effect(() => {
@@ -94,13 +95,13 @@ export class Carrito {
     return this.productosSvc.porId(id);
   }
 
-  agregar(id: string): void {
+  agregar(id: string, sabor?: string): void {
     const eraVacio = this.items().length === 0;
     this.items.update((lista) => {
-      const existe = lista.find((i) => i.id === id);
+      const existe = lista.find((i) => this.esLinea(i, id, sabor));
       return existe
-        ? lista.map((i) => (i.id === id ? { ...i, cantidad: i.cantidad + 1 } : i))
-        : [...lista, { id, cantidad: 1 }];
+        ? lista.map((i) => (this.esLinea(i, id, sabor) ? { ...i, cantidad: i.cantidad + 1 } : i))
+        : [...lista, sabor ? { id, cantidad: 1, sabor } : { id, cantidad: 1 }];
     });
     // Dispara el aviso flotante (nonce único para reactivarlo aunque el texto
     // se repita al agregar varias veces seguidas).
@@ -109,16 +110,21 @@ export class Carrito {
     if (eraVacio && !this.cuenta.registrado()) this.cuenta.abrir();
   }
 
-  restar(id: string): void {
+  restar(id: string, sabor?: string): void {
     this.items.update((lista) =>
       lista
-        .map((i) => (i.id === id ? { ...i, cantidad: i.cantidad - 1 } : i))
+        .map((i) => (this.esLinea(i, id, sabor) ? { ...i, cantidad: i.cantidad - 1 } : i))
         .filter((i) => i.cantidad > 0),
     );
   }
 
-  quitar(id: string): void {
-    this.items.update((lista) => lista.filter((i) => i.id !== id));
+  quitar(id: string, sabor?: string): void {
+    this.items.update((lista) => lista.filter((i) => !this.esLinea(i, id, sabor)));
+  }
+
+  /** ¿La línea corresponde a este producto y sabor? (distingue milkshakes por sabor). */
+  private esLinea(i: ItemCarrito, id: string, sabor?: string): boolean {
+    return i.id === id && (i.sabor ?? '') === (sabor ?? '');
   }
 
   vaciar(): void {
@@ -132,7 +138,7 @@ export class Carrito {
   /** ¿El formulario está completo para enviar? */
   puedeEnviar(): boolean {
     const d = this.datos();
-    // Iniciar sesión es obligatorio para pedir (identifica al cliente y aplica el cupón).
+    // Iniciar sesión es obligatorio para pedir (identifica al cliente).
     if (!this.cuenta.registrado()) return false;
     if (this.items().length === 0) return false;
     if (!d.nombre.trim() || !d.telefono.trim()) return false;
@@ -159,18 +165,13 @@ export class Carrito {
     for (const i of this.items()) {
       const p = this.producto(i.id);
       if (!p) continue;
-      const precio = precioNumero(p);
+      const precio = this.precioUnit(i);
+      const nombre = i.sabor ? `${p.nombre} (${i.sabor})` : p.nombre;
       const sub = precio > 0 ? `— ${formatoCOP(precio * i.cantidad)}` : '— (a consultar)';
-      L.push(`• ${i.cantidad}×  ${p.nombre}  ${sub}`);
+      L.push(`• ${i.cantidad}×  ${nombre}  ${sub}`);
     }
     L.push('');
-    if (this.cuponAplicado()) {
-      L.push(`💵 Subtotal: ${formatoCOP(this.total())}`);
-      L.push(`🎁 Cupón bienvenida −18%: -${formatoCOP(this.descuento())}`);
-      L.push(`💰 *TOTAL: ${formatoCOP(this.totalFinal())}*${this.hayConsultar() ? ' + ítems a consultar' : ''}`);
-    } else {
-      L.push(`💰 *TOTAL: ${formatoCOP(this.total())}*${this.hayConsultar() ? ' + ítems a consultar' : ''}`);
-    }
+    L.push(`💰 *TOTAL: ${formatoCOP(this.total())}*${this.hayConsultar() ? ' + ítems a consultar' : ''}`);
 
     // ── Bloque 2: datos del cliente + fidelidad ──
     L.push(barra);
@@ -179,11 +180,6 @@ export class Carrito {
     L.push(`• 📱 Teléfono: ${d.telefono.trim()}`);
     if (reg && c?.instagram) L.push(`• 📷 Instagram: ${c.instagram}`);
     if (reg) L.push(`• ⭐ Estrellas: ${this.cuenta.puntos()}`);
-    L.push(
-      `• 🎫 Cupón bienvenida: ${
-        this.cuponAplicado() ? 'ACTIVO ✅ (−18% aplicado)' : reg ? 'ya usado' : 'sin cuenta'
-      }`,
-    );
 
     // ── Bloque 3: entrega y pago ──
     L.push(barra);
@@ -215,16 +211,13 @@ export class Carrito {
     return `CM-${fecha}-${r}`;
   }
 
-  /** Tras enviar el pedido: registra el pedido en la base y consume el cupón. */
+  /** Tras enviar el pedido: registra el pedido en la base. */
   confirmarEnvio(): void {
-    // Snapshot ANTES de consumir el cupón (para guardar el estado real del pedido).
-    const aplicado = this.cuponAplicado();
-    void this.registrarPedido(aplicado);
-    if (aplicado) void this.cuenta.usarCupon();
+    void this.registrarPedido();
   }
 
   /** Guarda el pedido en la base para el panel (buscar por código, historial). */
-  private async registrarPedido(cuponAplicado: boolean): Promise<void> {
+  private async registrarPedido(): Promise<void> {
     const codigo = this.codigoActual;
     if (!codigo) return;
     const d = this.datos();
@@ -235,9 +228,9 @@ export class Carrito {
         if (!p) return null;
         return {
           id: i.id,
-          nombre: p.nombre,
+          nombre: i.sabor ? `${p.nombre} (${i.sabor})` : p.nombre,
           cantidad: i.cantidad,
-          precioUnit: precioNumero(p),
+          precioUnit: this.precioUnit(i),
         };
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);
@@ -254,9 +247,9 @@ export class Carrito {
       notas: d.notas.trim(),
       items,
       subtotal: this.total(),
-      descuento: cuponAplicado ? this.descuento() : 0,
-      total: cuponAplicado ? this.totalFinal() : this.total(),
-      cupon: cuponAplicado,
+      descuento: 0,
+      total: this.total(),
+      cupon: false,
       hayConsultar: this.hayConsultar(),
     };
     try {

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { Carrito, formatoCOP, precioNumero } from '../../carrito';
+import { Carrito, ItemCarrito, formatoCOP } from '../../carrito';
 import { CuentaService } from '../../cuenta.service';
-import { Producto, urlFoto } from '../../productos';
+import { urlFoto } from '../../productos';
 
 @Component({
   selector: 'app-carrito-panel',
@@ -14,23 +14,24 @@ export class CarritoPanel {
   readonly cuenta = inject(CuentaService);
   readonly urlFoto = urlFoto;
 
-  precioLinea(p: Producto | undefined, cantidad: number): string {
-    const n = precioNumero(p);
-    return n > 0 ? formatoCOP(n * cantidad) : 'CONSULTAR';
+  precioLinea(item: ItemCarrito): string {
+    const n = this.carrito.precioUnit(item);
+    return n > 0 ? formatoCOP(n * item.cantidad) : 'CONSULTAR';
+  }
+
+  /** Clave única de la línea (distingue milkshakes por sabor) para el *ngFor. */
+  lineaId(item: ItemCarrito): string {
+    return item.sabor ? `${item.id}::${item.sabor}` : item.id;
   }
 
   totalTexto(): string {
-    return formatoCOP(this.carrito.totalFinal());
-  }
-
-  descuentoTexto(): string {
-    return formatoCOP(this.carrito.descuento());
+    return formatoCOP(this.carrito.total());
   }
 
   enviar(): void {
     if (!this.carrito.puedeEnviar()) return;
     window.open(this.carrito.linkPedido(), '_blank', 'noopener');
-    // Consume el cupón de bienvenida (si estaba aplicado): una vez por cuenta.
+    // Registra el pedido en la base (historial del panel).
     this.carrito.confirmarEnvio();
   }
 

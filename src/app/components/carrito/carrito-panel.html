@@ -14,7 +14,7 @@
       </div>
     } @else {
       <ul class="lista">
-        @for (item of carrito.items(); track item.id) {
+        @for (item of carrito.items(); track lineaId(item)) {
           @if (carrito.producto(item.id); as p) {
             <li class="item">
               @if (p.fotos.length > 0) {
@@ -24,24 +24,20 @@
               }
               <div class="item-info">
                 <strong>{{ p.nombre }}</strong>
-                <span class="item-precio">{{ precioLinea(p, item.cantidad) }}</span>
+                @if (item.sabor) {
+                  <span class="item-sabor">SABOR: {{ item.sabor }}</span>
+                }
+                <span class="item-precio">{{ precioLinea(item) }}</span>
               </div>
               <div class="cantidad">
-                <button type="button" (click)="carrito.restar(item.id)" aria-label="Quitar uno">−</button>
+                <button type="button" (click)="carrito.restar(item.id, item.sabor)" aria-label="Quitar uno">−</button>
                 <span>{{ item.cantidad }}</span>
-                <button type="button" (click)="carrito.agregar(item.id)" aria-label="Agregar uno">+</button>
+                <button type="button" (click)="carrito.agregar(item.id, item.sabor)" aria-label="Agregar uno">+</button>
               </div>
             </li>
           }
         }
       </ul>
-
-      @if (carrito.cuponAplicado()) {
-        <div class="cupon-linea">
-          <span>🎁 Cupón bienvenida −18%</span>
-          <span class="cupon-desc">−{{ descuentoTexto() }}</span>
-        </div>
-      }
 
       <div class="total">
         <span>TOTAL</span>
@@ -112,7 +108,7 @@
 
         @if (!cuenta.registrado()) {
           <div class="sesion-aviso">
-            <p>🔒 INICIA SESIÓN PARA HACER TU PEDIDO Y OBTENER TU <b>18% DE DESCUENTO</b> DE BIENVENIDA.</p>
+            <p>🔒 INICIA SESIÓN PARA HACER TU PEDIDO.</p>
             <button type="button" class="enviar" (click)="pedirSesion()">INICIAR SESIÓN / CREAR CUENTA</button>
           </div>
         } @else {

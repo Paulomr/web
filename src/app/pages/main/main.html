@@ -33,18 +33,6 @@
   <!-- Menú en movimiento: filas de productos que se deslizan desde los lados.
        Tocar un producto lo agrega al carrito. -->
   <section class="menu-vivo">
-    @if (mostrarCupon()) {
-      <a class="promo-banda" routerLink="/catalogo" aria-label="18% de descuento en tu primera compra">
-        <span class="promo-track" aria-hidden="true">
-          <span>🍪 18% OFF · TU PRIMERA COMPRA</span>
-          <span>🍪 18% OFF · TU PRIMERA COMPRA</span>
-          <span>🍪 18% OFF · TU PRIMERA COMPRA</span>
-          <span>🍪 18% OFF · TU PRIMERA COMPRA</span>
-          <span>🍪 18% OFF · TU PRIMERA COMPRA</span>
-          <span>🍪 18% OFF · TU PRIMERA COMPRA</span>
-        </span>
-      </a>
-    }
     <h2>{{ cfg.texto('menuTitulo') }}</h2>
 
     <div class="fila" aria-label="Productos destacados">

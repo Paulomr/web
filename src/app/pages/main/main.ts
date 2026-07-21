@@ -26,9 +26,6 @@ export class Main implements AfterViewInit {
     this.cuenta.registrado() ? `HOLA ${this.cuenta.primerNombre()}` : this.cfg.texto('heroTitulo'),
   );
 
-  /** Banda de cupón: se ve para visitantes y para quien aún no lo ha usado. */
-  readonly mostrarCupon = computed(() => !this.cuenta.registrado() || this.cuenta.cuponDisponible());
-
   /** Productos con foto, repartidos en tres cintas (marquee). Reacciona al
       menú del servicio (local al inicio; base de datos si llega). */
   private readonly filas = computed(() => {

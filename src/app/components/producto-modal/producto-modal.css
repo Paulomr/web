@@ -213,6 +213,67 @@
   flex: 1;
 }
 
+/* ---------- Selector de sabor (milkshakes) ---------- */
+.pm-sabores {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pm-sabores-tit {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  color: #4a2f42;
+}
+
+.pm-sabores-tit em {
+  font-style: normal;
+  color: #b83a77;
+  font-size: 0.72rem;
+}
+
+.pm-sabores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.pm-sabor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 10px;
+  border: 1.5px solid #f4b6d5;
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: #7a4a63;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 140ms ease;
+}
+
+.pm-sabor:hover {
+  border-color: #e0559f;
+  transform: translateY(-1px);
+}
+
+.pm-sabor.on {
+  background: linear-gradient(135deg, #f078b8, #e0559f);
+  border-color: #e0559f;
+  color: #fff;
+  box-shadow: 0 6px 14px -8px rgba(224, 85, 159, 0.8);
+}
+
+.pm-sabor-extra {
+  font-size: 0.64rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
 .pm-pie {
   display: flex;
   align-items: center;
@@ -251,6 +312,14 @@
 
 .pm-agregar:active {
   transform: translateY(0) scale(0.97);
+}
+
+.pm-agregar:disabled {
+  cursor: not-allowed;
+  background: #d9c6d2;
+  color: #fff;
+  box-shadow: none;
+  transform: none;
 }
 
 /* ---------- Responsive: apila en móvil ---------- */

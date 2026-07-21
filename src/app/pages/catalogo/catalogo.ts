@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
-import { CATEGORIAS, Categoria, Producto, urlFoto } from '../../productos';
+import { CATEGORIAS, Categoria, Producto, esMilkshake, urlFoto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
@@ -65,6 +65,11 @@ export class Catalogo implements OnDestroy {
   }
 
   agregar(p: Producto): void {
+    // Un milkshake necesita elegir sabor: abre la tarjeta en vez de agregar directo.
+    if (esMilkshake(p)) {
+      this.detalle.abrir(p);
+      return;
+    }
     this.carrito.agregar(p.id);
   }
 

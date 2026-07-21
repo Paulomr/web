@@ -44,9 +44,36 @@
     <div class="pm-info">
       <h2>{{ p.nombre }}</h2>
       <p class="pm-desc">{{ p.descripcion }}</p>
+
+      <!-- Milkshake: elige el sabor de tu galleta favorita (obligatorio). -->
+      @if (esMilkshake(p)) {
+        <div class="pm-sabores">
+          <span class="pm-sabores-tit">ELIGE TU SABOR <em>(OBLIGATORIO)</em></span>
+          <div class="pm-sabores-grid">
+            @for (s of sabores(); track s.nombre) {
+              <button
+                type="button"
+                class="pm-sabor"
+                [class.on]="saborSel() === s.nombre"
+                (click)="saborSel.set(s.nombre)"
+              >
+                {{ s.nombre }}@if (s.extra > 0) { <span class="pm-sabor-extra">+$2.000</span> }
+              </button>
+            }
+          </div>
+        </div>
+      }
+
       <div class="pm-pie">
-        <span class="pm-precio">{{ p.precio || 'CONSULTAR' }}</span>
-        <button type="button" class="pm-agregar" (click)="agregar()">AGREGAR AL CARRITO</button>
+        <span class="pm-precio">{{ precioMostrar(p) }}</span>
+        <button
+          type="button"
+          class="pm-agregar"
+          [disabled]="faltaSabor(p)"
+          (click)="agregar()"
+        >
+          {{ faltaSabor(p) ? 'ELIGE UN SABOR' : 'AGREGAR AL CARRITO' }}
+        </button>
       </div>
     </div>
   </div>

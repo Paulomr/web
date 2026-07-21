@@ -185,30 +185,12 @@ export const PRODUCTOS: Producto[] = [
     categoria: 'crookies',
   },
 
-  // ---------- MILKSHAKES (helado de tu galleta favorita) ----------
+  // ---------- MILKSHAKES (malteada del sabor de tu galleta favorita) ----------
   {
-    id: 'milkshake-cookies-cream',
-    nombre: 'MILKSHAKE COOKIES & CREAM',
-    descripcion: 'Helado de tu galleta favorita batido y coronado con crumble de galleta.',
-    fotos: ['bearnie-0805.webp', 'bearnie-0825.webp'],
-    precio: '$ 25.000',
-    detalle: '450 G',
-    categoria: 'milkshakes',
-  },
-  {
-    id: 'milkshake-fresa',
-    nombre: 'MILKSHAKE FRESA',
-    descripcion: 'Cremoso de fresa con crumble de red velvet y fresas liofilizadas.',
-    fotos: ['bearnie-0648.webp', 'bearnie-0630.webp'],
-    precio: '$ 25.000',
-    detalle: '450 G',
-    categoria: 'milkshakes',
-  },
-  {
-    id: 'milkshake-red-velvet',
-    nombre: 'MILKSHAKE RED VELVET',
-    descripcion: 'Batido de red velvet coronado con crumble rojo y crema.',
-    fotos: ['bearnie-1180.webp'],
+    id: 'milkshake',
+    nombre: 'MILKSHAKE',
+    descripcion: 'Tu malteada del sabor de tu galleta favorita: batida, cremosa y coronada con crumble. Elige tu sabor entre nuestras New York Cookies.',
+    fotos: ['bearnie-0805.webp', 'bearnie-0825.webp', 'bearnie-1180.webp', 'bearnie-0648.webp'],
     precio: '$ 25.000',
     detalle: '450 G',
     categoria: 'milkshakes',
@@ -318,6 +300,19 @@ export const PRODUCTOS: Producto[] = [
     categoria: 'bebidas',
   },
 ];
+
+/** ¿El producto es un milkshake? (necesita elegir sabor obligatorio al pedir). */
+export function esMilkshake(p: Producto | undefined): boolean {
+  return p?.categoria === 'milkshakes';
+}
+
+/**
+ * Recargo (COP) del sabor de milkshake. Los sabores Kinder y Ferrero cuestan
+ * $2.000 más (por el chocolate). Los demás no tienen recargo.
+ */
+export function extraSabor(sabor: string): number {
+  return /kinder|ferrero/i.test(sabor) ? 2000 : 0;
+}
 
 /**
  * URL final de una foto. Las subidas nuevas guardan una URL completa
