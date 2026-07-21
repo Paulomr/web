@@ -14,16 +14,15 @@
   justify-content: center;
   gap: 34px;
   padding: 40px 16px 48px;
-  /* Azul más intenso, con un velo blanco encima que lo "opaca" un poco. */
+  /* Azul más intenso, con un velo blanco tenue encima que lo "opaca" un poco. */
   background:
-    linear-gradient(0deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)),
     linear-gradient(165deg, #5aa9e6 0%, #2f8bd8 52%, #5aa9e6 100%);
-  color: var(--text);
+  color: #fff;
   overflow: hidden;
 }
 
-/* Doodles de la marca. Se usan SIN repetir (cover) para que no se vean las
-   costuras donde el patrón termina y vuelve a empezar. */
+/* Doodles de la marca en mosaico (repetidos), textura cercana sobre el azul. */
 .hs::before {
   content: '';
   position: absolute;
@@ -31,10 +30,8 @@
   z-index: 0;
   pointer-events: none;
   background-image: url('/fotos/doodles-azul.webp');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  opacity: 0.28;
+  background-size: 560px auto;
+  opacity: 0.4;
 }
 
 /* ---- Encabezado ---- */
@@ -46,13 +43,13 @@
 }
 
 .hs-title {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   font-family: var(--font-display);
-  font-size: clamp(2.3rem, 8vw, 3.6rem);
-  line-height: 1.02;
-  letter-spacing: 0.01em;
-  color: var(--text);
-  text-shadow: 0 3px 16px rgba(255, 255, 255, 0.5);
+  font-size: clamp(2.4rem, 8.5vw, 3.9rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  color: #fff;
+  text-shadow: 0 3px 22px rgba(20, 60, 110, 0.35);
   opacity: 0;
   transform: translateY(-20px);
   animation: hs-fade-top 0.8s ease forwards 0.25s;
@@ -60,9 +57,11 @@
 
 .hs-sub {
   margin: 0;
-  color: var(--text-muted);
-  font-size: clamp(0.95rem, 2.6vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(0.95rem, 2.6vw, 1.18rem);
   font-weight: 500;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 12px rgba(20, 60, 110, 0.3);
   opacity: 0;
   transform: translateY(-20px);
   animation: hs-fade-top 0.8s ease forwards 0.5s;
@@ -98,9 +97,10 @@
   cursor: pointer;
   /* Borde base sutil (blanco translúcido) + sombra. */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28), inset 0 0 0 1.5px rgba(255, 255, 255, 0.5);
+  /* NOTA: nada de transform en el panel — un transform rompe el
+     background-attachment: fixed del brillo del borde. La entrada es solo opacidad. */
   opacity: 0;
-  transform: translateX(-50px);
-  animation: hs-slide-in 0.6s ease forwards;
+  animation: hs-fade-in 0.6s ease forwards;
   transition:
     flex-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.5s ease;
@@ -109,7 +109,7 @@
 
 .hs-opt.active {
   flex-grow: 7;
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(255, 255, 255, 0.85);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
 /* Borde con brillo "spotlight": anillo de color que sigue al cursor. Usa
@@ -121,13 +121,13 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 2.5px;
+  padding: 3px;
   pointer-events: none;
   z-index: 4;
   background-image: radial-gradient(
-    220px 220px at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
-    hsl(var(--hue) 75% 72% / 0.95),
-    hsl(var(--hue) 75% 72% / 0) 60%
+    300px 300px at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+    hsl(var(--hue) 95% 68% / 1),
+    hsl(var(--hue) 95% 68% / 0) 55%
   );
   background-attachment: fixed;
   -webkit-mask:
@@ -203,14 +203,12 @@
   }
 }
 
-@keyframes hs-slide-in {
+@keyframes hs-fade-in {
   from {
     opacity: 0;
-    transform: translateX(-50px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 

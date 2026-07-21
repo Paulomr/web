@@ -12,6 +12,8 @@ interface Slide {
   img: string;
   /** Nombre del producto (rótulo del panel). */
   nombre: string;
+  /** Encuadre de la foto (background-position). Por defecto 'center'. */
+  pos?: string;
 }
 
 @Component({
@@ -21,13 +23,15 @@ interface Slide {
   styleUrl: './hero-selector.css',
 })
 export class HeroSelector {
-  /** Las 5 más vendidas: foto + nombre (sin logos, el rótulo es el nombre). */
+  /** Las más vendidas: foto + nombre (sin logos, el rótulo es el nombre). */
   readonly slides: Slide[] = [
     { img: 'fotos/bearnie-0630.webp', nombre: 'MILKSHAKE' },
     { img: 'fotos/bearnie-0572.webp', nombre: 'NY CROOKIE' },
-    { img: 'fotos/bearnie-0433.webp', nombre: "S'MORES" },
-    { img: 'fotos/bearnie-0399.webp', nombre: 'MINICOOKIES' },
-    { img: 'fotos/bearnie-0939.webp', nombre: 'MANGO MATCHA' },
+    { img: 'fotos/bearnie-0433.webp', nombre: 'MINICOOKIES' },
+    { img: 'fotos/bearnie-0399.webp', nombre: "S'MORES", pos: 'center 30%' },
+    { img: 'fotos/bearnie-0939.webp', nombre: 'MANGO MATCHA', pos: 'center 75%' },
+    { img: 'fotos/bearnie-0228.webp', nombre: 'KINDER' },
+    { img: 'fotos/bearnie-0121.webp', nombre: 'RED VELVET' },
   ];
 
   /** Índice del panel expandido. */

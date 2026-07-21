@@ -14,6 +14,7 @@
         [attr.aria-selected]="activa() === i"
         [attr.aria-label]="s.nombre"
         [style.background-image]="'url(' + s.img + ')'"
+        [style.background-position]="s.pos || 'center'"
         [style.animation-delay.ms]="i * 130"
         (click)="seleccionar(i)"
       >
