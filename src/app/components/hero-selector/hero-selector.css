@@ -20,19 +20,19 @@
   overflow: hidden;
 }
 
-/* Doodles de la marca en mosaico (repetidos), tono sobre tono: se usa la imagen
-   como máscara y se pinta de un violeta más oscuro para que se note la textura
-   sobre el fondo #B163FF. */
+/* Doodles de la marca en mosaico (repetidos). Se dibujan como imagen de fondo
+   (render garantizado) y se recolorean a violeta oscuro con un filtro, para que
+   contrasten y se aprecien sobre el fondo #B163FF. */
 .hs::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-color: #7e33cc;
-  opacity: 0.4;
-  -webkit-mask: url('/fotos/doodles-azul.webp') 0 0 / 560px auto repeat;
-  mask: url('/fotos/doodles-azul.webp') 0 0 / 560px auto repeat;
+  background-image: url('/fotos/doodles-azul.webp');
+  background-size: 560px auto;
+  opacity: 0.6;
+  filter: hue-rotate(60deg) saturate(1.3) brightness(0.72);
 }
 
 /* ---- Encabezado ---- */
