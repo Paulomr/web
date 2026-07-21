@@ -14,12 +14,16 @@
   justify-content: center;
   gap: 34px;
   padding: 40px 16px 48px;
-  background: linear-gradient(165deg, var(--cyan-soft) 0%, #a9dced 55%, var(--cyan-soft) 100%);
+  /* Azul más intenso, con un velo blanco encima que lo "opaca" un poco. */
+  background:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)),
+    linear-gradient(165deg, #5aa9e6 0%, #2f8bd8 52%, #5aa9e6 100%);
   color: var(--text);
   overflow: hidden;
 }
 
-/* Doodles de la marca sobre el fondo azul cielo. */
+/* Doodles de la marca. Se usan SIN repetir (cover) para que no se vean las
+   costuras donde el patrón termina y vuelve a empezar. */
 .hs::before {
   content: '';
   position: absolute;
@@ -27,8 +31,10 @@
   z-index: 0;
   pointer-events: none;
   background-image: url('/fotos/doodles-azul.webp');
-  background-size: 560px auto;
-  opacity: 0.4;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.28;
 }
 
 /* ---- Encabezado ---- */
@@ -74,12 +80,15 @@
 }
 
 .hs-opt {
+  /* Tono del brillo del borde según la posición del cursor: recorre la paleta
+     de la marca rosa(300) → violeta(240) → cian(180). */
+  --hue: calc(300 + var(--xp, 0.5) * -120);
   position: relative;
   flex: 1 1 0%;
   min-width: 44px;
   padding: 0;
   overflow: hidden;
-  border: 2px solid #2b2528;
+  border: none;
   border-radius: 16px;
   background-color: #18181b;
   background-repeat: no-repeat;
@@ -87,21 +96,45 @@
   background-size: cover;
   color: #fff;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  /* Borde base sutil (blanco translúcido) + sombra. */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28), inset 0 0 0 1.5px rgba(255, 255, 255, 0.5);
   opacity: 0;
   transform: translateX(-50px);
   animation: hs-slide-in 0.6s ease forwards;
   transition:
     flex-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.5s ease,
     box-shadow 0.5s ease;
   will-change: flex-grow;
 }
 
 .hs-opt.active {
   flex-grow: 7;
-  border-color: #fff;
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(255, 255, 255, 0.85);
+}
+
+/* Borde con brillo "spotlight": anillo de color que sigue al cursor. Usa
+   background-attachment: fixed para que el foco viva en coordenadas de pantalla
+   y se ilumine el panel que esté bajo el puntero. La máscara deja ver el
+   degradado SOLO en el borde. */
+.hs-opt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2.5px;
+  pointer-events: none;
+  z-index: 4;
+  background-image: radial-gradient(
+    220px 220px at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+    hsl(var(--hue) 75% 72% / 0.95),
+    hsl(var(--hue) 75% 72% / 0) 60%
+  );
+  background-attachment: fixed;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 /* Degradado inferior para que el nombre se lea sobre la foto. */
@@ -125,6 +158,7 @@
 .hs-nombre {
   position: absolute;
   inset: 0;
+  z-index: 5;
   display: flex;
   align-items: flex-end;
   justify-content: center;
