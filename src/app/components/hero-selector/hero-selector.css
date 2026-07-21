@@ -12,27 +12,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 34px;
+  gap: 30px;
   padding: 40px 16px 48px;
-  /* Azul más intenso, con un velo blanco tenue encima que lo "opaca" un poco. */
-  background:
-    linear-gradient(0deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)),
-    linear-gradient(165deg, #5aa9e6 0%, #2f8bd8 52%, #5aa9e6 100%);
+  /* Fondo violeta de marca (#B163FF) con una leve profundidad. */
+  background: linear-gradient(165deg, #b163ff 0%, #9c46f5 55%, #b163ff 100%);
   color: #fff;
   overflow: hidden;
 }
 
-/* Doodles de la marca en mosaico (repetidos), textura cercana sobre el azul.
-   Se usa la imagen como máscara y se pinta del violeta de marca (#B163FF), así
-   el color es exacto sin depender del tinte del archivo. */
+/* Doodles de la marca en mosaico (repetidos), tono sobre tono: se usa la imagen
+   como máscara y se pinta de un violeta más oscuro para que se note la textura
+   sobre el fondo #B163FF. */
 .hs::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-color: #b163ff;
-  opacity: 0.45;
+  background-color: #7e33cc;
+  opacity: 0.4;
   -webkit-mask: url('/fotos/doodles-azul.webp') 0 0 / 560px auto repeat;
   mask: url('/fotos/doodles-azul.webp') 0 0 / 560px auto repeat;
 }
@@ -46,13 +44,13 @@
 }
 
 .hs-title {
-  margin: 0 0 12px;
+  margin: 0 0 2px;
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 8.5vw, 3.9rem);
-  line-height: 1;
-  letter-spacing: 0.05em;
+  font-size: clamp(2.6rem, 9vw, 4.2rem);
+  line-height: 0.95;
+  letter-spacing: 0.04em;
   color: #fff;
-  text-shadow: 0 3px 22px rgba(20, 60, 110, 0.35);
+  text-shadow: 0 4px 22px rgba(70, 20, 120, 0.4);
   opacity: 0;
   transform: translateY(-20px);
   animation: hs-fade-top 0.8s ease forwards 0.25s;
@@ -60,11 +58,12 @@
 
 .hs-sub {
   margin: 0;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: clamp(0.95rem, 2.6vw, 1.18rem);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  text-shadow: 0 2px 12px rgba(20, 60, 110, 0.3);
+  color: #fff;
+  font-size: clamp(1rem, 2.9vw, 1.32rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(70, 20, 120, 0.4);
   opacity: 0;
   transform: translateY(-20px);
   animation: hs-fade-top 0.8s ease forwards 0.5s;
