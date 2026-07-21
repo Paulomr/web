@@ -1,0 +1,28 @@
+<section class="hs">
+  <div class="hs-head">
+    @if (saludo()) {
+      <span class="hs-eyebrow">{{ saludo() }}</span>
+    }
+    <h1 class="hs-title">BEST SELLERS</h1>
+    <p class="hs-sub">Las favoritas de Crunchy Munch.</p>
+  </div>
+
+  <div class="hs-opts" role="tablist" aria-label="Las más vendidas">
+    @for (s of slides; track s.img; let i = $index) {
+      <button
+        type="button"
+        class="hs-opt"
+        role="tab"
+        [class.active]="activa() === i"
+        [attr.aria-selected]="activa() === i"
+        [attr.aria-label]="s.nombre"
+        [style.background-image]="'url(' + s.img + ')'"
+        [style.animation-delay.ms]="i * 130"
+        (click)="seleccionar(i)"
+      >
+        <span class="hs-shadow" aria-hidden="true"></span>
+        <span class="hs-nombre"><span class="hs-txt">{{ s.nombre }}</span></span>
+      </button>
+    }
+  </div>
+</section>

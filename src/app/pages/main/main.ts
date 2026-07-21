@@ -1,30 +1,24 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Producto, urlFoto } from '../../productos';
 import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
 import { ConfiguracionService } from '../../configuracion.service';
-import { CuentaService } from '../../cuenta.service';
+import { HeroSelector } from '../../components/hero-selector/hero-selector';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterLink],
+  imports: [RouterLink, HeroSelector],
   templateUrl: './main.html',
   styleUrl: './main.css',
 })
-export class Main implements AfterViewInit {
+export class Main {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
   readonly cfg = inject(ConfiguracionService);
-  readonly cuenta = inject(CuentaService);
   private readonly productosSvc = inject(ProductosService);
   readonly urlFoto = urlFoto;
-
-  /** Título del hero: saluda por nombre si hay sesión ("HOLA PAULO"). */
-  readonly tituloHero = computed(() =>
-    this.cuenta.registrado() ? `HOLA ${this.cuenta.primerNombre()}` : this.cfg.texto('heroTitulo'),
-  );
 
   /** Productos con foto, repartidos en tres cintas (marquee). Reacciona al
       menú del servicio (local al inicio; base de datos si llega). */
@@ -40,24 +34,5 @@ export class Main implements AfterViewInit {
   /** Tocar un producto del menú vivo abre su tarjeta ampliada. */
   abrir(p: Producto): void {
     this.detalle.abrir(p);
-  }
-
-  /** Sección alta que gobierna el hero expandible (progreso 0 → 1). */
-  @ViewChild('expandEl') private expandEl?: ElementRef<HTMLElement>;
-
-  ngAfterViewInit(): void {
-    this.onScroll();
-  }
-
-  // El progreso del scroll se escribe como variable CSS (--p) directamente en
-  // el DOM: la interpolación de tamaños/posiciones vive en el CSS y no pasa
-  // por change detection (innecesaria a esta frecuencia).
-  @HostListener('window:scroll')
-  onScroll(): void {
-    const el = this.expandEl?.nativeElement;
-    if (!el) return;
-    const recorrible = el.offsetHeight - window.innerHeight;
-    const p = recorrible > 0 ? Math.min(1, Math.max(0, window.scrollY / recorrible)) : 1;
-    el.style.setProperty('--p', p.toFixed(4));
   }
 }

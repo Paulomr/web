@@ -1,26 +1,6 @@
 <main class="landing">
-  <!-- Hero expandible: la foto crece con el scroll y el título se abre.
-       El fondo lleva los doodles de la marca en rosa, bien visibles. -->
-  <section class="expand" #expandEl>
-    <div class="pegajoso">
-      <!-- Fotos laterales: acompañan a la principal y se difuminan al bajar. -->
-      <img class="exp-lado izq" src="fotos/bearnie-0648.webp" alt="" aria-hidden="true" />
-      <img class="exp-lado der" src="fotos/bearnie-0019.webp" alt="" aria-hidden="true" />
-
-      <img class="exp-media" src="fotos/hero-0856.jpg" alt="Galletas estilo Nueva York y milkshakes de Crunchy Munch" />
-
-      <div class="exp-titulos">
-        <h1 class="exp-h1">{{ tituloHero() }}</h1>
-        <span class="exp-linea1">{{ cfg.texto('heroLinea1') }}</span>
-        <span class="exp-linea2">{{ cfg.texto('heroLinea2') }}</span>
-      </div>
-
-      <div class="exp-hint" aria-hidden="true">
-        <span>Desliza para descubrir</span>
-        <span class="chevron">⌄</span>
-      </div>
-    </div>
-  </section>
+  <!-- Hero: selector acordeón de las más vendidas (toca una foto y se expande). -->
+  <app-hero-selector />
 
   <!-- Único llamado a la acción: el catálogo. -->
   <section class="cta">
