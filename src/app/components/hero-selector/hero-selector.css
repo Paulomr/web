@@ -22,16 +22,19 @@
   overflow: hidden;
 }
 
-/* Doodles de la marca en mosaico (repetidos), textura cercana sobre el azul. */
+/* Doodles de la marca en mosaico (repetidos), textura cercana sobre el azul.
+   Se usa la imagen como máscara y se pinta del violeta de marca (#B163FF), así
+   el color es exacto sin depender del tinte del archivo. */
 .hs::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url('/fotos/doodles-azul.webp');
-  background-size: 560px auto;
-  opacity: 0.4;
+  background-color: #b163ff;
+  opacity: 0.45;
+  -webkit-mask: url('/fotos/doodles-azul.webp') 0 0 / 560px auto repeat;
+  mask: url('/fotos/doodles-azul.webp') 0 0 / 560px auto repeat;
 }
 
 /* ---- Encabezado ---- */
