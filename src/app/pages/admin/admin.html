@@ -190,6 +190,53 @@
       }
     </div>
 
+    <!-- Opiniones que dejan los clientes en la web (moderación) -->
+    <div class="modulo">
+      <button type="button" class="modulo-cab cab-cfg" (click)="revAbierto.set(!revAbierto()); cargarResenas()">
+        <span class="modulo-nombre">OPINIONES DE CLIENTES</span>
+        @if (revPendientes() > 0) {
+          <span class="rev-pend">{{ revPendientes() }}</span>
+        }
+        <span class="chev" [class.rot]="revAbierto()" aria-hidden="true">⌄</span>
+      </button>
+      @if (revAbierto()) {
+        <div class="modulo-cuerpo cfg-cuerpo">
+          <p class="fid-admin-ayuda">
+            Las opiniones que dejan los clientes registrados llegan aquí en revisión: no las ve nadie
+            hasta que le des "Publicar". Si publicas una y luego te arrepientes, "Ocultar" la quita de
+            la portada sin borrarla.
+          </p>
+          @if (resenas().length === 0) {
+            <p class="vacio-cat">Todavía no hay opiniones.</p>
+          } @else {
+            <div class="revs">
+              @for (r of resenasOrdenadas(); track r.instagram) {
+                <div class="rev-fila" [attr.data-estado]="r.estado">
+                  <div class="rev-fila-top">
+                    <strong>{{ r.nombre }}</strong>
+                    <span class="rev-fila-ig">{{ r.instagram }}</span>
+                    <span class="rev-fila-est">{{ r.estado }}</span>
+                  </div>
+                  <div class="rev-fila-stars" aria-hidden="true">{{ '★'.repeat(r.estrellas) }}</div>
+                  <p class="rev-fila-txt">{{ r.texto }}</p>
+                  <div class="rev-fila-btns">
+                    @if (r.estado !== 'aprobada') {
+                      <button class="guardar" (click)="moderar(r, 'aprobada')">Publicar</button>
+                    }
+                    @if (r.estado !== 'oculta') {
+                      <button class="del-txt" (click)="moderar(r, 'oculta')">Ocultar</button>
+                    }
+                    <button class="del-txt" (click)="borrarResena(r)">Borrar</button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @if (revMsg()) { <span class="msg">{{ revMsg() }}</span> }
+        </div>
+      }
+    </div>
+
     <!-- Horarios y fechas especiales de las sedes -->
     <div class="modulo">
       <button type="button" class="modulo-cab cab-cfg" (click)="sedesAbierto.set(!sedesAbierto())">

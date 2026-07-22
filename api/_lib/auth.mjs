@@ -8,6 +8,11 @@
 //
 // ⚠️ RELLENAR EN VERCEL Y EN TU .env LOCAL:
 //    ADMIN_TOKEN = una clave larga y secreta que solo tú conozcas.
+//
+// Aquí viven también los ayudantes de identidad del CLIENTE (@instagram + pin),
+// para que la fórmula del hash exista en un solo sitio: si se duplica en cada
+// endpoint, tarde o temprano una copia cambia y esas cuentas dejan de entrar.
+import crypto from 'node:crypto';
 
 export function esAdmin(req) {
   const token = req.headers['x-admin-token'];
@@ -21,4 +26,18 @@ export function requiereAdmin(req, res) {
     return false;
   }
   return true;
+}
+
+/** Usuario de Instagram normalizado: '@usuario' en minúsculas, o '' si viene vacío. */
+export function normalizarIg(s) {
+  const v = (s || '').toString().trim().replace(/^@+/, '').replace(/\s+/g, '').toLowerCase();
+  return v ? '@' + v : '';
+}
+
+/**
+ * Hash del código de 4 dígitos del cliente. No cambiar la fórmula: dejaría
+ * fuera a todas las cuentas ya creadas.
+ */
+export function hashPin(ig, pin) {
+  return crypto.createHash('sha256').update(`${ig}:${pin}:crunchy-pin-v1`).digest('hex');
 }

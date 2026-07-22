@@ -6,19 +6,9 @@
 // El "pin" es un código de 4 dígitos (contraseña ligera). Se guarda hasheado,
 // no en claro. Nota: 4 dígitos es baja seguridad (apto para fidelidad de una
 // tienda, no para datos sensibles). Identidad = @instagram.
-import crypto from 'node:crypto';
 import { conectarDB } from './_lib/mongo.mjs';
 import { Cuenta } from './_lib/models/cuenta.mjs';
-import { requiereAdmin } from './_lib/auth.mjs';
-
-function normalizarIg(s) {
-  const v = (s || '').toString().trim().replace(/^@+/, '').replace(/\s+/g, '').toLowerCase();
-  return v ? '@' + v : '';
-}
-
-function hashPin(ig, pin) {
-  return crypto.createHash('sha256').update(`${ig}:${pin}:crunchy-pin-v1`).digest('hex');
-}
+import { requiereAdmin, normalizarIg, hashPin } from './_lib/auth.mjs';
 
 // Cuenta pública (sin el hash) para devolver al cliente.
 function publica(c) {

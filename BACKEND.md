@@ -29,13 +29,16 @@ api/
     [id].mjs            <- GET uno | PUT editar | DELETE ocultar (admin)
   pedidos.mjs           <- POST registra pedido | GET admin busca por código
   estadisticas.mjs      <- POST registra visita | GET admin métricas del negocio
-  chat.mjs              <- IA de Bearnie (ya existía)
+  resenas.mjs           <- opiniones de clientes (POST envía, PUT/DELETE modera)
+  chat.mjs              <- IA de Bearnie (hoy SIN USO: el oso salió de la web)
 scripts/                <- utilidades (semilla de datos, etc.)
 ```
 
-> Nota Vercel: cada archivo de `api/*.mjs` es una función serverless. Hoy hay 11
-> (el plan Hobby permite 12). Si se agregan más, conviene agrupar acciones dentro
-> de un mismo endpoint.
+> ⚠️ **Nota Vercel:** cada archivo de `api/*.mjs` es una función serverless. Hoy
+> hay **12 de las 12** que permite el plan Hobby: **no cabe ninguna más**. Para
+> hacer sitio hay dos caminos: borrar `chat.mjs` (el oso de IA ya no está en la
+> web) o agrupar varias acciones dentro de un mismo endpoint, como hace
+> `cuentas.mjs` con su campo `accion`.
 
 ## Fases
 
@@ -56,6 +59,11 @@ scripts/                <- utilidades (semilla de datos, etc.)
 - [x] **Fase 3.5 — Estadísticas del negocio** ✅
       Página `/admin/estadisticas` (diseño propio): tráfico en vivo / por día / mes /
       año, usuarios registrados, jugadores por juego, pedidos e ingresos.
+- [x] **Fase 3.6 — Opiniones de clientes** ✅
+      Quien tiene cuenta puede dejar su opinión (1 a 5 estrellas) desde la
+      portada. Para escribir hace falta @instagram + el código de 4 dígitos, así
+      nadie opina en nombre de otro. Toda opinión entra como *pendiente* y solo
+      se publica cuando se aprueba en `/admin` → "Opiniones de clientes".
 - [ ] **Fase 4 — Pagos en línea**
       Cobro con tarjeta/PSE (proveedor colombiano: Wompi o MercadoPago).
 - [ ] **Fase 5 — Cuentas y fidelidad**

@@ -28,6 +28,16 @@ interface ProdAdmin {
   _msg?: string;
 }
 
+/** Opinión de un cliente, tal como la devuelve /api/resenas?admin=1. */
+interface ResenaAdmin {
+  instagram: string;
+  nombre: string;
+  estrellas: number;
+  texto: string;
+  fecha: string;
+  estado: 'pendiente' | 'aprobada' | 'oculta';
+}
+
 const API = '/api/productos';
 const KEY_TOKEN = 'cm-admin-token';
 
@@ -105,6 +115,17 @@ export class Admin {
   readonly canjes = signal<any[]>([]);
   readonly canjesMsg = signal('');
 
+  // ---- Opiniones de clientes (moderación) ----
+  readonly revAbierto = signal(false);
+  readonly resenas = signal<ResenaAdmin[]>([]);
+  readonly revMsg = signal('');
+  /** Las que esperan revisión salen primero: son las que hay que atender. */
+  readonly resenasOrdenadas = computed(() => {
+    const orden = { pendiente: 0, aprobada: 1, oculta: 2 } as Record<string, number>;
+    return [...this.resenas()].sort((a, b) => (orden[a.estado] ?? 9) - (orden[b.estado] ?? 9));
+  });
+  readonly revPendientes = computed(() => this.resenas().filter((r) => r.estado === 'pendiente').length);
+
   // ---- Galería de fotos ----
   readonly galAbierto = signal(false);
   readonly galSubiendo = signal(false);
@@ -129,6 +150,9 @@ export class Admin {
       void this.cargarConfig();
       void this.cargarFidelidad();
       void this.cargarCanjes();
+      // Al entrar, no al abrir el módulo: el contador de pendientes existe
+      // justamente para avisar sin tener que ir a mirar.
+      void this.cargarResenas();
     }
   }
 
@@ -304,6 +328,74 @@ export class Admin {
     } else {
       this.canjesMsg.set('⚠ Error');
     }
+  }
+
+  // ---- Opiniones de clientes ----
+  async cargarResenas(): Promise<void> {
+    try {
+      const r = await fetch('/api/resenas?admin=1', { headers: this.cabeceras() });
+      if (r.status === 401) {
+        this.salir();
+        return;
+      }
+      if (!r.ok) return;
+      const d = (await r.json()) as { resenas?: ResenaAdmin[] };
+      this.resenas.set(d.resenas ?? []);
+    } catch {
+      /* sin conexión: se queda la lista que ya había */
+    }
+  }
+
+  /** Aprueba (la publica) u oculta una opinión. */
+  async moderar(r: ResenaAdmin, estado: ResenaAdmin['estado']): Promise<void> {
+    this.revMsg.set('');
+    let res: Response;
+    try {
+      res = await fetch('/api/resenas', {
+        method: 'PUT',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ instagram: r.instagram, estado }),
+      });
+    } catch {
+      this.revMsg.set('⚠ Sin conexión');
+      return;
+    }
+    if (res.status === 401) {
+      this.salir();
+      return;
+    }
+    if (!res.ok) {
+      this.revMsg.set('⚠ Error');
+      return;
+    }
+    this.resenas.update((l) => l.map((x) => (x.instagram === r.instagram ? { ...x, estado } : x)));
+    this.revMsg.set(estado === 'aprobada' ? '✓ Publicada' : '✓ Oculta');
+  }
+
+  /** Borra la opinión del todo (el cliente podrá escribir otra). */
+  async borrarResena(r: ResenaAdmin): Promise<void> {
+    if (!confirm(`¿Borrar la opinión de ${r.nombre}?`)) return;
+    this.revMsg.set('');
+    let res: Response;
+    try {
+      res = await fetch(`/api/resenas?ig=${encodeURIComponent(r.instagram)}`, {
+        method: 'DELETE',
+        headers: this.cabeceras(),
+      });
+    } catch {
+      this.revMsg.set('⚠ Sin conexión');
+      return;
+    }
+    if (res.status === 401) {
+      this.salir();
+      return;
+    }
+    if (!res.ok) {
+      this.revMsg.set('⚠ Error');
+      return;
+    }
+    this.resenas.update((l) => l.filter((x) => x.instagram !== r.instagram));
+    this.revMsg.set('✓ Borrada');
   }
 
   // ---- Galería ----
@@ -540,6 +632,7 @@ export class Admin {
     void this.cargarConfig();
     void this.cargarFidelidad();
     void this.cargarCanjes();
+    void this.cargarResenas();
   }
 
   salir(): void {

@@ -49,6 +49,235 @@
   color: transparent;
 }
 
+/* ============ Dejar una opinión ============ */
+.rev-tuya {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(560px, 100%);
+}
+
+.rev-aviso {
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.rev-aviso.ok {
+  border-color: #a8e0c0;
+  background: #eefaf3;
+  color: #17805a;
+}
+
+/* Botón de entrada (mismo lenguaje que el resto de píldoras de la marca). */
+.rev-abrir {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 28px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--grad-pink);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: var(--glow-pink);
+  transition: transform 200ms ease;
+}
+
+.rev-abrir:hover {
+  transform: translateY(-2px);
+}
+
+.rev-nota {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* ---- Formulario ---- */
+.rev-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  padding: 24px;
+  border-radius: var(--r-lg);
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+}
+
+.rev-campo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rev-lbl {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.rev-form textarea,
+.rev-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.rev-form textarea::placeholder,
+.rev-form input::placeholder {
+  color: var(--text-dim);
+}
+
+.rev-form textarea:focus,
+.rev-form input:focus {
+  outline: 2px solid var(--violet);
+  outline-offset: 1px;
+}
+
+/* El código no es un texto largo: campo corto y dígitos separados. */
+.rev-form input[name='pin'] {
+  width: 120px;
+  text-align: center;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.rev-contador {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  pointer-events: none;
+}
+
+.rev-contador.poco {
+  color: #c96a9a;
+}
+
+.rev-ayuda {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+}
+
+.rev-error {
+  margin: 0;
+  padding: 9px 13px;
+  border-radius: var(--r-md);
+  background: #fdeaf2;
+  border: 1px solid #f4b6d5;
+  color: #b83a77;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* ---- Selector de estrellas ---- */
+.rev-picker {
+  display: flex;
+  gap: 4px;
+}
+
+.rev-star {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--border-strong);
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 160ms ease, transform 160ms ease;
+}
+
+.rev-star.on {
+  color: #f6b73c;
+}
+
+.rev-star:hover {
+  transform: scale(1.12);
+}
+
+.rev-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.rev-cancelar {
+  padding: 12px 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.rev-enviar {
+  padding: 13px 26px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: var(--glow-pink);
+  transition: transform 180ms ease;
+}
+
+.rev-enviar:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.rev-enviar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* ---- Grilla de tarjetas ---- */
 .rev-grid {
   list-style: none;
@@ -127,10 +356,30 @@
   opacity: 0.9;
 }
 
+/* Sello de la marca: distingue las opiniones de la web de las de Google. */
+.rev-marca {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.rev-marca img {
+  width: 22px;
+  height: 22px;
+  max-width: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .rev-stars {
   color: #f6b73c;
   letter-spacing: 2px;
   font-size: 1rem;
+}
+
+/* Las estrellas que no dio, en gris: se ve la nota real de un vistazo. */
+.rev-stars-off {
+  color: var(--border-strong);
 }
 
 .rev-texto {
@@ -166,9 +415,17 @@
 /* ============ Responsive ============ */
 @media (hover: none) {
   .rev-card:hover,
-  .rev-cta:hover {
+  .rev-cta:hover,
+  .rev-abrir:hover,
+  .rev-enviar:hover:not(:disabled) {
     transform: none;
+  }
+  .rev-card:hover,
+  .rev-cta:hover {
     box-shadow: var(--shadow-card);
+  }
+  .rev-star:hover {
+    transform: none;
   }
 }
 
@@ -199,6 +456,25 @@
   .rev-eyebrow {
     font-size: 0.78rem;
     padding: 6px 13px;
+  }
+  .rev-form {
+    padding: 18px 16px;
+    gap: 13px;
+  }
+  .rev-star {
+    width: 44px;
+    height: 44px;
+    font-size: 1.85rem;
+  }
+  .rev-acciones {
+    /* Los dos botones a lo ancho: en celular quedaban muy pegados al borde. */
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .rev-cancelar,
+  .rev-enviar {
+    width: 100%;
+    padding: 14px 20px;
   }
 }
 
