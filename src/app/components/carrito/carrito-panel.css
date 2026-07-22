@@ -379,3 +379,57 @@ input:focus {
   line-height: 1.5;
   text-align: center;
 }
+
+/* ============ Responsive ============ */
+@media (hover: none) {
+  .carrito-btn:hover,
+  .enviar:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Panel a pantalla completa: a 94vw quedaba una franja del fondo que
+     se tocaba sin querer y cerraba el carrito a medio pedido. */
+  .panel {
+    width: 100vw;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .panel-top {
+    padding: 16px 18px 10px;
+  }
+  .lista {
+    padding: 0 18px;
+  }
+  .total {
+    margin: 14px 18px 4px;
+  }
+  .datos {
+    padding: 12px 18px 24px;
+  }
+  .vacio img {
+    width: 120px;
+  }
+  .mini {
+    width: 46px;
+    height: 46px;
+  }
+  /* Botones de cantidad más grandes: 26px es difícil de acertar con el dedo. */
+  .cantidad button {
+    width: 32px;
+    height: 32px;
+  }
+  .fila-2 {
+    grid-template-columns: 1fr;
+  }
+  .opciones {
+    flex-wrap: wrap;
+  }
+  .opciones button {
+    flex: 1 1 45%;
+    padding: 12px 8px;
+  }
+  .enviar {
+    padding: 16px 20px;
+  }
+}

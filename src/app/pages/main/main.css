@@ -552,11 +552,129 @@
   text-decoration: underline;
 }
 
-@media (max-width: 640px) {
+/* Sin puntero (celular/tablet) los efectos de hover se quedan "pegados"
+   después de tocar: se anulan. */
+@media (hover: none) {
+  .bocado:hover,
+  .mundo-fotos img:hover,
+  .sede-pill:hover,
+  .btn-primary:hover {
+    transform: none;
+  }
+  .mundo-fotos img:nth-child(2):hover {
+    transform: translateY(14px);
+  }
+  .btn-notch:hover {
+    padding: 16px 54px;
+    color: var(--text);
+  }
+  .btn-notch:hover::before,
+  .btn-notch:hover::after {
+    opacity: 0;
+  }
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 900px) {
+  .bocado {
+    width: 168px;
+  }
+  .sedes-cta {
+    padding-top: 60px;
+  }
+  .mundo {
+    padding-top: 72px;
+  }
   .mundo-fotos {
-    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 640px) {
+  .cta {
+    padding: 22px 18px 0;
+  }
+  .btn-notch {
+    padding: 15px 32px;
+    font-size: 0.92rem;
+    max-width: 100%;
+  }
+  .btn-notch span:first-child {
+    /* Título largo ("Ver catálogo completo") sin desbordar el botón. */
+    white-space: normal;
+  }
+  .menu-vivo {
+    padding-top: 24px;
+  }
+  .bocado {
+    width: 144px;
+    border-radius: 14px;
+  }
+  .bocado-info {
+    padding: 18px 10px 8px;
+  }
+  .bocado-info strong {
+    font-size: 0.7rem;
+  }
+  .bocado-info em {
+    font-size: 0.68rem;
+  }
+  /* Menos recorrido por segundo: en pantalla chica el desfile se veía frenético.
+     El gap NO se toca: el -9px del keyframe depende de él para que el bucle
+     empalme sin saltos. */
+  .cinta {
+    animation-duration: 34s;
+  }
+  .fila.reversa .cinta {
+    animation-duration: 40s;
+  }
+  .fila.lenta .cinta {
+    animation-duration: 48s;
+  }
+
+  .sedes-cta {
+    gap: 20px;
+    padding: 52px 18px 0;
+  }
+  .sede-pill {
+    flex: 1 1 100%;
+    padding: 18px 22px;
+  }
+  .mundo {
+    gap: 14px;
+    padding: 60px 18px 0;
+  }
+  .mundo-fotos {
+    /* Dos columnas: tres fotos apiladas a pantalla completa era muchísimo scroll. */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   .mundo-fotos img:nth-child(2) {
     transform: none;
+  }
+  .mundo-fotos img:nth-child(3) {
+    grid-column: span 2;
+    aspect-ratio: 16 / 10;
+  }
+  .osa-deco {
+    width: 76px;
+  }
+  .osa-deco.corre {
+    width: 84px;
+  }
+  .guinio {
+    margin: 44px 18px 52px;
+  }
+}
+
+@media (max-width: 380px) {
+  .bocado {
+    width: 128px;
+  }
+  .btn-notch {
+    padding: 14px 24px;
+    font-size: 0.86rem;
+    letter-spacing: 0.05em;
   }
 }

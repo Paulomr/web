@@ -446,6 +446,123 @@
   background: #e78ab8;
 }
 
+/* ============ Responsive ============ */
+
+/* Sin puntero, el hover se queda pegado tras tocar la tarjeta. */
+@media (hover: none) {
+  .producto:hover {
+    transform: none;
+  }
+  .pedir:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.85);
+  }
+  .pedir:hover::after {
+    opacity: 0;
+  }
+  /* En táctil no hay "pasar el cursor": la pista se muestra siempre. */
+  .ver-mas {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .catalogo {
+    padding-top: 96px;
+  }
+  .productos {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .segmento {
+    margin-bottom: 44px;
+  }
+}
+
+/* Celular: dos columnas. Una sola columna dejaba tarjetas enormes y
+   obligaba a un scroll interminable para ver el menú. */
+@media (max-width: 640px) {
+  .catalogo {
+    width: 92vw;
+    padding: 88px 0 120px;
+  }
+  .head {
+    margin-bottom: 30px;
+  }
+  .head-osa {
+    width: 78px;
+  }
+  .head p {
+    font-size: 0.9rem;
+  }
+  .productos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .producto {
+    padding: 6px 6px 14px;
+  }
+  .info {
+    padding: 10px 6px 0;
+    gap: 5px;
+  }
+  .info h3 {
+    font-size: 0.86rem;
+  }
+  .desc {
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+  .pie {
+    /* A dos columnas no caben precio y botón lado a lado. */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 0 6px;
+  }
+  .precio {
+    text-align: center;
+    font-size: 0.86rem;
+  }
+  .pedir {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+  .nuevo,
+  .detalle {
+    top: 8px;
+    padding: 4px 9px;
+    font-size: 0.6rem;
+  }
+  .nuevo { left: 8px; }
+  .detalle { right: 8px; }
+  /* A dos columnas la pista "VER +" se pisa con los puntos del carrusel y
+     sobra: la tarjeta entera ya se ve como algo que se toca. */
+  .ver-mas {
+    display: none;
+  }
+  .sin-foto-osa {
+    width: 64px;
+    height: 64px;
+  }
+  .sin-foto-txt {
+    font-size: 0.62rem;
+  }
+}
+
 @media (max-width: 480px) {
   .catalogo { padding-bottom: 120px; }
+  /* El notch de secciones no puede pasarse del ancho de la pantalla. */
+  .notch-filtro { max-width: calc(100vw - 24px); }
+  .notch-panel { max-height: 52vh; overflow-y: auto; }
+  .notch-panel button { gap: 14px; }
+}
+
+/* Pantallas muy angostas: vuelve a una sola columna, ya no cabe el texto. */
+@media (max-width: 340px) {
+  .productos {
+    grid-template-columns: 1fr;
+  }
 }

@@ -219,7 +219,16 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
       const BALL_SPEED = 6 * scale;
 
       this.pixels = [];
-      const words = ['MINIJUEGOS', 'DISFRUTA DE NUESTROS MINIJUEGOS Y COMPITE'];
+
+      // La primera línea es el título (píxel grande); las siguientes, el
+      // subtítulo (píxel pequeño). En pantallas angostas el subtítulo se parte
+      // en dos: en una sola línea obligaba a encoger TODO el texto hasta
+      // volverlo ilegible en un celular.
+      const TITLE = 'MINIJUEGOS';
+      const lines =
+        canvas.width < 700
+          ? [TITLE, 'DISFRUTA DE NUESTROS', 'MINIJUEGOS Y COMPITE']
+          : [TITLE, 'DISFRUTA DE NUESTROS MINIJUEGOS Y COMPITE'];
 
       const calculateWordWidth = (word: string, pixelSize: number) => {
         return (
@@ -231,11 +240,17 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
         );
       };
 
-      const totalWidthLarge = calculateWordWidth(words[0], LARGE_PIXEL_SIZE);
-      const totalWidthSmall = words[1].split(' ').reduce((width, word, index) => {
-        return width + calculateWordWidth(word, SMALL_PIXEL_SIZE) + (index > 0 ? WORD_SPACING * SMALL_PIXEL_SIZE : 0);
+      /** Ancho de una línea completa, contando los espacios entre palabras. */
+      const calculateLineWidth = (line: string, pixelSize: number) => {
+        return line.split(' ').reduce((width, word, index) => {
+          return width + calculateWordWidth(word, pixelSize) + (index > 0 ? WORD_SPACING * pixelSize : 0);
+        }, 0);
+      };
+
+      // La línea más ancha (medida con su propio tamaño de píxel) manda la escala.
+      const totalWidth = lines.reduce((max, line, index) => {
+        return Math.max(max, calculateLineWidth(line, index === 0 ? LARGE_PIXEL_SIZE : SMALL_PIXEL_SIZE));
       }, 0);
-      const totalWidth = Math.max(totalWidthLarge, totalWidthSmall);
       const scaleFactor = (canvas.width * 0.8) / totalWidth;
 
       const adjustedLargePixelSize = LARGE_PIXEL_SIZE * scaleFactor;
@@ -244,46 +259,23 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
       const largeTextHeight = 5 * adjustedLargePixelSize;
       const smallTextHeight = 5 * adjustedSmallPixelSize;
       const spaceBetweenLines = 5 * adjustedLargePixelSize;
-      const totalTextHeight = largeTextHeight + spaceBetweenLines + smallTextHeight;
+      const spaceBetweenSmall = 2 * adjustedSmallPixelSize;
+      const smallLines = lines.length - 1;
+      const totalTextHeight =
+        largeTextHeight +
+        spaceBetweenLines +
+        smallLines * smallTextHeight +
+        (smallLines - 1) * spaceBetweenSmall;
 
       let startY = (canvas.height - totalTextHeight) / 2;
 
-      words.forEach((word, wordIndex) => {
-        const pixelSize = wordIndex === 0 ? adjustedLargePixelSize : adjustedSmallPixelSize;
-        const totalWidth =
-          wordIndex === 0
-            ? calculateWordWidth(word, adjustedLargePixelSize)
-            : words[1].split(' ').reduce((width, w, index) => {
-                return (
-                  width +
-                  calculateWordWidth(w, adjustedSmallPixelSize) +
-                  (index > 0 ? WORD_SPACING * adjustedSmallPixelSize : 0)
-                );
-              }, 0);
+      lines.forEach((line, lineIndex) => {
+        const big = lineIndex === 0;
+        const pixelSize = big ? adjustedLargePixelSize : adjustedSmallPixelSize;
+        let startX = (canvas.width - calculateLineWidth(line, pixelSize)) / 2;
 
-        let startX = (canvas.width - totalWidth) / 2;
-
-        if (wordIndex === 1) {
-          word.split(' ').forEach((subWord) => {
-            subWord.split('').forEach((letter) => {
-              const pixelMap = PIXEL_MAP[letter];
-              if (!pixelMap) return;
-
-              for (let i = 0; i < pixelMap.length; i++) {
-                for (let j = 0; j < pixelMap[i].length; j++) {
-                  if (pixelMap[i][j]) {
-                    const x = startX + j * pixelSize;
-                    const y = startY + i * pixelSize;
-                    this.pixels.push({ x, y, size: pixelSize, hit: false, big: false });
-                  }
-                }
-              }
-              startX += (pixelMap[0].length + LETTER_SPACING) * pixelSize;
-            });
-            startX += WORD_SPACING * adjustedSmallPixelSize;
-          });
-        } else {
-          word.split('').forEach((letter) => {
+        line.split(' ').forEach((subWord) => {
+          subWord.split('').forEach((letter) => {
             const pixelMap = PIXEL_MAP[letter];
             if (!pixelMap) return;
 
@@ -292,14 +284,16 @@ export class AnimatedHero implements AfterViewInit, OnDestroy {
                 if (pixelMap[i][j]) {
                   const x = startX + j * pixelSize;
                   const y = startY + i * pixelSize;
-                  this.pixels.push({ x, y, size: pixelSize, hit: false, big: true });
+                  this.pixels.push({ x, y, size: pixelSize, hit: false, big });
                 }
               }
             }
             startX += (pixelMap[0].length + LETTER_SPACING) * pixelSize;
           });
-        }
-        startY += wordIndex === 0 ? largeTextHeight + spaceBetweenLines : 0;
+          startX += WORD_SPACING * pixelSize;
+        });
+
+        startY += big ? largeTextHeight + spaceBetweenLines : smallTextHeight + spaceBetweenSmall;
       });
 
       // Posición inicial de la pelota: cerca de la esquina superior derecha.

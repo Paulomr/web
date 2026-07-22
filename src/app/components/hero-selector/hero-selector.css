@@ -214,22 +214,76 @@
   }
 }
 
+/* ---- Tablet: los paneles ocupan el ancho pero con menos alto ---- */
+@media (max-width: 900px) {
+  .hs {
+    padding-top: 92px;
+  }
+  .hs-opts {
+    width: 96vw;
+    height: min(52vh, 400px);
+  }
+  .hs::before {
+    background-size: 400px auto;
+  }
+}
+
 @media (max-width: 560px) {
   .hs {
-    gap: 24px;
-    padding: 28px 10px 36px;
+    gap: 22px;
+    /* Deja aire bajo el notch fijo (12px + ~52px de alto). */
+    padding: 84px 10px 36px;
   }
   .hs-opts {
     gap: 6px;
     height: min(56vh, 420px);
   }
   .hs-opt {
-    min-width: 34px;
+    min-width: 30px;
     border-radius: 12px;
   }
   .hs-txt {
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+  }
+  .hs-opt.active .hs-nombre {
+    padding-left: 14px;
+  }
+  .hs::before {
+    background-size: 300px auto;
+  }
+  /* El brillo del borde sigue al cursor: sin puntero no aporta y en móvil
+     el `background-attachment: fixed` es caro de pintar. */
+  .hs-opt::after {
+    display: none;
+  }
+}
+
+/* Teléfonos muy angostos: el panel activo manda, los demás son solo lomos. */
+@media (max-width: 380px) {
+  .hs-opts {
+    gap: 4px;
+  }
+  .hs-opt {
+    min-width: 24px;
+  }
+  .hs-opt.active {
+    flex-grow: 9;
+  }
+  .hs-txt {
+    font-size: 0.62rem;
+  }
+}
+
+/* Móvil apaisado: la pantalla es baja, el hero no puede pedir 100svh. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hs {
+    min-height: auto;
+    gap: 16px;
+    padding: 76px 12px 24px;
+  }
+  .hs-opts {
+    height: 62vh;
   }
 }
 

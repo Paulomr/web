@@ -30,6 +30,9 @@
 .masonry {
   columns: 4 260px;
   column-gap: 16px;
+  /* Las fotos entran desplazadas hacia los lados: sin esto asoman fuera del
+     viewport y el móvil se puede arrastrar en horizontal. */
+  overflow-x: clip;
 }
 
 .pic {
@@ -192,7 +195,7 @@
 
 .cerrar {
   position: absolute;
-  top: 18px;
+  top: max(18px, env(safe-area-inset-top));
   right: 22px;
   width: 42px;
   height: 42px;
@@ -203,4 +206,70 @@
   font-size: 1.1rem;
   cursor: pointer;
   box-shadow: var(--shadow-card);
+}
+
+/* ============ Responsive ============ */
+@media (hover: none) {
+  .pic:hover {
+    transform: translateX(0) rotate(0);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@media (max-width: 900px) {
+  .galeria {
+    padding-top: 96px;
+  }
+  .masonry {
+    columns: 3 200px;
+    column-gap: 12px;
+  }
+  .pic {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .galeria {
+    width: 92vw;
+    padding: 88px 0 60px;
+  }
+  .head {
+    margin-bottom: 26px;
+  }
+  .head p {
+    font-size: 0.9rem;
+  }
+  /* Dos columnas de fotos: el masonry a una sola columna se hacía eterno. */
+  .masonry {
+    columns: 2 auto;
+    column-gap: 10px;
+  }
+  .pic {
+    min-height: 120px;
+    margin-bottom: 10px;
+  }
+  /* La entrada lateral de 70px provocaba scroll horizontal en pantalla chica. */
+  .pic:nth-child(odd) {
+    transform: translateX(-24px) rotate(-1.5deg);
+  }
+  .pic:nth-child(even) {
+    transform: translateX(24px) rotate(1.5deg);
+  }
+  .sello {
+    bottom: 6px;
+    right: 6px;
+    padding: 3px 7px;
+    gap: 4px;
+  }
+  .sello img { height: 12px; }
+  .sello em { font-size: 0.56rem; }
+  .galeria-pie img { width: 88px; }
+  .lightbox {
+    padding: 2vh 3vw;
+  }
+  .cerrar {
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+  }
 }

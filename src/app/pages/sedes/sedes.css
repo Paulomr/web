@@ -42,7 +42,8 @@
 /* ---------- Grilla de tarjetas ---------- */
 .sp-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  /* min() evita que la columna de 320px desborde en teléfonos angostos. */
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 26px;
 }
 
@@ -295,4 +296,64 @@
 .sp-volver:hover {
   color: #a95a86;
   border-color: var(--pink);
+}
+
+/* ============ Responsive ============ */
+@media (hover: none) {
+  .sede-card:hover,
+  .sc-tira:hover,
+  .sc-btn:hover {
+    transform: none;
+  }
+  .sede-card:hover {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@media (max-width: 900px) {
+  .sedes-page {
+    padding-top: 96px;
+  }
+  .sp-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sedes-page {
+    width: 92vw;
+    padding: 88px 0 90px;
+  }
+  .sp-head {
+    margin-bottom: 28px;
+  }
+  .sp-osa {
+    width: 78px;
+  }
+  .sp-head p {
+    font-size: 0.9rem;
+  }
+  .sc-body {
+    gap: 14px;
+    padding: 18px 16px 20px;
+  }
+  .sc-horarios li {
+    /* Días y horas en dos líneas: lado a lado se partían feo. */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 10px 12px;
+  }
+  .sc-mapa {
+    height: 200px;
+  }
+  .sc-tiras {
+    padding: 10px 10px 0;
+  }
+  .sc-chip {
+    top: 10px;
+    right: 10px;
+    padding: 6px 11px;
+    font-size: 0.66rem;
+  }
 }

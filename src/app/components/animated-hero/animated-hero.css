@@ -3,7 +3,9 @@
 :host {
   display: block;
   width: 100%;
-  height: 100vh;
+  /* svh: en móvil la barra del navegador no recorta el hero ni deja
+     una franja vacía al aparecer/desaparecer. */
+  height: 100svh;
 }
 
 .hero-canvas {

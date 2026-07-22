@@ -69,6 +69,12 @@ body {
   padding: 0;
 }
 
+html {
+  /* iOS no agranda el texto solo al girar el teléfono. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   overflow-x: hidden;
   font-family: var(--font-body);
@@ -112,6 +118,48 @@ body::after {
 h1, h2, h3, h4 {
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+/* Nada se sale del ancho de la pantalla: media e incrustaciones fluidas. */
+img,
+svg,
+video,
+iframe {
+  max-width: 100%;
+}
+
+/* Los formularios heredan la tipografía y nunca fuerzan zoom en iOS
+   (Safari hace zoom automático si el campo mide menos de 16px). */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+@media (max-width: 720px) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* Áreas de toque cómodas y sin el destello gris de Android al tocar. */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    -webkit-tap-highlight-color: rgba(201, 174, 232, 0.25);
+  }
+}
+
+/* Los doodles de fondo se hacen más pequeños en pantallas chicas para que
+   se lea el mismo patrón y no un par de trazos gigantes. */
+@media (max-width: 620px) {
+  body::after {
+    background-size: 320px auto;
+  }
 }
 
 /* Foco accesible y consistente para todos los controles. */

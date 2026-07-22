@@ -39,7 +39,7 @@
 
 /* ============ Hero animado ============ */
 .hero-wrap {
-  height: 100vh;
+  height: 100svh;
 }
 
 .scroll-hint {
@@ -175,9 +175,12 @@
   overflow: hidden;
 }
 
-/* Al pasar el ratón, las escenas se aceleran (efecto "tráiler"). */
-.card:hover .trailer * {
-  animation-duration: 1.4s;
+/* Al pasar el ratón, las escenas se aceleran (efecto "tráiler"). Solo con
+   puntero real: en táctil el hover se queda pegado tras tocar la tarjeta. */
+@media (hover: hover) {
+  .card:hover .trailer * {
+    animation-duration: 1.4s;
+  }
 }
 
 /* --- Pacman --- */
@@ -749,4 +752,122 @@
   background: var(--pink, #f2a9cd);
   border-radius: 999px;
   padding: 1px 6px;
+}
+
+/* ============ Responsive ============ */
+@media (hover: none) {
+  .card:hover {
+    transform: none;
+    box-shadow: var(--shadow-card);
+  }
+  .play:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .card:hover .card-shine {
+    transform: translateX(-100%);
+  }
+}
+
+@media (max-width: 900px) {
+  .minijuegos::before {
+    -webkit-mask-size: 340px auto;
+    mask-size: 340px auto;
+  }
+  .content {
+    padding: 40px 0 72px;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 18px;
+  }
+  .player {
+    padding-top: 80px;
+  }
+  .game-frame {
+    min-height: 380px;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    width: 92vw;
+    padding: 32px 0 64px;
+  }
+  .list-bar {
+    /* Volver + título + contador no caben en una línea. */
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .list-bar h1 {
+    order: 3;
+    flex: 1 0 100%;
+  }
+  .link {
+    padding: 8px 12px;
+    font-size: 0.88rem;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .card-cover {
+    height: 130px;
+  }
+  .card-body {
+    padding: 15px 16px 17px;
+  }
+  .desc {
+    font-size: 0.86rem;
+  }
+  .play {
+    align-self: stretch;
+    text-align: center;
+    padding: 12px 20px;
+  }
+
+  /* ---- Reproductor ---- */
+  .player {
+    width: 94vw;
+    padding: 80px 0 40px;
+    gap: 12px;
+  }
+  .player-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .player-bar h2 {
+    font-size: 0.95rem;
+  }
+  /* El 16/9 en vertical deja el juego en una tira ilegible: se le da
+     una caja alta y el botón de pantalla completa hace el resto. */
+  .game-frame {
+    aspect-ratio: 3 / 4;
+    min-height: 0;
+    max-height: 72svh;
+  }
+  .scores {
+    padding: 15px 16px;
+  }
+  .scores li {
+    font-size: 0.88rem;
+    gap: 9px;
+  }
+  .scroll-hint {
+    bottom: 18px;
+    font-size: 0.78rem;
+  }
+}
+
+/* Móvil apaisado: aprovecha el ancho, el juego ocupa el alto disponible. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .player {
+    padding-top: 70px;
+  }
+  .game-frame {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    max-height: 78svh;
+  }
 }

@@ -24,10 +24,29 @@
 }
 @media (max-width: 800px) {
   .cards { flex-direction: column; align-items: center; gap: 18px; }
-  /* Arriba, hueco para el enlace "Inicio" (absolute en top:78): apiladas, las
-     tarjetas llegan hasta el padding y lo tapaban. Abajo, hueco para el Bearnie
-     flotante (fixed abajo a la izquierda), que se comía el pie de la 2ª tarjeta. */
-  .fid { padding-top: 116px; padding-bottom: 118px; }
+  /* Hueco arriba para el enlace "Inicio" (absolute en top:78): apiladas, las
+     tarjetas llegaban hasta el padding y lo tapaban. */
+  .fid { padding-top: 116px; padding-bottom: 48px; }
+}
+
+/* Sin puntero: los hover se quedan pegados tras tocar. */
+@media (hover: none) {
+  .cardc:hover { transform: none; box-shadow: 0 24px 46px -22px rgba(200, 60, 130, 0.6); }
+  .fid-row button:hover,
+  .premio-btn:hover { transform: none; }
+}
+
+@media (max-width: 560px) {
+  .fid { padding-left: 14px; padding-right: 14px; }
+  .cardc-img img { height: 160px; }
+  .carde-body { padding: 18px 16px; }
+  .fid-sellos-sec { padding: 32px 12px 16px; }
+  .fid-sellos { gap: 8px; }
+  /* Campo + botón apilados: el botón "canjear" comprimía el input hasta
+     no dejar ver el código que se está escribiendo. */
+  .fid-row { flex-direction: column; }
+  .fid-row button { padding: 13px 16px; }
+  .premio-cod { font-size: 25px; letter-spacing: 4px; }
 }
 
 .fid-inicio {
