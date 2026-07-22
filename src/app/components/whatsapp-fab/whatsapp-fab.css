@@ -1,0 +1,230 @@
+/* ============================================================
+   Burbuja de WhatsApp (abajo a la izquierda).
+   Cerrada: un círculo verde. Abierta: sube una píldora por sede.
+   ============================================================ */
+
+/* Capa para cerrar tocando fuera. Va por debajo del botón. */
+.wa-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 155;
+}
+
+.wa {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 160;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* ---------- Píldoras de sede ---------- */
+.wa-sedes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wa-sedes li {
+  opacity: 0;
+  animation: wa-sube 320ms cubic-bezier(0.22, 1.1, 0.36, 1) forwards;
+}
+
+@keyframes wa-sube {
+  from { opacity: 0; transform: translateY(14px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.wa-sede {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 18px 10px 11px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-float);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.wa-sede:hover {
+  transform: translateY(-2px);
+}
+
+/* Pin de ubicación, con el color de la sede (rosa / celeste de la marca). */
+.wa-sede-ico {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: linear-gradient(45deg, #f078b8, #c9aee8);
+}
+
+.wa-sedes li:nth-child(2) .wa-sede-ico {
+  background: linear-gradient(45deg, #7cd4ea, #a97fd6);
+}
+
+.wa-sede-ico svg {
+  width: 19px;
+  height: 19px;
+}
+
+.wa-sede-txt {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.wa-sede-txt em {
+  font-style: normal;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #1faa54;
+}
+
+.wa-sede-txt strong {
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+}
+
+.wa-sede-txt small {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+/* ---------- Botón circular ---------- */
+.wa-btn {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  /* Verde de WhatsApp. */
+  background: linear-gradient(45deg, #1faa54, #25d366);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(0.22, 1.1, 0.36, 1);
+  /* Halo que late para que la burbuja se note. Va por box-shadow y no por un
+     pseudo-elemento: al pasar el ratón el botón se transforma y un ::before
+     con z-index negativo acabaría pintándose por encima del círculo. */
+  animation: wa-latido 2.6s ease-out infinite;
+}
+
+@keyframes wa-latido {
+  0% {
+    box-shadow: 0 14px 30px -10px rgba(37, 211, 102, 0.65), 0 0 0 0 rgba(37, 211, 102, 0.5);
+  }
+  70%, 100% {
+    box-shadow: 0 14px 30px -10px rgba(37, 211, 102, 0.65), 0 0 0 18px rgba(37, 211, 102, 0);
+  }
+}
+
+.wa-btn:hover {
+  transform: translateY(-3px) scale(1.04);
+}
+
+/* Al abrir, el glifo gira y da paso a la ✕. */
+.wa-glifo,
+.wa-x {
+  grid-area: 1 / 1;
+  transition: transform 280ms cubic-bezier(0.22, 1.1, 0.36, 1), opacity 200ms ease;
+}
+
+.wa-glifo {
+  width: 28px;
+  height: 28px;
+}
+
+.wa-x {
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+.wa.abierto .wa-glifo {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+.wa.abierto .wa-x {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+/* Abierto, el halo distrae: el desplegable ya tiene toda la atención. */
+.wa.abierto .wa-btn {
+  animation: none;
+  box-shadow: 0 14px 30px -10px rgba(37, 211, 102, 0.65);
+}
+
+/* ---------- Responsive ---------- */
+@media (hover: none) {
+  .wa-btn:hover,
+  .wa-sede:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .wa {
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    /* Las píldoras nunca se salen por la derecha. */
+    max-width: calc(100vw - 24px);
+  }
+  .wa-btn {
+    width: 52px;
+    height: 52px;
+  }
+  .wa-glifo {
+    width: 25px;
+    height: 25px;
+  }
+  .wa-sede {
+    padding: 9px 15px 9px 9px;
+    gap: 9px;
+  }
+  .wa-sede-ico {
+    width: 30px;
+    height: 30px;
+  }
+  .wa-sede-ico svg {
+    width: 17px;
+    height: 17px;
+  }
+  .wa-sede-txt strong {
+    font-size: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-sedes li {
+    opacity: 1;
+    animation: none;
+  }
+  .wa-btn {
+    animation: none;
+    box-shadow: 0 14px 30px -10px rgba(37, 211, 102, 0.65);
+  }
+}
