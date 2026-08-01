@@ -1,0 +1,48 @@
+<section class="hv" #seccion [class.reducido]="reducido" aria-label="Bearnie abre la caja">
+  <div class="hv-pegado" #pegado>
+    <video
+      #video
+      class="hv-video"
+      [src]="fuente"
+      [poster]="poster"
+      preload="auto"
+      muted
+      playsinline
+      disablepictureinpicture
+      disableremoteplayback
+      aria-hidden="true"
+    ></video>
+
+    <!-- Resplandor blanco que se abre bajo el saludo para que el texto se lea
+         sobre el cielo (y que hereda del destello de sol del propio video). -->
+    <div class="hv-velo" aria-hidden="true"></div>
+
+    <!-- 1 · Dentro de la caja: la invitación a bajar. -->
+    <p class="hv-pista" aria-hidden="true">
+      <span class="hv-pista-txt">Desliza</span>
+      <span class="hv-flecha">▾</span>
+    </p>
+
+    <!-- 2 · Bearnie se asoma. -->
+    <p class="hv-susurro" aria-hidden="true">Alguien se está asomando</p>
+
+    <!-- 3 · El cielo abierto: la bienvenida. -->
+    <div class="hv-final" [class.activo]="finalActivo()">
+      <h1 class="hv-titulo">
+        @if (cuenta.registrado()) {
+          <span class="hv-hola">Bienvenido</span>
+          <span class="hv-nombre">{{ cuenta.primerNombre() }}</span>
+        } @else {
+          <span class="hv-hola">Bienvenido a</span>
+          <span class="hv-nombre">Crunchy Munch</span>
+        }
+      </h1>
+
+      @if (!cuenta.registrado()) {
+        <button type="button" class="hv-registro" (click)="cuenta.abrir('registro')">
+          Regístrate y te saludamos por tu nombre
+        </button>
+      }
+    </div>
+  </div>
+</section>

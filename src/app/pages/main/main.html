@@ -1,17 +1,14 @@
 <main class="landing">
-  <!-- Hero: selector acordeón de las más vendidas (toca una foto y se expande). -->
-  <app-hero-selector />
+  <!-- Hero: el video de la caja, contado con el scroll (el saludo por nombre
+       vive dentro, sobre el cielo del final). -->
+  <app-hero-video />
 
-  <!-- Saludo por nombre si hay sesión; si no, el llamado a la acción al catálogo. -->
+  <!-- Llamado a la acción al catálogo, justo al salir del hero. -->
   <section class="cta">
-    @if (cuenta.registrado()) {
-      <p class="hero-saludo">HOLA {{ cuenta.primerNombre() }}</p>
-    } @else {
-      <button type="button" class="btn-notch" routerLink="/catalogo">
-        <span>Ver catálogo</span>
-        <span class="btn-arrow" aria-hidden="true">▸</span>
-      </button>
-    }
+    <button type="button" class="btn-notch" routerLink="/catalogo">
+      <span>Ver catálogo</span>
+      <span class="btn-arrow" aria-hidden="true">▸</span>
+    </button>
   </section>
 
   <!-- Menú en movimiento: filas de productos que se deslizan desde los lados.

@@ -5,13 +5,12 @@ import { Carrito } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
 import { ProductosService } from '../../productos.service';
 import { ConfiguracionService } from '../../configuracion.service';
-import { CuentaService } from '../../cuenta.service';
-import { HeroSelector } from '../../components/hero-selector/hero-selector';
+import { HeroVideo } from '../../components/hero-video/hero-video';
 import { Resenas } from '../../components/resenas/resenas';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterLink, HeroSelector, Resenas],
+  imports: [RouterLink, HeroVideo, Resenas],
   templateUrl: './main.html',
   styleUrl: './main.css',
 })
@@ -19,7 +18,6 @@ export class Main {
   readonly carrito = inject(Carrito);
   readonly detalle = inject(DetalleProducto);
   readonly cfg = inject(ConfiguracionService);
-  readonly cuenta = inject(CuentaService);
   private readonly productosSvc = inject(ProductosService);
   readonly urlFoto = urlFoto;
 

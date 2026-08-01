@@ -1,0 +1,278 @@
+/* ============ Hero: el video de la caja, contado con el scroll ============
+   El componente publica el progreso (0–1) en la variable `--p`. Cada capa se
+   revela con `clamp()` sobre ese número, de modo que el texto entra y sale en
+   el momento exacto del video:
+
+       p 0.00 – 0.30   POV dentro de la caja / Bearnie se asoma
+       p ~0.41         la caja sale volando
+       p 0.47 – 0.56   destello de sol
+       p 0.62 – 1.00   cielo abierto  → aquí aterriza la bienvenida
+   ------------------------------------------------------------------------- */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.hv {
+  position: relative;
+  width: 100%;
+  /* Recorrido de scroll: lo que sobra de 100svh es lo que dura la película. */
+  height: 340svh;
+}
+
+.hv-pegado {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  /* Azul cielo del propio video: si tarda en pintar, no hay salto en blanco. */
+  background: #79c2ea;
+}
+
+.hv-video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* El `max-width: 100%` global mediría contra el padre y lo encogería. */
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Al final, el cielo se funde con el crema de la página: sin costura dura. */
+.hv-pegado::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24%;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bg), rgba(253, 249, 247, 0));
+  opacity: clamp(0, calc((var(--p, 0) - 0.78) / 0.18), 1);
+}
+
+/* Resplandor blanco bajo el saludo. */
+.hv-velo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 78% at 50% 58%,
+    rgba(255, 255, 255, 0.94),
+    rgba(255, 255, 255, 0.42) 40%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  opacity: clamp(0, calc((var(--p, 0) - 0.56) / 0.16), 1);
+}
+
+/* ---- 1 · "Desliza" (dentro de la caja) ---- */
+.hv-pista {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(28px, 7vh, 64px);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  text-shadow: 0 2px 14px rgba(60, 30, 70, 0.55);
+  opacity: clamp(0, calc((0.14 - var(--p, 0)) / 0.08), 1);
+}
+
+.hv-flecha {
+  font-size: 1.3rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-indent: 0;
+  animation: hv-baja 1.6s ease-in-out infinite;
+}
+
+@keyframes hv-baja {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translateY(7px);
+    opacity: 1;
+  }
+}
+
+/* ---- 2 · El susurro, mientras Bearnie se asoma ---- */
+.hv-susurro {
+  --ent: clamp(0, calc((var(--p, 0) - 0.15) / 0.09), 1);
+  --sal: clamp(0, calc((0.4 - var(--p, 0)) / 0.06), 1);
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Bajo el notch fijo (14px + ~52px de alto). */
+  top: clamp(88px, 13vh, 150px);
+  margin: 0;
+  padding: 0 24px;
+  text-align: center;
+  pointer-events: none;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 3.4vw, 1.7rem);
+  letter-spacing: 0.08em;
+  text-shadow: 0 3px 18px rgba(40, 20, 60, 0.6);
+  opacity: min(var(--ent), var(--sal));
+  transform: translateY(calc((1 - var(--ent)) * 18px));
+}
+
+/* ---- 3 · La bienvenida sobre el cielo ---- */
+.hv-final {
+  --ent: clamp(0, calc((var(--p, 0) - 0.58) / 0.16), 1);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 0 22px;
+  text-align: center;
+  /* Hasta que no está a la vista no se puede tocar nada de aquí dentro. */
+  pointer-events: none;
+  opacity: var(--ent);
+  transform: translateY(calc((1 - var(--ent)) * 34px));
+}
+
+.hv-final.activo {
+  pointer-events: auto;
+}
+
+.hv-titulo {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2px, 1vw, 8px);
+  /* Sin esto los hijos se miden por su contenido y un nombre largo
+     ("CRUNCHY MUNCH") se sale de la pantalla en vez de partirse en dos. */
+  max-width: 100%;
+  letter-spacing: normal;
+}
+
+.hv-hola {
+  font-family: var(--font-body);
+  font-size: clamp(0.78rem, 2.6vw, 1.05rem);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--text);
+  /* Halo blanco: sobre el cielo el tono apagado se perdía. */
+  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.95);
+}
+
+.hv-nombre {
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: clamp(2.3rem, 11.5vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+  /* Rosa → violeta: el extremo cian del degradado de marca se apagaba
+     demasiado contra el azul del cielo. */
+  background: var(--grad-pink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Con `background-clip: text` no sirve `text-shadow`: la sombra se dibuja
+     sobre las letras. El halo va sobre la forma del glifo. */
+  filter: drop-shadow(0 8px 22px rgba(255, 255, 255, 0.95));
+}
+
+.hv-registro {
+  padding: 12px 26px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.hv-registro:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-pink);
+}
+
+/* ---- Teléfono: el botón de registro no puede ocupar todo el ancho ---- */
+@media (max-width: 560px) {
+  .hv-registro {
+    padding: 11px 18px;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+  .hv-susurro {
+    font-size: 1.05rem;
+  }
+}
+
+/* ---- Pantallas bajas en horizontal: el saludo sube y encoge ---- */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hv-susurro {
+    top: 74px;
+    font-size: 1.05rem;
+  }
+  .hv-final {
+    gap: 14px;
+  }
+  .hv-nombre {
+    font-size: clamp(2rem, 8vh, 3.4rem);
+  }
+}
+
+/* ---- Sin movimiento: el hero es una sola pantalla, ya en el cielo ---- */
+.hv.reducido {
+  height: 100svh;
+}
+
+.hv.reducido .hv-pegado {
+  position: relative;
+}
+
+.hv.reducido .hv-pista,
+.hv.reducido .hv-susurro {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hv {
+    height: 100svh;
+  }
+  .hv-pegado {
+    position: relative;
+  }
+  .hv-pista,
+  .hv-susurro {
+    display: none;
+  }
+  .hv-velo,
+  .hv-final {
+    opacity: 1;
+    transform: none;
+  }
+  .hv-final {
+    pointer-events: auto;
+  }
+}
