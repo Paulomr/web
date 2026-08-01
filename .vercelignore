@@ -1,0 +1,13 @@
+# Qué NO se sube al desplegar con el CLI de Vercel.
+# Ojo: si este archivo existe, Vercel deja de mirar .gitignore.
+
+# Credenciales: viven solo en este equipo y en el panel de Vercel.
+.env
+.env.local
+.env.*.local
+
+# Lo que Vercel reconstruye por su cuenta en cada despliegue.
+node_modules
+dist
+.angular
+.git
