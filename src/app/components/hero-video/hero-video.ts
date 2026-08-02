@@ -45,6 +45,14 @@ export class HeroVideo {
   readonly fuente = this.vertical ? 'video/hero-caja-alto.mp4' : 'video/hero-caja-ancho.mp4';
   readonly poster = this.vertical ? 'video/hero-caja-alto.webp' : 'video/hero-caja-ancho.webp';
 
+  /** Ritmo del video que se cargó. Son dos tomas distintas y cada una cuenta a
+      su tiempo, así que los textos no pueden entrar en los mismos puntos:
+      el vertical dura 6,7 s y los ositos se quedan asomados más rato; el ancho
+      dura 8 s y despeja antes. Valores en fracción del recorrido (0–1). */
+  private readonly ritmo = this.vertical
+    ? { pistaFin: 0.13, susurroIni: 0.13, susurroFin: 0.5, veloIni: 0.6, finalIni: 0.63 }
+    : { pistaFin: 0.14, susurroIni: 0.15, susurroFin: 0.4, veloIni: 0.56, finalIni: 0.58 };
+
   /** El bloque final (saludo) ya es visible: solo entonces se puede tocar. */
   readonly finalActivo = signal(false);
 
@@ -63,6 +71,13 @@ export class HeroVideo {
     // El atributo `muted` del HTML no fija la propiedad cuando Angular crea el
     // elemento: hay que ponerla a mano o los navegadores no dejan decodificar.
     v.muted = true;
+
+    // El ritmo del video se publica como variables CSS: el CSS decide con ellas
+    // en qué punto del recorrido entra y sale cada capa de texto.
+    const el = this.host.nativeElement as HTMLElement;
+    for (const [clave, valor] of Object.entries(this.ritmo)) {
+      el.style.setProperty(`--r-${clave.toLowerCase()}`, String(valor));
+    }
 
     if (this.reducido) {
       this.pintar(1);
@@ -140,7 +155,7 @@ export class HeroVideo {
 
   private pintar(p: number): void {
     (this.host.nativeElement as HTMLElement).style.setProperty('--p', p.toFixed(4));
-    const activo = p > 0.6;
+    const activo = p > this.ritmo.finalIni;
     if (activo !== this.finalActivo()) this.finalActivo.set(activo);
   }
 }
