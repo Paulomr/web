@@ -1,12 +1,16 @@
 /* ============ Hero: el video de la caja, contado con el scroll ============
    El componente publica el progreso (0–1) en la variable `--p`. Cada capa se
    revela con `clamp()` sobre ese número, de modo que el texto entra y sale en
-   el momento exacto del video:
+   el momento exacto del video.
 
-       p 0.00 – 0.30   POV dentro de la caja / Bearnie se asoma
-       p ~0.41         la caja sale volando
-       p 0.47 – 0.56   destello de sol
-       p 0.62 – 1.00   cielo abierto  → aquí aterriza la bienvenida
+   Los puntos de entrada NO se escriben aquí: llegan como `--r-*` desde el
+   `ritmo` del componente, porque la toma ancha y la vertical son dos tomas
+   distintas y no coinciden. Los `fallback` de cada `clamp()` son los de la
+   ancha, que va así:
+
+       p 0.00 – 0.38   POV dentro de la caja / los ositos se asoman y se hunden
+       p 0.38 – 0.74   destello de sol (blanco pleno en ~0.64)
+       p 0.74 – 1.00   cielo abierto  → aquí aterriza la bienvenida
    ------------------------------------------------------------------------- */
 :host {
   display: block;
@@ -64,7 +68,7 @@
     rgba(255, 255, 255, 0.42) 40%,
     rgba(255, 255, 255, 0) 72%
   );
-  opacity: clamp(0, calc((var(--p, 0) - var(--r-veloini, 0.56)) / 0.16), 1);
+  opacity: clamp(0, calc((var(--p, 0) - var(--r-veloini, 0.6)) / 0.16), 1);
 }
 
 /* ---- 1 · "Desliza" (dentro de la caja) ---- */
@@ -85,7 +89,7 @@
   letter-spacing: 0.34em;
   text-indent: 0.34em;
   text-shadow: 0 2px 14px rgba(60, 30, 70, 0.55);
-  opacity: clamp(0, calc((var(--r-pistafin, 0.14) - var(--p, 0)) / 0.08), 1);
+  opacity: clamp(0, calc((var(--r-pistafin, 0.1) - var(--p, 0)) / 0.08), 1);
 }
 
 .hv-flecha {
@@ -110,8 +114,8 @@
 
 /* ---- 2 · El susurro, mientras Bearnie se asoma ---- */
 .hv-susurro {
-  --ent: clamp(0, calc((var(--p, 0) - var(--r-susurroini, 0.15)) / 0.09), 1);
-  --sal: clamp(0, calc((var(--r-susurrofin, 0.4) - var(--p, 0)) / 0.06), 1);
+  --ent: clamp(0, calc((var(--p, 0) - var(--r-susurroini, 0.11)) / 0.09), 1);
+  --sal: clamp(0, calc((var(--r-susurrofin, 0.37) - var(--p, 0)) / 0.06), 1);
   position: absolute;
   left: 0;
   right: 0;
@@ -132,7 +136,7 @@
 
 /* ---- 3 · La bienvenida sobre el cielo ---- */
 .hv-final {
-  --ent: clamp(0, calc((var(--p, 0) - var(--r-finalini, 0.58)) / 0.16), 1);
+  --ent: clamp(0, calc((var(--p, 0) - var(--r-finalini, 0.66)) / 0.16), 1);
   position: absolute;
   inset: 0;
   display: flex;

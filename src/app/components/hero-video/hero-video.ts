@@ -48,10 +48,12 @@ export class HeroVideo {
   /** Ritmo del video que se cargó. Son dos tomas distintas y cada una cuenta a
       su tiempo, así que los textos no pueden entrar en los mismos puntos:
       el vertical dura 6,7 s y los ositos se quedan asomados más rato; el ancho
-      dura 8 s y despeja antes. Valores en fracción del recorrido (0–1). */
+      dura 8 s, los ositos se asoman enseguida (p 0.03) y se hunden fuera de
+      cuadro hacia p 0.38, y el destello llega mucho más tarde (blanco pleno en
+      p 0.64, cielo limpio desde p 0.74). Valores en fracción del recorrido (0–1). */
   private readonly ritmo = this.vertical
     ? { pistaFin: 0.13, susurroIni: 0.13, susurroFin: 0.5, veloIni: 0.6, finalIni: 0.63 }
-    : { pistaFin: 0.14, susurroIni: 0.15, susurroFin: 0.4, veloIni: 0.56, finalIni: 0.58 };
+    : { pistaFin: 0.1, susurroIni: 0.11, susurroFin: 0.37, veloIni: 0.6, finalIni: 0.66 };
 
   /** El bloque final (saludo) ya es visible: solo entonces se puede tocar. */
   readonly finalActivo = signal(false);
