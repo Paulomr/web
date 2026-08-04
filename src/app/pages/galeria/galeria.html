@@ -1,15 +1,51 @@
 <section class="galeria" (contextmenu)="bloquear($event)" (dragstart)="bloquear($event)">
   <header class="head">
     <h1>GALERÍA</h1>
-    <p>Bearnie, nuestras galletas y el mundo Crunchy Munch.</p>
+    <p>Bearnie, nuestras galletas y el arte del mundo Crunchy Munch.</p>
   </header>
 
-  <!-- Masonry con columnas CSS: respeta la orientación de cada foto. -->
+  <!-- Masonry con columnas CSS: respeta la orientación de cada pieza. El arte
+       va intercalado entre las fotos (ver mezclar() en el componente). -->
   <div class="masonry">
-    @for (foto of fotos(); track foto) {
-      <button type="button" class="pic" (click)="abrir(foto)">
-        <img [src]="urlFoto(foto)" alt="Foto Crunchy Munch" loading="lazy" draggable="false" />
-        <!-- Notch con el logo: marca de agua visible en cada foto. -->
+    @for (p of piezas(); track src(p)) {
+      <button
+        type="button"
+        class="pic"
+        [class.pic-arte]="p.clase === 'arte'"
+        (click)="abrir(p)"
+      >
+        @if (p.clase === 'arte' && p.arte.tipo === 'video') {
+          <!-- El arte en video va en bucle y sin sonido: es decoración, así que
+               nunca pide permiso ni interrumpe. Sin `autoplay` a propósito: el
+               componente lo arranca al entrar en pantalla y lo para al salir,
+               para no gastar datos ni CPU en los que quedan fuera de vista. -->
+          <video
+            class="pic-medio"
+            [src]="'arte/' + p.arte.archivo + '.mp4'"
+            [poster]="'arte/' + p.arte.archivo + '.webp'"
+            [attr.width]="p.arte.ancho"
+            [attr.height]="p.arte.alto"
+            [attr.aria-label]="p.arte.alt"
+            muted
+            loop
+            playsinline
+            preload="none"
+            disablepictureinpicture
+            disableremoteplayback
+          ></video>
+        } @else {
+          <img
+            class="pic-medio"
+            [src]="src(p)"
+            [alt]="alt(p)"
+            [attr.width]="p.clase === 'arte' ? p.arte.ancho : 1000"
+            [attr.height]="p.clase === 'arte' ? p.arte.alto : 1500"
+            loading="lazy"
+            draggable="false"
+          />
+        }
+
+        <!-- Notch con el logo: marca de agua visible en cada pieza. -->
         <span class="sello" aria-hidden="true">
           <img src="fotos/logo-crunchy.webp" alt="" draggable="false" />
           <em>©</em>
@@ -23,11 +59,24 @@
     <span>TODAS LAS FOTOS SON NUESTRAS. BEARNIE LAS CUIDA.</span>
   </div>
 
-  @if (ampliada(); as foto) {
+  @if (ampliada(); as p) {
     <!-- Visor: clic en cualquier parte para cerrar. -->
     <div class="lightbox" (click)="cerrar()">
       <div class="marco">
-        <img [src]="urlFoto(foto)" alt="Foto ampliada Crunchy Munch" draggable="false" />
+        @if (p.clase === 'arte' && p.arte.tipo === 'video') {
+          <video
+            [src]="'arte/' + p.arte.archivo + '.mp4'"
+            [poster]="'arte/' + p.arte.archivo + '.webp'"
+            [attr.aria-label]="p.arte.alt"
+            autoplay
+            muted
+            loop
+            playsinline
+            disablepictureinpicture
+          ></video>
+        } @else {
+          <img [src]="src(p)" [alt]="alt(p)" draggable="false" />
+        }
         <span class="sello grande" aria-hidden="true">
           <img src="fotos/logo-crunchy.webp" alt="" draggable="false" />
           <em>© CRUNCHY MUNCH</em>

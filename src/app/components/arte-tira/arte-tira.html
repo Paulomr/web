@@ -1,0 +1,25 @@
+<section class="tira" #seccion [class.reducido]="reducido" aria-labelledby="tira-tit">
+  <header class="tira-head">
+    <h2 id="tira-tit">EL ARTE DE CRUNCHY MUNCH</h2>
+    <a class="tira-link" routerLink="/galeria">Ver la galería <span aria-hidden="true">▸</span></a>
+  </header>
+
+  <!-- El marco recorta; la pista es lo que se desplaza. El overflow vive aquí
+       dentro y nunca en la página, para no provocar scroll horizontal. -->
+  <div class="tira-marco">
+    <div class="tira-pista" #pista>
+      @for (p of piezas; track p.src) {
+        <figure class="tira-pieza">
+          <img
+            [src]="p.src"
+            [alt]="p.alt"
+            [attr.width]="p.ancho"
+            [attr.height]="p.alto"
+            loading="lazy"
+            draggable="false"
+          />
+        </figure>
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,118 @@
+/* ---------- Tira de arte de la portada ----------
+   La sección tiene su alto natural: el desplazamiento horizontal sale de lo
+   que tarda en cruzar el viewport (ver arte-tira.ts), no de estirarla. */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.tira {
+  width: 100%;
+  padding: 64px 0 0;
+  overflow: hidden; /* red de seguridad: la página nunca se va en horizontal */
+}
+
+.tira-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: min(1180px, 90vw);
+  margin: 0 auto 20px;
+}
+
+.tira-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 3.4vw, 2.1rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tira-link {
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 180ms ease;
+}
+
+.tira-link:hover {
+  color: #e0559f;
+}
+
+.tira-marco {
+  width: 100%;
+  overflow: hidden;
+}
+
+.tira-pista {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  /* Sangría a los lados para que la primera y la última pieza no queden
+     pegadas al borde cuando la pista está en sus extremos. */
+  padding: 0 max(24px, calc((100vw - 1180px) / 2));
+  width: max-content;
+  will-change: transform;
+}
+
+.tira-pieza {
+  flex: none;
+  margin: 0;
+  /* Alto fijo + proporción conocida por los atributos width/height del <img>:
+     el ancho de la pista se puede medir antes de que carguen las imágenes. */
+  height: clamp(190px, 32vh, 310px);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: var(--shadow-card);
+}
+
+.tira-pieza img {
+  display: block;
+  height: 100%;
+  width: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ---------- Sin movimiento: se recorre a dedo ----------
+   Si solo se apagara la animación, las piezas de la derecha quedarían fuera
+   de alcance. Aquí el marco se vuelve un carrusel normal con scroll táctil. */
+.tira.reducido .tira-marco {
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tira.reducido .tira-pieza {
+  scroll-snap-align: center;
+}
+
+.tira.reducido .tira-pista {
+  will-change: auto;
+}
+
+@media (max-width: 640px) {
+  .tira {
+    padding-top: 44px;
+  }
+  .tira-head {
+    width: 92vw;
+    margin-bottom: 14px;
+  }
+  .tira-pista {
+    gap: 12px;
+    padding: 0 4vw;
+  }
+}

@@ -262,14 +262,17 @@
   font-weight: 600;
 }
 
-/* ---------- Sedes: CTA compacto en la portada ---------- */
+/* ---------- Sedes: CTA compacto en la portada ----------
+   Deliberadamente contenido: el bloque va entre el menú vivo y la tira de
+   arte, y es un paso de camino, no un destino. El titular llegaba antes a
+   7rem y se comía una pantalla entera él solo. */
 .sedes-cta {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 26px;
+  gap: 16px;
   width: 100%;
-  padding: 76px 24px 0;
+  padding: 46px 24px 0;
   text-align: center;
 }
 
@@ -277,8 +280,8 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.6rem, 11vw, 7rem);
-  line-height: 0.95;
+  font-size: clamp(1.7rem, 5vw, 3rem);
+  line-height: 1;
   letter-spacing: 0.02em;
   background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
   -webkit-background-clip: text;
@@ -297,11 +300,11 @@
 /* Píldora grande estilo notch (gradiente + brillo desenfocado). */
 .sede-pill {
   position: relative;
-  flex: 1 1 300px;
+  flex: 1 1 280px;
   display: inline-flex;
   align-items: center;
-  gap: 14px;
-  padding: 22px 30px;
+  gap: 12px;
+  padding: 15px 24px;
   border-radius: var(--r-pill);
   text-decoration: none;
   color: #ffffff;
@@ -566,7 +569,7 @@
     width: 168px;
   }
   .sedes-cta {
-    padding-top: 60px;
+    padding-top: 40px;
   }
   .mundo {
     padding-top: 72px;
@@ -620,12 +623,12 @@
   }
 
   .sedes-cta {
-    gap: 20px;
-    padding: 52px 18px 0;
+    gap: 13px;
+    padding: 34px 18px 0;
   }
   .sede-pill {
     flex: 1 1 100%;
-    padding: 18px 22px;
+    padding: 13px 20px;
   }
   .mundo {
     gap: 14px;
