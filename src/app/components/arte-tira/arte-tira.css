@@ -1,34 +1,62 @@
 /* ---------- Tira de arte de la portada ----------
-   La sección tiene su alto natural: el desplazamiento horizontal sale de lo
-   que tarda en cruzar el viewport (ver arte-tira.ts), no de estirarla. */
+   La sección se ancla (bloque `sticky` dentro) y la fila gira en horizontal
+   mientras se baja. El alto de la sección lo calcula el componente: pantalla
+   pegada + recorrido, para que el anclaje suelte justo al acabar la fila. */
 :host {
   display: block;
   width: 100%;
 }
 
 .tira {
+  position: relative;
   width: 100%;
-  padding: 64px 0 0;
-  overflow: hidden; /* red de seguridad: la página nunca se va en horizontal */
+  /* Red de seguridad: la página nunca se va en horizontal. */
+  overflow: clip;
 }
 
+.tira-pegado {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(14px, 2.4vh, 26px);
+  padding: 84px 0 34px; /* hueco para el notch fijo de arriba */
+}
+
+/* ---------- Cabecera ---------- */
 .tira-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
   width: min(1180px, 90vw);
-  margin: 0 auto 20px;
+  margin: 0 auto;
 }
 
-.tira-head h2 {
+/* Chip de vidrio: el titular sobre una lámina traslúcida en vez de suelto. */
+.tira-chip {
+  display: inline-flex;
+  padding: 9px 18px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 8px 22px -14px rgba(90, 55, 85, 0.5);
+}
+
+.tira-chip h2 {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.3rem, 3.4vw, 2.1rem);
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -36,46 +64,66 @@
 }
 
 .tira-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-family: var(--font-body);
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--text-muted);
   text-decoration: none;
   white-space: nowrap;
-  transition: color 180ms ease;
+  transition: color 180ms ease, gap 180ms ease;
 }
 
 .tira-link:hover {
   color: #e0559f;
+  gap: 11px;
 }
 
+/* ---------- La fila ---------- */
 .tira-marco {
   width: 100%;
   overflow: hidden;
+  /* Los bordes se desvanecen en vez de cortar en seco: la fila se siente
+     continua, como si siguiera más allá de la pantalla. */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 5.5%,
+    #000 94.5%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(90deg, transparent 0, #000 5.5%, #000 94.5%, transparent 100%);
 }
 
 .tira-pista {
   display: flex;
   align-items: center;
-  gap: 18px;
-  /* Sangría a los lados para que la primera y la última pieza no queden
-     pegadas al borde cuando la pista está en sus extremos. */
+  gap: clamp(16px, 2vw, 30px);
+  /* Sangría para que la primera y la última pieza no queden pegadas al borde
+     cuando la fila está en sus extremos. */
   padding: 0 max(24px, calc((100vw - 1180px) / 2));
   width: max-content;
   will-change: transform;
 }
 
 .tira-pieza {
+  position: relative;
   flex: none;
   margin: 0;
   /* Alto fijo + proporción conocida por los atributos width/height del <img>:
-     el ancho de la pista se puede medir antes de que carguen las imágenes. */
-  height: clamp(190px, 32vh, 310px);
-  border-radius: var(--r-md);
+     el ancho de la fila se puede medir antes de que carguen las imágenes. */
+  height: clamp(230px, 56vh, 560px);
+  border-radius: clamp(16px, 1.6vw, 26px);
   overflow: hidden;
   background: var(--surface-2);
-  box-shadow: var(--shadow-card);
+  /* Sombra en capas: una de contacto corta y otra ambiental larga. Una sola
+     sombra grande se ve como una mancha; dos dan volumen real. */
+  box-shadow:
+    0 2px 6px -2px rgba(90, 55, 85, 0.28),
+    0 26px 54px -26px rgba(90, 55, 85, 0.55);
 }
 
 .tira-pieza img {
@@ -86,9 +134,58 @@
   -webkit-user-drag: none;
 }
 
+/* El filo de vidrio: un aro interior de 1px más un brillo arriba. Va en un
+   span aparte y no en un ::after del figure para que quede por encima de la
+   imagen sin que el overflow del marco lo recorte. */
+.tira-vidrio {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.16);
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0) 26%,
+    rgba(255, 255, 255, 0) 74%,
+    rgba(255, 255, 255, 0.07) 100%
+  );
+}
+
+/* ---------- Cuánto queda de fila ---------- */
+.tira-riel {
+  position: relative;
+  width: min(1180px, 90vw);
+  height: 3px;
+  margin: 0 auto;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(120, 80, 110, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.tira-barra {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+}
+
 /* ---------- Sin movimiento: se recorre a dedo ----------
-   Si solo se apagara la animación, las piezas de la derecha quedarían fuera
-   de alcance. Aquí el marco se vuelve un carrusel normal con scroll táctil. */
+   Aquí no se ancla nada. Si solo se apagara la animación, las piezas de la
+   derecha quedarían fuera de alcance. */
+.tira.reducido .tira-pegado {
+  position: static;
+  height: auto;
+  padding: 52px 0 34px;
+}
+
 .tira.reducido .tira-marco {
   overflow-x: auto;
   scroll-snap-type: x proximity;
@@ -103,16 +200,32 @@
   will-change: auto;
 }
 
-@media (max-width: 640px) {
-  .tira {
-    padding-top: 44px;
+.tira.reducido .tira-riel {
+  display: none;
+}
+
+/* ---------- Pantallas bajas: la fila manda, la cabecera se aparta ---------- */
+@media (max-height: 620px) {
+  .tira-pegado {
+    padding: 70px 0 22px;
+    gap: 12px;
   }
+  .tira-pieza {
+    height: clamp(180px, 50vh, 400px);
+  }
+}
+
+@media (max-width: 640px) {
   .tira-head {
     width: 92vw;
-    margin-bottom: 14px;
   }
   .tira-pista {
-    gap: 12px;
     padding: 0 4vw;
+  }
+  .tira-riel {
+    width: 92vw;
+  }
+  .tira-link {
+    font-size: 0.78rem;
   }
 }

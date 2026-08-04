@@ -150,6 +150,15 @@
   overflow: hidden;
 }
 
+/* El "Ver catálogo completo" cierra el menú vivo. Va más discreto que el
+   botón grande de arriba: es un remate, no la llamada principal, y con el
+   pedestal de antes estiraba el bloque sin aportar nada. */
+.menu-vivo .btn-notch {
+  margin-top: 2px;
+  padding: 12px 36px;
+  font-size: 0.88rem;
+}
+
 /* NUESTRO MENÚ: titular gigante que abarca el ancho de la pantalla.
    Misma fuente display de la marca; el vw hace que escale con el viewport. */
 .menu-vivo h2 {
@@ -270,9 +279,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 11px;
   width: 100%;
-  padding: 46px 24px 0;
+  padding: 28px 24px 0;
   text-align: center;
 }
 
@@ -280,7 +289,7 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.7rem, 5vw, 3rem);
+  font-size: clamp(1.35rem, 3.4vw, 2rem);
   line-height: 1;
   letter-spacing: 0.02em;
   background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
@@ -300,11 +309,11 @@
 /* Píldora grande estilo notch (gradiente + brillo desenfocado). */
 .sede-pill {
   position: relative;
-  flex: 1 1 280px;
+  flex: 1 1 260px;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 15px 24px;
+  gap: 10px;
+  padding: 11px 20px;
   border-radius: var(--r-pill);
   text-decoration: none;
   color: #ffffff;
@@ -441,28 +450,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   max-width: 940px;
   text-align: center;
-  padding: 96px 24px 0;
-}
-
-.mundo h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 3.4vw, 1.8rem);
-  font-weight: 700;
-  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.seccion-texto {
-  margin: 0;
-  max-width: 560px;
-  color: var(--text-muted);
-  line-height: 1.65;
+  padding: 40px 24px 0;
 }
 
 .mundo-fotos {
@@ -470,7 +461,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   width: 100%;
-  margin: 10px 0 6px;
+  margin: 0 0 4px;
 }
 
 .mundo-fotos img {
@@ -501,10 +492,6 @@
 .osa-deco.corre {
   width: 104px;
   animation-delay: -1s;
-}
-
-.osa-deco.enamorada {
-  animation-delay: -2s;
 }
 
 .osa-deco.comiendo {
@@ -623,12 +610,12 @@
   }
 
   .sedes-cta {
-    gap: 13px;
-    padding: 34px 18px 0;
+    gap: 9px;
+    padding: 22px 18px 0;
   }
   .sede-pill {
     flex: 1 1 100%;
-    padding: 13px 20px;
+    padding: 10px 18px;
   }
   .mundo {
     gap: 14px;

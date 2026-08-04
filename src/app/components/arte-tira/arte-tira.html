@@ -1,25 +1,43 @@
 <section class="tira" #seccion [class.reducido]="reducido" aria-labelledby="tira-tit">
-  <header class="tira-head">
-    <h2 id="tira-tit">EL ARTE DE CRUNCHY MUNCH</h2>
-    <a class="tira-link" routerLink="/galeria">Ver la galería <span aria-hidden="true">▸</span></a>
-  </header>
+  <!-- El bloque que se queda pegado ocupando la pantalla mientras la fila gira. -->
+  <div class="tira-pegado">
+    <header class="tira-head">
+      <span class="tira-chip">
+        <h2 id="tira-tit">EL ARTE DE CRUNCHY MUNCH</h2>
+      </span>
+      <a class="tira-link" routerLink="/galeria">
+        Ver la galería
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+          stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h13" /><path d="M12 5.5 18.5 12 12 18.5" />
+        </svg>
+      </a>
+    </header>
 
-  <!-- El marco recorta; la pista es lo que se desplaza. El overflow vive aquí
-       dentro y nunca en la página, para no provocar scroll horizontal. -->
-  <div class="tira-marco">
-    <div class="tira-pista" #pista>
-      @for (p of piezas; track p.src) {
-        <figure class="tira-pieza">
-          <img
-            [src]="p.src"
-            [alt]="p.alt"
-            [attr.width]="p.ancho"
-            [attr.height]="p.alto"
-            loading="lazy"
-            draggable="false"
-          />
-        </figure>
-      }
+    <!-- El marco recorta y difumina los bordes; la pista es lo que se mueve.
+         El desbordamiento vive aquí dentro y nunca en la página. -->
+    <div class="tira-marco" #marco>
+      <div class="tira-pista" #pista>
+        @for (p of piezas; track p.src) {
+          <figure class="tira-pieza">
+            <img
+              [src]="p.src"
+              [alt]="p.alt"
+              [attr.width]="p.ancho"
+              [attr.height]="p.alto"
+              loading="lazy"
+              draggable="false"
+            />
+            <span class="tira-vidrio" aria-hidden="true"></span>
+          </figure>
+        }
+      </div>
+    </div>
+
+    <!-- Cuánto queda de fila: sin esto el anclaje se siente como que la
+         página se atascó, en vez de como algo que tiene un final. -->
+    <div class="tira-riel" aria-hidden="true">
+      <span class="tira-barra" #barra></span>
     </div>
   </div>
 </section>

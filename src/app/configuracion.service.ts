@@ -8,8 +8,10 @@ export const CAMPOS_TEXTO: { clave: string; label: string }[] = [
   { clave: 'heroLinea2', label: 'Hero — línea 2' },
   { clave: 'menuTitulo', label: 'Título “Nuestro menú”' },
   { clave: 'sedesTitulo', label: 'Título “Sedes”' },
-  { clave: 'mundoTitulo', label: 'Título “El mundo Crunchy Munch”' },
-  { clave: 'mundoTexto', label: 'Texto bajo “El mundo…”' },
+  // mundoTitulo y mundoTexto salieron de aquí en agosto de 2026: la portada
+  // dejó de pintar ese título y esa intro, y dejarlos en el panel sería
+  // ofrecer dos campos que no cambian nada. Sus valores siguen abajo por si
+  // la base de datos aún los guarda.
 ];
 
 export interface SedeHorario {
