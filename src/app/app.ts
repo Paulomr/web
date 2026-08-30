@@ -7,6 +7,7 @@ import { Toast } from './components/toast/toast';
 import { RegistroModal } from './components/registro-modal/registro-modal';
 import { WhatsappFab } from './components/whatsapp-fab/whatsapp-fab';
 import { AnaliticaService } from './analitica.service';
+import { PixelService } from './pixel.service';
 
 @Component({
   selector: 'app-root',
@@ -17,5 +18,6 @@ import { AnaliticaService } from './analitica.service';
 export class App {
   constructor() {
     inject(AnaliticaService).iniciar();
+    inject(PixelService).iniciar();
   }
 }

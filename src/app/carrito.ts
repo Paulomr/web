@@ -2,6 +2,7 @@ import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { PRODUCTOS, Producto, WHATSAPP_SEDES, extraSabor } from './productos';
 import { ProductosService } from './productos.service';
 import { CuentaService } from './cuenta.service';
+import { PixelService } from './pixel.service';
 
 // Carrito de pedidos: estado global con signals, persistido en localStorage.
 // El "checkout" no cobra: arma el pedido completo y lo envía por WhatsApp,
@@ -90,6 +91,7 @@ export class Carrito {
 
   private readonly productosSvc = inject(ProductosService);
   private readonly cuenta = inject(CuentaService);
+  private readonly pixel = inject(PixelService);
 
   producto(id: string): Producto | undefined {
     return this.productosSvc.porId(id);
@@ -108,6 +110,8 @@ export class Carrito {
     this.notificacion.set({ nonce: Date.now(), texto: 'AÑADIDO AL CARRITO' });
     // Con la PRIMERA galleta del carrito, invita a crear cuenta (una sola vez).
     if (eraVacio && !this.cuenta.registrado()) this.cuenta.abrir();
+    const p = this.producto(id);
+    if (p) this.pixel.agregarAlCarrito(id, p.nombre, this.precioUnit({ id, cantidad: 1, sabor }));
   }
 
   restar(id: string, sabor?: string): void {
@@ -213,6 +217,10 @@ export class Carrito {
 
   /** Tras enviar el pedido: registra el pedido en la base. */
   confirmarEnvio(): void {
+    this.pixel.pedidoEnviado(
+      this.items().map((i) => i.id),
+      this.total(),
+    );
     void this.registrarPedido();
   }
 

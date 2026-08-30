@@ -4,6 +4,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
 import { WHATSAPP_SEDES } from '../../productos';
 import { CuentaService } from '../../cuenta.service';
+import { PixelService } from '../../pixel.service';
 
 /** Rutas donde el botón NO aparece: ahí el usuario está en otra tarea
  *  (administrar, jugar o mirar su tarjeta) y el flotante solo estorba. */
@@ -31,6 +32,7 @@ const SALUDO = '¡Hola Crunchy Munch! Quiero hacer un pedido 🍪';
 export class WhatsappFab {
   private readonly router = inject(Router);
   private readonly cuenta = inject(CuentaService);
+  private readonly pixel = inject(PixelService);
 
   readonly abierto = signal(false);
 
@@ -82,6 +84,12 @@ export class WhatsappFab {
 
   enlace(sede: SedeWhatsApp): string {
     return `https://wa.me/${sede.numero}?text=${encodeURIComponent(SALUDO)}`;
+  }
+
+  /** Tocó una sede: avisa al píxel y cierra el desplegable (el enlace sigue su curso). */
+  irAWhatsapp(): void {
+    this.pixel.contactoWhatsapp();
+    this.cerrar();
   }
 
   @HostListener('document:keydown.escape')
