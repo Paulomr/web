@@ -8,6 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { CuentaService } from '../../cuenta.service';
+import { Votados } from '../votados/votados';
 
 // Hero de la portada: el video de la caja, contado con el scroll.
 //
@@ -21,7 +22,7 @@ import { CuentaService } from '../../cuenta.service';
 // recorrido se pinta sin pasar por la detección de cambios de Angular.
 @Component({
   selector: 'app-hero-video',
-  imports: [],
+  imports: [Votados],
   templateUrl: './hero-video.html',
   styleUrl: './hero-video.css',
 })
@@ -57,6 +58,12 @@ export class HeroVideo {
 
   /** El bloque final (saludo) ya es visible: solo entonces se puede tocar. */
   readonly finalActivo = signal(false);
+
+  /** El marcador de la convocatoria sigue en juego (al principio del
+      recorrido). El CSS ya lo desvanece con `--p`; esta señal es la que
+      además lo saca del alcance del ratón y de los lectores de pantalla, que
+      con opacidad 0 seguirían pudiendo tocarlo y leerlo. */
+  readonly votadosActivo = signal(true);
 
   /** Progreso del scroll (0–1) y su versión suavizada, que es la que manda. */
   private objetivo = 0;
@@ -98,7 +105,7 @@ export class HeroVideo {
 
     // El bucle solo gira mientras el hero está en pantalla.
     const io = new IntersectionObserver(
-      ([e]) => (e.isIntersecting ? this.encender() : this.apagar()),
+      ([e]) => (e.isIntersecting ? this.encender() : this.salirDeCuadro()),
       { rootMargin: '15% 0px' },
     );
     io.observe(this.seccion().nativeElement);
@@ -121,6 +128,20 @@ export class HeroVideo {
   private apagar(): void {
     this.corriendo = false;
     cancelAnimationFrame(this.raf);
+  }
+
+  /**
+   * El hero se fue de la pantalla: antes de parar el bucle, se pinta una vez
+   * el avance real. Sin esto, un salto instantáneo (un ancla, o el navegador
+   * restaurando la posición al recargar) deja congelado el último valor que
+   * alcanzó a verse — y el marcador de la convocatoria se quedaba visible y
+   * pulsable aunque el hero ya no estuviera.
+   */
+  private salirDeCuadro(): void {
+    this.medir();
+    this.suave = this.objetivo;
+    this.pintar(this.objetivo);
+    this.apagar();
   }
 
   /** Cuánto se ha recorrido de la sección: 0 al entrar, 1 al soltar el sticky. */
@@ -159,5 +180,11 @@ export class HeroVideo {
     (this.host.nativeElement as HTMLElement).style.setProperty('--p', p.toFixed(4));
     const activo = p > this.ritmo.finalIni;
     if (activo !== this.finalActivo()) this.finalActivo.set(activo);
+
+    // Con menos movimiento el hero se pinta de una vez en su último fotograma:
+    // si el marcador dependiera solo del avance, esas personas no lo verían
+    // nunca. Ahí se queda puesto.
+    const vot = this.reducido || p < 0.2;
+    if (vot !== this.votadosActivo()) this.votadosActivo.set(vot);
   }
 }

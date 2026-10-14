@@ -18,27 +18,26 @@ api/
     auth.mjs            <- protección de rutas de admin (temporal)
     models/
       producto.mjs      <- forma de cada producto en la base
-  productos/
-    index.mjs           <- GET lista | POST crear (admin)
-    [id].mjs            <- GET uno | PUT editar | DELETE ocultar (admin)
-    models/
       pedido.mjs        <- pedidos enviados por WhatsApp (código, cliente, ítems)
       visita.mjs        <- pageviews para las estadísticas de tráfico
+      resena.mjs        <- opiniones de clientes
+      postulacion.mjs   <- negocios postulados + votos de la convocatoria
   productos/
     index.mjs           <- GET lista | POST crear (admin)
     [id].mjs            <- GET uno | PUT editar | DELETE ocultar (admin)
   pedidos.mjs           <- POST registra pedido | GET admin busca por código
   estadisticas.mjs      <- POST registra visita | GET admin métricas del negocio
   resenas.mjs           <- opiniones de clientes (POST envía, PUT/DELETE modera)
-  chat.mjs              <- IA de Bearnie (hoy SIN USO: el oso salió de la web)
+  postulaciones.mjs     <- "Postula tu negocio" (POST postula/vota, PUT/DELETE modera)
 scripts/                <- utilidades (semilla de datos, etc.)
 ```
 
-> ⚠️ **Nota Vercel:** cada archivo de `api/*.mjs` es una función serverless. Hoy
-> hay **12 de las 12** que permite el plan Hobby: **no cabe ninguna más**. Para
-> hacer sitio hay dos caminos: borrar `chat.mjs` (el oso de IA ya no está en la
-> web) o agrupar varias acciones dentro de un mismo endpoint, como hace
-> `cuentas.mjs` con su campo `accion`.
+> ⚠️ **Nota Vercel:** cada archivo de `api/*.mjs` es una función serverless, y el
+> plan Hobby permite **12**. Están **las 12 ocupadas**: `postulaciones.mjs` entró
+> en el hueco que dejó `chat.mjs` (la IA de Bearnie, que ya no estaba en la web).
+> Para meter algo nuevo **no basta con crear otro archivo**: hay que agrupar la
+> acción dentro de un endpoint que ya exista, como hace `cuentas.mjs` con su
+> campo `accion` (y `postulaciones.mjs` con `accion:'votar'`).
 
 ## Fases
 
@@ -64,6 +63,14 @@ scripts/                <- utilidades (semilla de datos, etc.)
       portada. Para escribir hace falta @instagram + el código de 4 dígitos, así
       nadie opina en nombre de otro. Toda opinión entra como *pendiente* y solo
       se publica cuando se aprueba en `/admin` → "Opiniones de clientes".
+- [x] **Fase 3.7 — Postula tu negocio** ✅
+      Convocatoria para llevar un carrito a locales de otra gente. Postular NO
+      pide cuenta (el negocio llega de fuera; el spam lo frena la moderación),
+      pero votar SÍ: @instagram + código de 4 dígitos, un voto por cuenta en
+      toda la convocatoria, y votar otra vez mueve el voto en vez de sumarlo.
+      Se modera en `/admin` → "Postulaciones de negocios"; los 4 más votados
+      salen en la portada. Los votos se cuentan agregando la colección `Voto`,
+      nunca con un contador guardado (se desincroniza).
 - [ ] **Fase 4 — Pagos en línea**
       Cobro con tarjeta/PSE (proveedor colombiano: Wompi o MercadoPago).
 - [ ] **Fase 5 — Cuentas y fidelidad**

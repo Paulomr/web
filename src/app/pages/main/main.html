@@ -1,7 +1,16 @@
 <main class="landing">
+  <!-- Aviso de la galleta nueva: cápsula fija bajo el notch. No ocupa sitio en
+       el flujo, así que no toca las medidas del hero ni de la tira de arte. -->
+  <app-cartel-nuevo />
+
   <!-- Hero: el video de la caja, contado con el scroll (el saludo por nombre
        vive dentro, sobre el cielo del final). -->
   <app-hero-video />
+
+  <!-- El lanzamiento, justo al terminar el video: la galleta nueva sola sobre
+       terciopelo. Va aquí, antes del menú, para que sea lo primero que se ve
+       cuando el hero suelta la página. -->
+  <app-producto-nuevo />
 
   <!-- Llamado a la acción al catálogo, justo al salir del hero. -->
   <section class="cta">

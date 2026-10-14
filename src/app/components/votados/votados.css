@@ -1,0 +1,224 @@
+/* ============ Marcador de la convocatoria (dentro del hero) ============
+   Cápsula de vidrio abajo a la derecha, en el mismo lenguaje que el notch y
+   el cartel de aviso: es otra pieza flotante de la misma familia.
+
+   Se desvanece con el video. La opacidad se calcula con `clamp()` sobre `--p`,
+   la variable que publica `hero-video` con su avance (0–1): a `--p` 0.04 está
+   entera y a 0.18 ya no está. Así el marcador se va justo cuando el osito
+   empieza a asomarse y no le roba la escena.
+   ------------------------------------------------------------------------- */
+:host {
+  position: absolute;
+  z-index: 3;
+  right: clamp(14px, 3vw, 34px);
+  bottom: clamp(18px, 4vh, 40px);
+  width: min(280px, 42vw);
+  opacity: clamp(0, calc((0.18 - var(--p, 0)) / 0.14), 1);
+  /* Se apaga por completo antes de estorbar: sin esto seguiría siendo
+     pulsable con opacidad 0 encima del video. La clase la pone `hero-video`. */
+  transition: opacity 200ms linear;
+}
+
+/* Fuera de juego: ni se ve ni se toca ni la leen los lectores de pantalla. */
+:host(.oculto) {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.vt {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 13px 14px 11px;
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 18px 40px -22px rgba(90, 55, 85, 0.7);
+  text-decoration: none;
+  color: var(--text);
+  transition: scale 260ms ease;
+}
+
+@media (hover: hover) {
+  .vt:hover {
+    scale: 1.015;
+  }
+}
+
+.vt:active {
+  scale: 0.99;
+}
+
+/* ---------- Cabecera ---------- */
+.vt-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vt-titulo {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  background: linear-gradient(135deg, #e2559f 0%, #a05fd0 62%, #4aa9c0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vt-total {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+/* ---------- La tabla ---------- */
+.vt-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vt-fila {
+  display: grid;
+  /* El puesto y los votos tienen ancho fijo: así los nombres arrancan todos
+     en la misma columna y las cifras no bailan al cambiar de dos a tres. */
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* El primero va marcado: un marcador sin líder no es un marcador. */
+.vt-fila.lider {
+  background: linear-gradient(90deg, rgba(242, 169, 205, 0.42), rgba(201, 174, 232, 0.3));
+  box-shadow: inset 0 0 0 1px rgba(232, 78, 156, 0.28);
+}
+
+.vt-puesto {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+}
+
+.vt-fila.lider .vt-puesto {
+  color: #b8367e;
+}
+
+.vt-negocio {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  /* Un nombre largo no puede reventar la cápsula. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vt-votos {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.vt-fila.lider .vt-votos {
+  color: #b8367e;
+}
+
+/* ---------- Antes de que haya negocios ----------
+   La misma cápsula, más corta, con una sola frase. El pincel es el mismo de
+   la ventana del terciopelo: quien viene de ahí reconoce la letra. */
+.vt-invita {
+  gap: 8px;
+  text-align: center;
+}
+
+.vt-invita .vt-titulo {
+  text-align: center;
+}
+
+.vt-invita-txt {
+  font-family: var(--font-brush);
+  /* Sin ligaduras. Zerocalcare trae ligaduras de PALABRA ("el", "tu", "la"…)
+     que cambian esas sílabas por una cursiva enlazada: "Postula tu negocio"
+     salía con el "tu" en otra letra. Ver también text-transform arriba. */
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
+  /* En caja mixta y SIN mayúsculas forzadas: en esta fuente las minúsculas
+     son el pincel en bloque y las MAYÚSCULAS una cursiva, otra letra. */
+  text-transform: none;
+  font-size: clamp(1.5rem, 4.6vw, 1.95rem);
+  line-height: 1.05;
+  color: var(--text);
+}
+
+/* ---------- Pie ---------- */
+.vt-pie {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(45deg, #f078b8, #a97fd6);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  box-shadow: 0 8px 18px -10px rgba(224, 96, 168, 0.9);
+}
+
+.vt-flecha {
+  font-size: 0.72em;
+  opacity: 0.85;
+}
+
+/* ---------- Pantallas chicas ----------
+   Abajo a la derecha se cruza con la pista "Desliza" del hero y con la
+   burbuja de WhatsApp. En móvil sube y se centra, encima de la pista, y se
+   queda a dos filas: cuatro nombres ahí ya no se leen, se amontonan. */
+@media (max-width: 720px) {
+  :host {
+    right: 12px;
+    left: 12px;
+    bottom: clamp(64px, 12vh, 96px);
+    width: auto;
+  }
+
+  .vt {
+    padding: 11px 12px 10px;
+  }
+
+  .vt-lista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .vt-negocio {
+    font-size: 0.7rem;
+  }
+}

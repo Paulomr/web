@@ -1,0 +1,106 @@
+<section class="dk" [id]="ancla" aria-label="Novedades de Crunchy Munch">
+  <div class="dk-inner">
+    <!-- Dos ventanas del mismo tamaño: una impresa y una en movimiento. La
+         galleta que acaba de salir, y la convocatoria del carrito. -->
+    <div class="dk-puertas">
+      <!-- ================= 1 · La galleta nueva ================= -->
+      <article class="dk-puerta" aria-labelledby="dk-nombre">
+        <p class="dk-eyebrow">
+          <!-- El punto late porque el dato es "acaba de salir". -->
+          <span class="dk-punto" aria-hidden="true"></span>
+          Recién salida del horno
+        </p>
+
+        <!-- El póster ya lleva rotulado el nombre, así que aquí no se repite
+             en grande: el <h2> va oculto y solo titula el bloque. -->
+        <h2 class="dk-oculto" id="dk-nombre">{{ nombre() }}</h2>
+
+        <figure class="dk-marco" #marco>
+          <!-- Halo: la misma foto a 64 px, desenfocada. No es un resplandor
+               inventado, es la luz de la propia galleta sobre el terciopelo. -->
+          <img class="dk-aura" [src]="aura" alt="" aria-hidden="true" width="64" height="85" />
+          <img
+            class="dk-foto"
+            [src]="foto"
+            [alt]="'Póster de la ' + nombre() + ': la galleta sostenida en la mano'"
+            width="1100"
+            height="1467"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+
+        <div class="dk-texto" #texto>
+          <p class="dk-desc">{{ descripcion() }}</p>
+
+          <p class="dk-datos">
+            <span class="dk-precio">{{ precio() }}</span>
+            <span class="dk-sep" aria-hidden="true">·</span>
+            <span class="dk-gramos">{{ detalleCorto() }}</span>
+          </p>
+
+          <button type="button" class="dk-cta" (click)="ordenar()">
+            <span class="dk-cta-txt">Ordena ya</span>
+            <span class="dk-cta-flecha" aria-hidden="true">▸</span>
+          </button>
+        </div>
+      </article>
+
+      <!-- ================= 2 · La convocatoria del carrito ================= -->
+      <article class="dk-puerta">
+        <p class="dk-eyebrow">
+          <span class="dk-punto" aria-hidden="true"></span>
+          Convocatoria abierta
+        </p>
+
+        <!-- Toda la ventana es UN enlace: el video, el rótulo y el pie. Así
+             hay un solo destino que tocar y un solo foco de teclado, en vez
+             de tres controles que llevan al mismo sitio. -->
+        <a class="dk-puerta-link" [routerLink]="rutaPostula">
+          <span class="dk-marco dk-marco-video" #marcoDos>
+            <img
+              class="dk-aura"
+              src="video/carrito-glow.webp"
+              alt=""
+              aria-hidden="true"
+              width="64"
+              height="114"
+            />
+            <video
+              class="dk-foto dk-video"
+              #video
+              src="video/carrito-preview.mp4"
+              poster="video/carrito-preview.webp"
+              preload="none"
+              muted
+              loop
+              playsinline
+              disablepictureinpicture
+              disableremoteplayback
+              aria-hidden="true"
+            ></video>
+
+            <!-- El póster de la galleta lleva su título impreso dentro; este
+                 se lo ponemos nosotros, para que las dos ventanas sean
+                 gemelas y cada una se explique sola. -->
+            <span class="dk-rotulo">
+              <span class="dk-rotulo-txt">Postula tu negocio</span>
+            </span>
+          </span>
+
+          <span class="dk-texto" #textoDos>
+            <span class="dk-desc">
+              Un carrito de Crunchy Munch, montado en tu local. Tú pones el espacio; nosotros
+              ponemos el carrito, las galletas y la marca.
+            </span>
+
+            <span class="dk-cta dk-cta-fantasma">
+              <span class="dk-cta-txt">Ver cómo funciona</span>
+              <span class="dk-cta-flecha" aria-hidden="true">▸</span>
+            </span>
+          </span>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>

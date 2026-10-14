@@ -1,0 +1,28 @@
+@if (montado()) {
+  <aside class="cn" #caja aria-label="Novedad de la carta">
+    <button type="button" class="cn-ir" (click)="ir()">
+      <span class="cn-foto">
+        <img [src]="mini" alt="" aria-hidden="true" width="200" height="200" />
+      </span>
+
+      <span class="cn-txt">
+        <span class="cn-eyebrow">
+          <span class="cn-punto" aria-hidden="true"></span>
+          Nuevo producto
+        </span>
+        <strong class="cn-nombre">{{ nombre() }}</strong>
+      </span>
+
+      <span class="cn-ver">
+        <span class="cn-ver-txt">Ver</span>
+        <span class="cn-flecha" aria-hidden="true">▸</span>
+      </span>
+    </button>
+
+    <button type="button" class="cn-cerrar" (click)="cerrar()" aria-label="Cerrar aviso">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l8 8M14 6l-8 8" />
+      </svg>
+    </button>
+  </aside>
+}

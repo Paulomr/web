@@ -23,6 +23,11 @@
       <span class="hv-flecha">▾</span>
     </p>
 
+    <!-- Marcador de la convocatoria. Va dentro del bloque pegado para heredar
+         `--p` y desvanecerse al ritmo del video. Si no hay negocios aprobados
+         no pinta nada. -->
+    <app-votados [class.oculto]="!votadosActivo()" />
+
     <!-- 2 · Bearnie se asoma. -->
     <p class="hv-susurro" aria-hidden="true">Alguien se está asomando</p>
 

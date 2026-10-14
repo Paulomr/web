@@ -6,6 +6,9 @@ import { FOTOS } from '../../fotos';
 import { GAMES } from '../../games';
 import { ProductosService } from '../../productos.service';
 import { CAMPOS_TEXTO, DEFAULT_TEXTOS, DEFAULT_SEDES, SedeCfg } from '../../configuracion.service';
+// La forma de una postulación vive en el contrato compartido: si el panel se
+// definiera la suya, las dos copias se separarían al primer campo nuevo.
+import { PostulacionAdmin } from '../../postulaciones';
 
 // Producto en el panel: mismos campos que la base, pero 'fotos' como texto
 // (una foto por línea) para editarlo fácil. Los '_' son estado de la pantalla.
@@ -126,6 +129,22 @@ export class Admin {
   });
   readonly revPendientes = computed(() => this.resenas().filter((r) => r.estado === 'pendiente').length);
 
+  // ---- Postulaciones de negocios (moderación) ----
+  readonly posAbierto = signal(false);
+  readonly postulaciones = signal<PostulacionAdmin[]>([]);
+  readonly posMsg = signal('');
+  /** Las pendientes arriba (hay que atenderlas) y el resto por votos: así el
+   *  panel muestra el mismo ranking que ve la gente en la portada. */
+  readonly postulacionesOrdenadas = computed(() => {
+    const orden = { pendiente: 0, aprobada: 1, oculta: 2 } as Record<string, number>;
+    return [...this.postulaciones()].sort(
+      (a, b) => (orden[a.estado] ?? 9) - (orden[b.estado] ?? 9) || b.votos - a.votos,
+    );
+  });
+  readonly posPendientes = computed(
+    () => this.postulaciones().filter((p) => p.estado === 'pendiente').length,
+  );
+
   // ---- Galería de fotos ----
   readonly galAbierto = signal(false);
   readonly galSubiendo = signal(false);
@@ -153,6 +172,7 @@ export class Admin {
       // Al entrar, no al abrir el módulo: el contador de pendientes existe
       // justamente para avisar sin tener que ir a mirar.
       void this.cargarResenas();
+      void this.cargarPostulaciones();
     }
   }
 
@@ -398,6 +418,74 @@ export class Admin {
     this.revMsg.set('✓ Borrada');
   }
 
+  // ---- Postulaciones de negocios ----
+  async cargarPostulaciones(): Promise<void> {
+    try {
+      const r = await fetch('/api/postulaciones?admin=1', { headers: this.cabeceras() });
+      if (r.status === 401) {
+        this.salir();
+        return;
+      }
+      if (!r.ok) return;
+      const d = (await r.json()) as { postulaciones?: PostulacionAdmin[] };
+      this.postulaciones.set(d.postulaciones ?? []);
+    } catch {
+      /* sin conexión: se queda la lista que ya había */
+    }
+  }
+
+  /** Aprueba (la publica y la deja votable) u oculta una postulación. */
+  async moderarPostulacion(p: PostulacionAdmin, estado: PostulacionAdmin['estado']): Promise<void> {
+    this.posMsg.set('');
+    let res: Response;
+    try {
+      res = await fetch('/api/postulaciones', {
+        method: 'PUT',
+        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ id: p.id, estado }),
+      });
+    } catch {
+      this.posMsg.set('⚠ Sin conexión');
+      return;
+    }
+    if (res.status === 401) {
+      this.salir();
+      return;
+    }
+    if (!res.ok) {
+      this.posMsg.set('⚠ Error');
+      return;
+    }
+    this.postulaciones.update((l) => l.map((x) => (x.id === p.id ? { ...x, estado } : x)));
+    this.posMsg.set(estado === 'aprobada' ? '✓ Publicada' : '✓ Oculta');
+  }
+
+  /** Borra la postulación y sus votos. El negocio podrá volver a postularse. */
+  async borrarPostulacion(p: PostulacionAdmin): Promise<void> {
+    if (!confirm(`¿Borrar la postulación de ${p.negocio}? Se pierden sus ${p.votos} votos.`)) return;
+    this.posMsg.set('');
+    let res: Response;
+    try {
+      res = await fetch(`/api/postulaciones?id=${encodeURIComponent(p.id)}`, {
+        method: 'DELETE',
+        headers: this.cabeceras(),
+      });
+    } catch {
+      this.posMsg.set('⚠ Sin conexión');
+      return;
+    }
+    if (res.status === 401) {
+      this.salir();
+      return;
+    }
+    if (!res.ok) {
+      this.posMsg.set('⚠ Error');
+      return;
+    }
+    this.postulaciones.update((l) => l.filter((x) => x.id !== p.id));
+    this.posMsg.set('✓ Borrada');
+  }
+
   // ---- Galería ----
   onSoltarGaleria(ev: DragEvent): void {
     ev.preventDefault();
@@ -633,6 +721,7 @@ export class Admin {
     void this.cargarFidelidad();
     void this.cargarCanjes();
     void this.cargarResenas();
+    void this.cargarPostulaciones();
   }
 
   salir(): void {

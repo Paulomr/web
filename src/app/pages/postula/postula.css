@@ -1,0 +1,915 @@
+/* ============ /postula — la convocatoria de los carritos ============
+   La dirección de arte sale del propio carrito del video: morado claro y
+   blanco. El toldo a plena luz da el lila de marca; el mismo toldo de noche,
+   muestreado, da el lila hondo de los bordes. El rosa del letrero es lo único
+   que queda del neón, y se usa con cuentagotas.
+
+   El recorrido publica su avance (0–1) en la variable `--p` (la escribe el
+   componente sobre el host). Cada recuadro lleva su tramo en `--desde` /
+   `--hasta` y se revela con `clamp()`: el texto entra en el corte del video,
+   no en un momento cualquiera.
+   -------------------------------------------------------------------------- */
+:host {
+  display: block;
+  width: 100%;
+
+  /* --- Del carrito --- */
+  --pos-lila: #c9aee8; /* el toldo a plena luz (el violeta de marca) */
+  --pos-lila-hondo: #9a84ba; /* ese mismo toldo de noche: bordes y profundidad */
+  --pos-blanco: #ffffff;
+  --pos-crema: #f6f1fb;
+  --pos-neon: #ff5fb0; /* el letrero rosa. Solo acentos. */
+
+  /* --- Tintas ---
+     Las superficies claras van translúcidas sobre un video nocturno, así que
+     el contraste se calcula contra el peor caso (la superficie sobre negro,
+     ≈ #ddd9e2): el texto queda en 7,1:1 y el apagado en 5,2:1. El lila no se
+     usa nunca para texto — sobre crema no pasa de 2,4:1. */
+  --pos-tinta: #4a3b47;
+  --pos-tinta-tenue: #5f4f66;
+  --pos-tinta-suave: #7b6a81; /* letra pequeña de ayuda (4,9:1 sobre blanco) */
+  --pos-tinta-honda: #4a3766; /* fondo de las fichas numeradas (blanco a 10,3:1) */
+  /* El lila de marca escrito: #c9aee8 sobre blanco no pasa de 2,4:1 y
+     --pos-lila-hondo se queda en 3,3:1 (vale para un borde, no para leer).
+     Este es el mismo violeta bajado hasta 5,9:1. */
+  --pos-lila-texto: #6f5a91;
+
+  /* Noche del video: si el MP4 tarda en pintar, no hay salto en blanco. */
+  --pos-noche: #1c0f2a;
+
+  /* Lavado lila de la página. Va translúcido para que los doodles del fondo
+     del sitio sigan asomando. */
+  background: linear-gradient(
+    180deg,
+    rgba(250, 247, 253, 0.96) 0%,
+    rgba(255, 255, 255, 0.94) 42%,
+    rgba(250, 247, 253, 0.97) 100%
+  );
+}
+
+/* ==========================================================================
+   a) El recorrido
+   ========================================================================== */
+.pos-recorrido {
+  position: relative;
+  width: 100%;
+  /* Lo que sobra de 100svh es lo que dura la película: 15 s de video y cinco
+     recuadros piden espacio de sobra para que nada pase de largo.
+     Subido de 560 a 660: es el mando que decide cuánto scroll cuesta cada
+     fracción del recorrido y, con eso, cuántos segundos aguanta en pantalla
+     cada recuadro. Los tramos anchos de PASOS por sí solos no bastaban — el
+     video corría igual de rápido. */
+  height: 660svh;
+}
+
+.pos-pegado {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--pos-noche);
+}
+
+.pos-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* El `max-width: 100%` global mediría contra el padre y lo encogería. */
+  max-width: none;
+  object-fit: cover;
+  /* Un punto de contraste, color y luz. El plano es nocturno y el escalado a
+     pantalla completa lo deja lavado; esto le devuelve cuerpo sin tocar el
+     MP4. Muy leve a propósito: pasarse aplasta los negros de la calle. */
+  filter: contrast(1.05) saturate(1.12) brightness(1.1);
+}
+
+/* Grano encima del video, no dentro de él. El MP4 es 1080p y a pantalla
+   completa se ve blando; el ruido rompe el degradado del escalado. Va en
+   `overlay` y no en `soft-light` porque el plano nocturno tiene medios tonos:
+   con `soft-light` el grano desaparecía sobre el toldo iluminado. */
+/* Tres cosas hacen que esto sea grano de película y no "ruido digital":
+   1 · FINO, no grueso. El grano gordo (baseFrequency baja) se lee como
+       bloques de compresión — parece pixelado, que es justo lo contrario de
+       lo que se busca. Va en 0.95 con pocas octavas: puntito, no manchón.
+   2 · MONOCROMO. El `feColorMatrix` a saturación 0 quita el moteado de
+       colores del turbulence. El grano real es de luminancia; el de color
+       delata al instante que es un filtro.
+   3 · VIVO. La película resortea el grano en cada fotograma; un patrón
+       quieto se lee como suciedad pegada a la pantalla. Se desplaza a
+       saltos (`steps`), y se mueve con `transform` y no con
+       `background-position` para que lo componga la GPU en vez de repintar
+       una capa a pantalla completa doce veces por segundo.
+   La baldosa es de 300 px (antes 180) porque a 180 se notaba el patrón
+   repetido en cuanto el plano tenía una zona lisa. */
+.pos-grano {
+  position: absolute;
+  /* Más grande que la pantalla: al desplazarse no puede descubrir un borde. */
+  inset: -8%;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  opacity: 0.34;
+  mix-blend-mode: overlay;
+  animation: pos-grano-vivo 720ms steps(1, end) infinite;
+}
+
+/* Ocho posiciones sin relación entre sí: si los saltos siguieran un patrón,
+   el ojo lo pillaría como un temblor rítmico en vez de como grano. */
+@keyframes pos-grano-vivo {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  12.5% {
+    transform: translate3d(-2.4%, 1.7%, 0);
+  }
+  25% {
+    transform: translate3d(1.9%, -2.8%, 0);
+  }
+  37.5% {
+    transform: translate3d(-3.1%, -1.2%, 0);
+  }
+  50% {
+    transform: translate3d(2.7%, 2.3%, 0);
+  }
+  62.5% {
+    transform: translate3d(-1.4%, -2.6%, 0);
+  }
+  75% {
+    transform: translate3d(3.2%, 0.8%, 0);
+  }
+  87.5% {
+    transform: translate3d(-2.1%, 2.9%, 0);
+  }
+}
+
+/* Velo: cierra arriba y abajo. Es lo que garantiza que el título blanco y los
+   recuadros claros se lean pase lo que pase en el plano de debajo. */
+.pos-velo {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  /* Aclarado respecto a la primera versión (0.62/0.14/0.18/0.68). El plano ya
+     es de noche y el velo lo hundía todavía más; la página pedía aire. Los
+     extremos siguen siendo los más cerrados porque son los que sostienen el
+     titular blanco arriba y los recuadros claros abajo. */
+  background: linear-gradient(
+    180deg,
+    rgba(24, 12, 38, 0.46) 0%,
+    rgba(24, 12, 38, 0.07) 32%,
+    rgba(24, 12, 38, 0.1) 54%,
+    rgba(24, 12, 38, 0.5) 100%
+  );
+}
+
+/* ---------- La portada del recorrido ---------- */
+.pos-portada {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Bajo el notch fijo (14px + ~52px de alto). */
+  padding: clamp(94px, 15vh, 168px) 20px 0;
+  text-align: center;
+  pointer-events: none;
+  opacity: clamp(0, calc((0.2 - var(--p, 0)) / 0.08), 1);
+  translate: 0 calc(var(--p, 0) * -40px);
+}
+
+/* Halo oscuro propio del titular. El velo por sí solo no basta: en el tramo
+   medio baja a 0,14 y ahí el blanco sobre un plano claro se quedaría en 2:1.
+   El halo mantiene ~0,5 de sombra bajo todo el bloque, que sumado al velo pasa
+   de 0,55 — el mínimo para que el texto blanco llegue a 4,5:1 aunque el cuadro
+   de debajo se abriera en blanco. */
+.pos-portada::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -8% -14% -34%;
+  background: radial-gradient(
+    66% 74% at 50% 42%,
+    rgba(18, 7, 30, 0.8) 0%,
+    rgba(18, 7, 30, 0.55) 54%,
+    rgba(18, 7, 30, 0) 84%
+  );
+}
+
+.pos-antetitulo {
+  margin: 0 0 clamp(8px, 1.6vh, 16px);
+  display: inline-block;
+  padding: 6px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--r-pill);
+  background: rgba(28, 15, 42, 0.42);
+  color: var(--pos-blanco);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+}
+
+/* El pincel de la marca. Tres cosas que tiene esta cara:
+   · En caja mixta y SIN mayúsculas forzadas. Sus minúsculas son el pincel en
+     bloque (el rótulo del póster) y sus MAYÚSCULAS son una cursiva enlazada,
+     otra letra distinta: con el todo-mayúsculas de `body` encima, el titular
+     salía en cursiva sin que se viera el porqué.
+   · NO trae los signos '¡' ni '¿'; un texto que los lleve cae en la fuente de
+     apoyo a mitad de palabra.
+   · Se apoya alto en su caja, de ahí el aire de abajo. */
+.pos-h1 {
+  margin: 0;
+  padding-bottom: 0.12em;
+  font-family: var(--font-brush);
+  /* Sin ligaduras. Zerocalcare trae ligaduras de PALABRA ("el", "tu", "la"…)
+     que cambian esas sílabas por una cursiva enlazada: "Postula tu negocio"
+     salía con el "tu" en otra letra. Ver también text-transform arriba. */
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
+  text-transform: none;
+  font-size: clamp(2.7rem, 11vw, 6.4rem);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--pos-blanco);
+  text-shadow: 0 10px 34px rgba(20, 8, 32, 0.75);
+  overflow-wrap: break-word;
+}
+
+.pos-lead {
+  margin: clamp(6px, 1.4vh, 14px) auto 0;
+  max-width: 34ch;
+  color: var(--pos-blanco);
+  font-size: clamp(0.8rem, 2.6vw, 1rem);
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  text-shadow: 0 3px 16px rgba(20, 8, 32, 0.85);
+}
+
+/* ---------- Los cinco recuadros ---------- */
+.pos-pasos {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Van apilados unos sobre otros: si pudieran recibir el ratón, los cuatro
+     invisibles taparían todo lo de debajo. */
+  pointer-events: none;
+}
+
+.pos-paso {
+  /* Entrada y salida: 0.045 del recorrido a cada lado del tramo del contrato. */
+  --ent: clamp(0, calc((var(--p, 0) - var(--desde, 0)) / 0.045), 1);
+  --sal: clamp(0, calc((var(--hasta, 1) - var(--p, 0)) / 0.045), 1);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(92px, 15vh, 152px);
+  width: min(560px, 90vw);
+  margin-inline: auto;
+  padding: clamp(19px, 2.6vh, 27px) clamp(20px, 4vw, 30px);
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  background: rgba(246, 241, 251, 0.88);
+  box-shadow: 0 24px 52px -28px rgba(24, 10, 40, 0.95);
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
+  opacity: min(var(--ent), var(--sal));
+  /* Entra subiendo y sale subiendo: el recorrido siempre va hacia arriba.
+     `translate` y no `transform`, que es la propiedad que compone. */
+  translate: 0 calc((1 - var(--ent)) * 26px - (1 - var(--sal)) * 16px);
+}
+
+.pos-num {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 4px 11px;
+  border-radius: var(--r-pill);
+  background: var(--pos-tinta-honda);
+  color: var(--pos-blanco);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+}
+
+.pos-paso-t {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 3.6vw, 1.6rem);
+  line-height: 1.1;
+  color: var(--pos-tinta);
+}
+
+.pos-paso-p {
+  margin: 0;
+  color: var(--pos-tinta-tenue);
+  font-size: clamp(0.8rem, 2.4vw, 0.92rem);
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+/* ---------- Pista y barra de avance ---------- */
+.pos-desliza {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: clamp(28px, 5vh, 48px);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+  color: var(--pos-blanco);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;
+  text-shadow: 0 2px 14px rgba(20, 8, 32, 0.85);
+  opacity: clamp(0, calc((0.05 - var(--p, 0)) / 0.03), 1);
+}
+
+.pos-flecha {
+  font-size: 1.25rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-indent: 0;
+  animation: pos-baja 1.7s ease-in-out infinite;
+}
+
+@keyframes pos-baja {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 0.7;
+  }
+  50% {
+    translate: 0 7px;
+    opacity: 1;
+  }
+}
+
+.pos-rail {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.16);
+  pointer-events: none;
+}
+
+.pos-rail-lleno {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  scale: var(--p, 0) 1;
+  background: linear-gradient(90deg, var(--pos-lila), var(--pos-neon));
+}
+
+/* ==========================================================================
+   b) y c) — sobre el lavado lila de la página
+   ========================================================================== */
+.pos-seccion {
+  width: min(1040px, 92vw);
+  margin: 0 auto;
+  padding: clamp(54px, 9vh, 96px) 0;
+  /* El notch fijo no puede tapar el encabezado al llegar por ancla. */
+  scroll-margin-top: 92px;
+}
+
+.pos-eyebrow {
+  margin: 0 0 10px;
+  color: var(--pos-lila-texto);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+}
+
+.pos-h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  line-height: 1.1;
+  color: var(--pos-tinta-honda);
+}
+
+.pos-sub {
+  margin: 12px 0 0;
+  color: var(--pos-tinta-tenue);
+  font-size: clamp(0.82rem, 2.4vw, 0.94rem);
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.pos-nota {
+  margin: 12px 0 0;
+  color: var(--pos-tinta-tenue);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+/* ---------- El formulario ---------- */
+.pos-caja {
+  width: min(640px, 100%);
+  margin: 0 auto;
+  padding: clamp(24px, 4.5vw, 40px);
+  border: 1px solid rgba(154, 132, 186, 0.32);
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.pos-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: clamp(20px, 3vh, 28px);
+  text-align: left;
+}
+
+.pos-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pos-lbl {
+  color: var(--pos-tinta-tenue);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.pos-lbl em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--pos-tinta-suave);
+}
+
+.pos-campo input {
+  width: 100%;
+  /* Área de toque cómoda en teléfono. */
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid rgba(154, 132, 186, 0.45);
+  border-radius: var(--r-md);
+  background: var(--pos-blanco);
+  color: var(--pos-tinta);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.pos-campo input::placeholder {
+  color: var(--pos-tinta-suave);
+}
+
+.pos-campo input:focus-visible {
+  outline: 2px solid var(--pos-lila-hondo);
+  outline-offset: 1px;
+}
+
+/* Campo señalado por el aviso. */
+.pos-campo input[aria-invalid='true'] {
+  border-color: #d4568f;
+  background: #fff6fa;
+}
+
+.pos-fila {
+  display: grid;
+  /* min() evita que la columna desborde en teléfonos angostos. */
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 16px;
+}
+
+.pos-ayuda {
+  color: var(--pos-tinta-suave);
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+}
+
+.pos-mal {
+  margin: 0;
+  color: #b83a77;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.pos-aviso {
+  margin: clamp(18px, 3vh, 26px) 0 0;
+  padding: 14px 20px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-strong);
+  background: var(--pos-crema);
+  color: var(--pos-tinta-tenue);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.pos-aviso.ok {
+  border-color: #a8e0c0;
+  background: #eefaf3;
+  color: #17805a;
+}
+
+.pos-aviso.mal {
+  border-color: #f4b6d5;
+  background: #fdeaf2;
+  color: #b83a77;
+}
+
+/* ---------- Botones ---------- */
+.pos-btn {
+  align-self: flex-start;
+  min-height: 46px;
+  padding: 13px 28px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: linear-gradient(120deg, var(--pos-lila-hondo), #7d64a3);
+  color: var(--pos-blanco);
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  letter-spacing: 0.05em;
+  /* Chrome no hereda `text-transform` dentro de un <button>: el sitio entero
+     va en mayúsculas por `body`, pero aquí se pierde. Se repite a mano. */
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 12px 26px -14px rgba(74, 55, 102, 0.85);
+  /* `scale` va aparte de `transform` a propósito: son propiedades
+     independientes y componen, así que nada de lo que escriba una animación
+     en `transform` pisa este hover. */
+  transition:
+    scale 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease;
+}
+
+.pos-btn:hover:not(:disabled) {
+  scale: 1.03;
+  box-shadow: 0 16px 30px -14px rgba(74, 55, 102, 0.9);
+}
+
+/* El foco global de la web es el lila claro, que sobre estas superficies casi
+   no se ve (1,6:1). Aquí se marca con la tinta morada. */
+.pos-btn:focus-visible,
+.pos-n-ig:focus-visible {
+  outline: 2px solid var(--pos-tinta-honda);
+  outline-offset: 3px;
+}
+
+.pos-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pos-btn-suave {
+  margin-top: 16px;
+  border: 1px solid rgba(154, 132, 186, 0.5);
+  background: var(--pos-blanco);
+  color: var(--pos-tinta-tenue);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.pos-btn-suave:hover:not(:disabled) {
+  background: var(--pos-crema);
+  box-shadow: none;
+}
+
+/* ---------- La lista de postulados ---------- */
+.pos-cab {
+  max-width: 60ch;
+  margin-bottom: clamp(22px, 4vh, 34px);
+}
+
+.pos-estado {
+  margin: 0;
+  padding: 26px 22px;
+  border: 1px dashed rgba(154, 132, 186, 0.45);
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--pos-tinta-tenue);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.pos-estado.suave {
+  margin-top: 18px;
+  border-style: solid;
+  border-color: transparent;
+  background: none;
+  color: var(--pos-tinta-suave);
+  font-size: 0.68rem;
+}
+
+.pos-negocios {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px;
+}
+
+.pos-negocio {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+  padding: 18px 20px;
+  border: 1px solid rgba(154, 132, 186, 0.28);
+  border-radius: var(--r-lg);
+  background: var(--pos-blanco);
+  box-shadow: var(--shadow-card);
+}
+
+/* El que tiene tu voto lleva el único trazo de neón de la página. */
+.pos-negocio.votado {
+  border-color: rgba(255, 95, 176, 0.55);
+}
+
+.pos-negocio.votado::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--pos-neon);
+}
+
+.pos-n-datos {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.pos-n-nombre {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.2;
+  color: var(--pos-tinta-honda);
+  overflow-wrap: anywhere;
+}
+
+.pos-n-lugar {
+  margin: 5px 0 0;
+  color: var(--pos-tinta-tenue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.pos-n-ig {
+  display: inline-block;
+  margin-top: 6px;
+  color: var(--pos-lila-texto);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(154, 132, 186, 0.45);
+  overflow-wrap: anywhere;
+}
+
+.pos-n-ig:hover {
+  color: var(--pos-tinta-honda);
+}
+
+.pos-n-marcador {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pos-n-votos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.pos-n-votos strong {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--pos-tinta-honda);
+}
+
+.pos-n-votos em {
+  margin-top: 4px;
+  font-style: normal;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--pos-tinta-suave);
+}
+
+.pos-btn-voto {
+  align-self: center;
+  padding: 12px 22px;
+  font-size: 0.78rem;
+}
+
+.pos-btn-voto.activo {
+  background: linear-gradient(120deg, var(--pos-neon), #d8479a);
+  box-shadow: 0 12px 26px -14px rgba(216, 71, 154, 0.9);
+}
+
+/* Cajón del código: ocupa la fila entera de la tarjeta. */
+.pos-cajon {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(154, 132, 186, 0.25);
+}
+
+/* El código no es un texto largo: campo corto y dígitos separados. */
+.pos-campo-pin input {
+  width: 130px;
+  text-align: center;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.pos-cajon-botones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.pos-cajon-botones .pos-btn-suave {
+  margin-top: 0;
+}
+
+/* ==========================================================================
+   Pantallas pequeñas y apaisadas
+   ========================================================================== */
+@media (max-width: 560px) {
+  .pos-recorrido {
+    height: 570svh;
+  }
+  .pos-paso {
+    width: 92vw;
+    bottom: clamp(76px, 13vh, 116px);
+  }
+  .pos-btn,
+  .pos-btn-voto {
+    width: 100%;
+    text-align: center;
+  }
+  .pos-n-marcador {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+  .pos-n-marcador .pos-btn-voto {
+    width: auto;
+    flex: 1 1 auto;
+  }
+}
+
+/* En horizontal con poca altura no cabe el recuadro completo bajo el titular:
+   se encoge todo y la portada sube. */
+@media (max-height: 540px) and (orientation: landscape) {
+  .pos-portada {
+    padding-top: 74px;
+  }
+  .pos-h1 {
+    font-size: clamp(2rem, 9vh, 3.4rem);
+  }
+  .pos-lead {
+    display: none;
+  }
+  .pos-paso {
+    bottom: 44px;
+    padding: 14px 18px;
+  }
+  .pos-paso-p {
+    font-size: 0.78rem;
+  }
+  .pos-desliza {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Sin movimiento
+   --------------------------------------------------------------------------
+   El recorrido no existe: el póster queda de fotograma fijo y los cinco
+   recuadros se leen todos, en columna, sobre crema. La clase la pone el
+   componente con la misma consulta de medios; no hace falta repetirla aquí,
+   porque sin JavaScript esta página no llega a pintarse.
+   ========================================================================== */
+.pos-recorrido.reducido {
+  height: auto;
+}
+
+.pos-recorrido.reducido .pos-pegado {
+  position: relative;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 3vh, 26px);
+  padding-bottom: clamp(30px, 6vh, 56px);
+  background: var(--pos-crema);
+}
+
+.pos-recorrido.reducido .pos-portada {
+  position: static;
+  order: 1;
+  opacity: 1;
+  translate: none;
+  padding: clamp(94px, 14vh, 150px) 20px 0;
+}
+
+/* Sobre crema, el titular blanco no se vería: pasa a tinta morada. */
+.pos-recorrido.reducido .pos-portada::before {
+  display: none;
+}
+
+.pos-recorrido.reducido .pos-h1 {
+  color: var(--pos-tinta-honda);
+  text-shadow: none;
+}
+
+.pos-recorrido.reducido .pos-antetitulo {
+  border-color: rgba(154, 132, 186, 0.45);
+  background: var(--pos-blanco);
+  color: var(--pos-tinta-tenue);
+}
+
+.pos-recorrido.reducido .pos-lead {
+  color: var(--pos-tinta-tenue);
+  text-shadow: none;
+}
+
+.pos-recorrido.reducido .pos-video {
+  position: relative;
+  order: 2;
+  height: min(46svh, 380px);
+  width: min(1040px, 92vw);
+  border-radius: var(--r-lg);
+}
+
+.pos-recorrido.reducido .pos-pasos {
+  position: static;
+  order: 3;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 14px;
+  width: min(1040px, 92vw);
+  pointer-events: auto;
+}
+
+.pos-recorrido.reducido .pos-paso {
+  position: static;
+  width: auto;
+  opacity: 1;
+  translate: none;
+  border-color: rgba(154, 132, 186, 0.3);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: var(--shadow-card);
+}
+
+/* Sin recorrido no hay nada que anunciar ni que medir. */
+.pos-recorrido.reducido .pos-grano,
+.pos-recorrido.reducido .pos-velo,
+.pos-recorrido.reducido .pos-desliza,
+.pos-recorrido.reducido .pos-rail {
+  display: none;
+}

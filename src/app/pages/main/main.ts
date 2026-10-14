@@ -8,10 +8,12 @@ import { ConfiguracionService } from '../../configuracion.service';
 import { HeroVideo } from '../../components/hero-video/hero-video';
 import { Resenas } from '../../components/resenas/resenas';
 import { ArteTira } from '../../components/arte-tira/arte-tira';
+import { CartelNuevo } from '../../components/cartel-nuevo/cartel-nuevo';
+import { ProductoNuevo } from '../../components/producto-nuevo/producto-nuevo';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterLink, HeroVideo, Resenas, ArteTira],
+  imports: [RouterLink, HeroVideo, Resenas, ArteTira, CartelNuevo, ProductoNuevo],
   templateUrl: './main.html',
   styleUrl: './main.css',
 })

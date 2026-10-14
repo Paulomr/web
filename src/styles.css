@@ -12,6 +12,19 @@
   font-display: swap;
 }
 
+/* Pincel del lanzamiento (Zerocalcare Double Trouble): es la MISMA letra con la
+   que está rotulado el póster de la Doble Kinder, así el cartel de la sección y
+   la foto se leen como una sola pieza. Solo se usa ahí.
+   Aviso: esta cara no trae los signos '¡' ni '¿' — un texto que los lleve cae
+   en la fuente de apoyo a mitad de palabra. No escribirlos en este pincel. */
+@font-face {
+  font-family: 'Zerocalcare';
+  src: url('/fonts/zerocalcare.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* --- Superficies --- */
   --bg: #fdf9f7;
@@ -55,6 +68,7 @@
   /* --- Tipografía --- */
   --font-display: "Super Corn", "Unbounded", system-ui, sans-serif;
   --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-brush: "Zerocalcare", "Super Corn", system-ui, sans-serif;
 }
 
 *,

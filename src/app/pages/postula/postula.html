@@ -1,0 +1,280 @@
+<!-- ============ a) El recorrido: el carrito, contado con el scroll ============ -->
+<section class="pos-recorrido" #seccion [class.reducido]="reducido" aria-labelledby="pos-h1">
+  <div class="pos-pegado" #pegado>
+    <video
+      #video
+      class="pos-video"
+      [src]="fuente"
+      [poster]="poster"
+      [attr.preload]="reducido ? 'none' : 'auto'"
+      muted
+      playsinline
+      disablepictureinpicture
+      disableremoteplayback
+      aria-hidden="true"
+    ></video>
+
+    <!-- Grano encima del video (no dentro de él): 1080p estirado a pantalla
+         completa se ve blando, y el ruido disimula el escalado. -->
+    <div class="pos-grano" aria-hidden="true"></div>
+    <!-- Velo: oscurece arriba y abajo para que el título blanco y los recuadros
+         claros se lean sobre cualquier plano del video. -->
+    <div class="pos-velo" aria-hidden="true"></div>
+
+    <header class="pos-portada">
+      <p class="pos-antetitulo">Convocatoria abierta</p>
+      <h1 class="pos-h1" id="pos-h1">Postula tu negocio</h1>
+      <p class="pos-lead">Un carrito de Crunchy Munch, montado dentro de tu local.</p>
+    </header>
+
+    <ol class="pos-pasos">
+      @for (paso of pasos; track paso.titulo) {
+        <li class="pos-paso" #recuadro>
+          @if (paso.numero) {
+            <span class="pos-num" aria-hidden="true">{{ paso.numero }}</span>
+          }
+          <h2 class="pos-paso-t">{{ paso.titulo }}</h2>
+          <p class="pos-paso-p">{{ paso.texto }}</p>
+        </li>
+      }
+    </ol>
+
+    <p class="pos-desliza" aria-hidden="true">
+      <span>Desliza</span>
+      <span class="pos-flecha">▾</span>
+    </p>
+
+    <!-- Barra de avance del recorrido: dice cuánto queda sin ocupar sitio. -->
+    <div class="pos-rail" aria-hidden="true"><span class="pos-rail-lleno"></span></div>
+  </div>
+</section>
+
+<!-- ============ b) El formulario ============ -->
+<section class="pos-seccion pos-formulario" aria-labelledby="pos-form-h">
+  <div class="pos-caja" #cajaForm>
+    <p class="pos-eyebrow">Sin cuenta, sin compromiso</p>
+    <h2 class="pos-h2" id="pos-form-h">Cuéntanos de tu negocio</h2>
+    <p class="pos-sub">
+      Con el nombre, tus redes y dónde queda nos basta. Si necesitamos algo más, te escribimos por
+      ahí mismo.
+    </p>
+
+    @if (exito()) {
+      <p class="pos-aviso ok" role="status">
+        Listo. Tu postulación quedó EN REVISIÓN: la miramos una por una y aparece en la lista de
+        abajo en cuanto la aprobemos.
+      </p>
+      <button type="button" class="pos-btn pos-btn-suave" (click)="otroNegocio()">
+        Postular otro negocio
+      </button>
+    } @else {
+      <form class="pos-form" novalidate (submit)="$event.preventDefault(); enviar()">
+        <label class="pos-campo">
+          <span class="pos-lbl">Nombre del negocio</span>
+          <input
+            [ngModel]="negocio()"
+            (ngModelChange)="negocio.set($event)"
+            name="negocio"
+            type="text"
+            maxlength="80"
+            autocomplete="organization"
+            [attr.aria-invalid]="campoMal() === 'negocio' ? 'true' : null"
+            [attr.aria-describedby]="campoMal() === 'negocio' ? 'e-negocio' : null"
+          />
+          @if (campoMal() === 'negocio') {
+            <span class="pos-mal" id="e-negocio">{{ error() }}</span>
+          }
+        </label>
+
+        <label class="pos-campo">
+          <span class="pos-lbl">Instagram del negocio</span>
+          <input
+            [ngModel]="instagram()"
+            (ngModelChange)="instagram.set($event)"
+            name="instagram"
+            type="text"
+            maxlength="40"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="@tunegocio"
+            [attr.aria-invalid]="campoMal() === 'instagram' ? 'true' : null"
+            [attr.aria-describedby]="campoMal() === 'instagram' ? 'e-instagram' : 'a-instagram'"
+          />
+          @if (campoMal() === 'instagram') {
+            <span class="pos-mal" id="e-instagram">{{ error() }}</span>
+          } @else {
+            <span class="pos-ayuda" id="a-instagram">
+              Con arroba o sin ella. Es la identidad del negocio: uno por negocio.
+            </span>
+          }
+        </label>
+
+        <label class="pos-campo">
+          <span class="pos-lbl">Otra red o contacto <em>(opcional)</em></span>
+          <input
+            [ngModel]="otraRed()"
+            (ngModelChange)="otraRed.set($event)"
+            name="otraRed"
+            type="text"
+            maxlength="80"
+            autocomplete="off"
+            placeholder="TikTok, WhatsApp…"
+            [attr.aria-invalid]="campoMal() === 'otraRed' ? 'true' : null"
+            [attr.aria-describedby]="campoMal() === 'otraRed' ? 'e-otraRed' : null"
+          />
+          @if (campoMal() === 'otraRed') {
+            <span class="pos-mal" id="e-otraRed">{{ error() }}</span>
+          }
+        </label>
+
+        <div class="pos-fila">
+          <label class="pos-campo">
+            <span class="pos-lbl">Ciudad</span>
+            <input
+              [ngModel]="ciudad()"
+              (ngModelChange)="ciudad.set($event)"
+              name="ciudad"
+              type="text"
+              maxlength="60"
+              autocomplete="address-level2"
+              [attr.aria-invalid]="campoMal() === 'ciudad' ? 'true' : null"
+              [attr.aria-describedby]="campoMal() === 'ciudad' ? 'e-ciudad' : null"
+            />
+            @if (campoMal() === 'ciudad') {
+              <span class="pos-mal" id="e-ciudad">{{ error() }}</span>
+            }
+          </label>
+
+          <label class="pos-campo">
+            <span class="pos-lbl">Dirección o barrio</span>
+            <input
+              [ngModel]="direccion()"
+              (ngModelChange)="direccion.set($event)"
+              name="direccion"
+              type="text"
+              maxlength="120"
+              autocomplete="street-address"
+              [attr.aria-invalid]="campoMal() === 'direccion' ? 'true' : null"
+              [attr.aria-describedby]="campoMal() === 'direccion' ? 'e-direccion' : null"
+            />
+            @if (campoMal() === 'direccion') {
+              <span class="pos-mal" id="e-direccion">{{ error() }}</span>
+            }
+          </label>
+        </div>
+
+        <!-- Fallo que no cuelga de ningún campo (el servidor, o la conexión). -->
+        @if (error() && !campoMal()) {
+          <p class="pos-aviso mal" role="alert">{{ error() }}</p>
+        }
+
+        <p class="pos-nota">
+          Al enviar, tu postulación queda EN REVISIÓN. No aparece en la web hasta que la aprobemos,
+          y postular no te compromete a nada.
+        </p>
+
+        <button type="submit" class="pos-btn" [disabled]="enviando()">
+          {{ enviando() ? 'Enviando…' : 'Enviar postulación' }}
+        </button>
+      </form>
+    }
+  </div>
+</section>
+
+<!-- ============ c) Los postulados y sus votos ============ -->
+<section class="pos-seccion pos-votos" aria-labelledby="pos-lista-h" #cajaLista>
+  <header class="pos-cab">
+    <h2 class="pos-h2" id="pos-lista-h">Los negocios postulados</h2>
+    <p class="pos-sub">
+      Ya aprobados y listos para recibir votos. Los cuatro más votados salen en la portada de
+      Crunchy Munch.
+    </p>
+    <p class="pos-nota">
+      Votar necesita cuenta: un voto por cuenta. Si votas otra vez, tu voto se mueve a ese negocio
+      (no se suma).
+    </p>
+  </header>
+
+  @if (!postulaciones.cargado()) {
+    <p class="pos-estado">Cargando negocios…</p>
+  } @else if (postulaciones.lista().length === 0) {
+    <p class="pos-estado">
+      Todavía no hay negocios aprobados. En cuanto aprobemos el primero, aparece aquí.
+    </p>
+  } @else {
+    <ul class="pos-negocios">
+      @for (n of postulaciones.lista(); track n.id) {
+        <li class="pos-negocio" [class.votado]="postulaciones.miVoto() === n.id">
+          <div class="pos-n-datos">
+            <h3 class="pos-n-nombre">{{ n.negocio }}</h3>
+            <p class="pos-n-lugar">{{ n.ciudad }}</p>
+            <a class="pos-n-ig" [href]="enlaceIg(n.instagram)" target="_blank" rel="noopener">
+              {{ n.instagram }}
+            </a>
+          </div>
+
+          <div class="pos-n-marcador">
+            <span class="pos-n-votos">
+              <strong>{{ n.votos }}</strong>
+              <em>{{ n.votos === 1 ? 'voto' : 'votos' }}</em>
+            </span>
+            <button
+              type="button"
+              class="pos-btn pos-btn-voto"
+              [class.activo]="postulaciones.miVoto() === n.id"
+              [attr.aria-pressed]="postulaciones.miVoto() === n.id"
+              [attr.aria-expanded]="votando() === n.id"
+              [attr.aria-label]="
+                (postulaciones.miVoto() === n.id ? 'Tu voto está en ' : 'Votar por ') + n.negocio
+              "
+              (click)="pedirVoto(n.id)"
+            >
+              {{ postulaciones.miVoto() === n.id ? 'Tu voto' : 'Votar' }}
+            </button>
+          </div>
+
+          @if (votando() === n.id) {
+            <form class="pos-cajon" (submit)="$event.preventDefault(); confirmarVoto(n.id)">
+              <label class="pos-campo pos-campo-pin">
+                <span class="pos-lbl">Tu código de 4 dígitos</span>
+                <input
+                  #campoPin
+                  [ngModel]="pin()"
+                  (ngModelChange)="pin.set($event)"
+                  name="pin"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  maxlength="4"
+                  placeholder="0000"
+                  [attr.aria-invalid]="errorVoto() ? 'true' : null"
+                />
+              </label>
+              <span class="pos-ayuda">
+                El mismo con el que entras a tu cuenta. Así nadie vota por ti.
+              </span>
+              @if (errorVoto()) {
+                <p class="pos-mal" role="alert">{{ errorVoto() }}</p>
+              }
+              <div class="pos-cajon-botones">
+                <button type="button" class="pos-btn pos-btn-suave" (click)="cancelarVoto()">
+                  Cancelar
+                </button>
+                <button type="submit" class="pos-btn" [disabled]="votoEnCurso()">
+                  {{ votoEnCurso() ? 'Enviando…' : 'Confirmar voto' }}
+                </button>
+              </div>
+            </form>
+          }
+        </li>
+      }
+    </ul>
+
+    @if (!cuenta.registrado()) {
+      <p class="pos-estado suave">
+        Crea tu cuenta para votar: te la pedimos una sola vez y sirve para toda la web.
+      </p>
+    }
+  }
+</section>
