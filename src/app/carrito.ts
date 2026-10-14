@@ -262,6 +262,11 @@ export class Carrito {
     for (const r of this.regalosVigentes()) {
       L.push(`• 1×  ${r.producto.nombre}  — 🎁 REGALO meta ${r.meta.nombre} (${formatoCOP(r.meta.monto)})`);
     }
+    // Ganado pero sin elegir: igual se anuncia, para que la tienda pregunte
+    // cuál quiere en vez de que el regalo se pierda en silencio.
+    for (const m of this.regalosPorElegir()) {
+      L.push(`• 1×  ${m.premio[0].toUpperCase()}${m.premio.slice(1)} (sin elegir)  — 🎁 REGALO meta ${m.nombre} (${formatoCOP(m.monto)})`);
+    }
     L.push('');
     const consultar = this.hayConsultar() ? ' + ítems a consultar' : '';
     if (this.descuento() > 0) {
@@ -345,6 +350,14 @@ export class Carrito {
       items.push({
         id: r.producto.id,
         nombre: `REGALO ${r.meta.nombre.toUpperCase()}: ${r.producto.nombre}`,
+        cantidad: 1,
+        precioUnit: 0,
+      });
+    }
+    for (const m of this.regalosPorElegir()) {
+      items.push({
+        id: `regalo-${m.id}`,
+        nombre: `REGALO ${m.nombre.toUpperCase()}: ${m.premio} (sin elegir)`,
         cantidad: 1,
         precioUnit: 0,
       });

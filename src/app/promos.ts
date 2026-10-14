@@ -54,7 +54,7 @@ export const METAS: Meta[] = [
   {
     id: 'truco',
     nombre: 'Truco',
-    monto: 90000,
+    monto: 100000,
     premio: 'una galleta New York clásica',
     opciones: ['oreo', 'red-velvet', 'tres-chocolates', 'sea-salt'],
   },
