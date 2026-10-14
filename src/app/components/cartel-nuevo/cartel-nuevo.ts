@@ -17,12 +17,15 @@ import {
   MINI_LANZAMIENTO,
   buscarLanzamiento,
 } from '../../lanzamiento';
+import { MINI_TEMPORADA, enTemporada, esDeTemporada } from '../../temporada';
 
 /** Recuerda el cierre por producto: si mañana sale otra galleta, vuelve a salir. */
 const CLAVE = 'cm-cartel-lanzamiento';
 
 // Cartel de aviso de la portada: la cápsula horizontal que baja del notch al
-// entrar y anuncia la galleta nueva.
+// entrar y anuncia la novedad principal. En temporada es el producto de
+// temporada (el Dracula Milkshake, hasta el 31 de octubre); pasada la fecha
+// vuelve solo a la galleta nueva.
 //
 // Se retira solo. No es un banner que se queda estorbando: entra a los 900 ms,
 // espera, y en cuanto el visitante llega a la sección del lanzamiento se va,
@@ -42,7 +45,14 @@ export class CartelNuevo {
 
   private readonly caja = viewChild<ElementRef<HTMLElement>>('caja');
 
-  readonly mini = MINI_LANZAMIENTO;
+  /** El de temporada, mientras dure: es el que manda en el cartel. */
+  private readonly temporada = computed(() =>
+    enTemporada() ? this.productosSvc.productos().find(esDeTemporada) : undefined,
+  );
+
+  readonly mini = computed(() => (this.temporada() ? MINI_TEMPORADA : MINI_LANZAMIENTO));
+
+  readonly etiqueta = computed(() => (this.temporada() ? 'Solo en Halloween' : 'Nuevo producto'));
 
   readonly reducido =
     typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -51,7 +61,10 @@ export class CartelNuevo {
   readonly montado = signal(false);
 
   readonly nombre = computed(
-    () => buscarLanzamiento(this.productosSvc.productos())?.nombre || LANZAMIENTO_RESPALDO.nombre,
+    () =>
+      this.temporada()?.nombre ||
+      buscarLanzamiento(this.productosSvc.productos())?.nombre ||
+      LANZAMIENTO_RESPALDO.nombre,
   );
 
   private temporizador = 0;
@@ -81,9 +94,12 @@ export class CartelNuevo {
     this.destroyRef.onDestroy(() => clearTimeout(this.temporizador));
   }
 
-  /** Bajar hasta la sección del lanzamiento. */
+  /** Bajar hasta la ventana de lo que anuncia (la del Drácula en temporada). */
   ir(): void {
-    document.getElementById(ANCLA_LANZAMIENTO)?.scrollIntoView({
+    const destino = this.temporada()
+      ? document.getElementById('dk-temporada')?.closest('article')
+      : document.getElementById(ANCLA_LANZAMIENTO);
+    destino?.scrollIntoView({
       behavior: this.reducido ? 'auto' : 'smooth',
       block: 'center',
     });
@@ -131,9 +147,14 @@ export class CartelNuevo {
     this.montado.set(false);
   }
 
+  /** Qué se cerró: el Drácula y la galleta se recuerdan por separado. */
+  private marca(): string {
+    return enTemporada() ? 'temporada-dracula' : ANCLA_LANZAMIENTO;
+  }
+
   private cerradoAntes(): boolean {
     try {
-      return localStorage.getItem(CLAVE) === ANCLA_LANZAMIENTO;
+      return localStorage.getItem(CLAVE) === this.marca();
     } catch {
       // Navegación privada o cookies bloqueadas: se muestra, que es lo sano.
       return false;
@@ -142,7 +163,7 @@ export class CartelNuevo {
 
   private recordarCierre(): void {
     try {
-      localStorage.setItem(CLAVE, ANCLA_LANZAMIENTO);
+      localStorage.setItem(CLAVE, this.marca());
     } catch {
       /* si no se puede guardar, el cartel simplemente volverá a salir */
     }

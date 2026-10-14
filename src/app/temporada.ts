@@ -44,6 +44,9 @@ export const DRACULA: Producto = {
 export const FOTO_TEMPORADA = 'fotos/dracula-milkshake.webp';
 /** Copia de 64 px que se desenfoca detrás del póster para hacer el halo. */
 export const AURA_TEMPORADA = 'fotos/dracula-milkshake-glow.webp';
+/** Miniatura del cartel de la portada: recorte de la foto real del vaso
+    (dracula-frente.webp, 760×760 desde 120,420, a 200 px). */
+export const MINI_TEMPORADA = 'fotos/dracula-mini.webp';
 
 /** ¿Es el producto de temporada, venga del panel o de aquí? */
 export function esDeTemporada(p: Producto | undefined): boolean {

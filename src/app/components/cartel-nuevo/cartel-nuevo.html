@@ -2,13 +2,13 @@
   <aside class="cn" #caja aria-label="Novedad de la carta">
     <button type="button" class="cn-ir" (click)="ir()">
       <span class="cn-foto">
-        <img [src]="mini" alt="" aria-hidden="true" width="200" height="200" />
+        <img [src]="mini()" alt="" aria-hidden="true" width="200" height="200" />
       </span>
 
       <span class="cn-txt">
         <span class="cn-eyebrow">
           <span class="cn-punto" aria-hidden="true"></span>
-          Nuevo producto
+          {{ etiqueta() }}
         </span>
         <strong class="cn-nombre">{{ nombre() }}</strong>
       </span>
