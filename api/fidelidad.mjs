@@ -11,6 +11,7 @@
 import { conectarDB } from './_lib/mongo.mjs';
 import { Cuenta } from './_lib/models/cuenta.mjs';
 import { Fidelidad } from './_lib/models/fidelidad.mjs';
+import { Pedido } from './_lib/models/pedido.mjs';
 import { esAdmin, requiereAdmin } from './_lib/auth.mjs';
 
 const SIN_AMBIGUOS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -47,12 +48,16 @@ export default async function handler(req, res) {
       const ig = normalizarIg(req.query?.ig);
       if (ig) {
         const c = await Cuenta.findOne({ instagram: ig }).lean();
+        // ¿Le toca el 10 % de bienvenida? Nunca lo usó y no tiene pedidos.
+        // Mismo criterio que /api/cuentas (ver conBienvenida allí).
+        const yaPidio = await Pedido.exists({ instagram: ig });
         res.status(200).json({
           sellos: c?.sellos ?? 0,
           tarjetas: c?.tarjetas ?? 0,
           estrellas: c?.puntos ?? 0, // total de estrellas del perfil (juegos)
           premioEstrellas: !!c?.premioEstrellas,
           cuponUsado: !!c?.cuponUsado,
+          bienvenida: !!c && !c.cuponUsado && !yaPidio,
           meta: cfg.meta,
           umbral: cfg.umbral,
           fecha: hoyBogota(),

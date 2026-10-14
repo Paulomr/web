@@ -8,6 +8,7 @@
 // tienda, no para datos sensibles). Identidad = @instagram.
 import { conectarDB } from './_lib/mongo.mjs';
 import { Cuenta } from './_lib/models/cuenta.mjs';
+import { Pedido } from './_lib/models/pedido.mjs';
 import { requiereAdmin, normalizarIg, hashPin } from './_lib/auth.mjs';
 
 // Cuenta pública (sin el hash) para devolver al cliente.
@@ -24,6 +25,18 @@ function publica(c) {
     ultimoSello: c.ultimoSello ?? '',
     cuponUsado: !!c.cuponUsado,
   };
+}
+
+/**
+ * La cuenta pública más una respuesta: ¿le toca el descuento de bienvenida?
+ * Lo decide el servidor, no el navegador: la cuenta nunca lo usó Y no tiene
+ * ningún pedido guardado (así una cuenta vieja que ya compró no lo estrena
+ * ahora por primera vez). El porcentaje y la fecha viven en la web
+ * (src/app/promos.ts); aquí solo se responde si le toca.
+ */
+async function conBienvenida(c) {
+  const yaPidio = c.instagram ? await Pedido.exists({ instagram: c.instagram }) : null;
+  return { ...publica(c), bienvenida: !c.cuponUsado && !yaPidio };
 }
 
 export default async function handler(req, res) {
@@ -46,7 +59,7 @@ export default async function handler(req, res) {
           res.status(401).json({ error: 'Instagram o código incorrecto.' });
           return;
         }
-        res.status(200).json({ ok: true, cuenta: publica(c) });
+        res.status(200).json({ ok: true, cuenta: await conBienvenida(c) });
         return;
       }
 
@@ -73,7 +86,7 @@ export default async function handler(req, res) {
         }
         c.pinHash = hashPin(ig, pin);
         await c.save();
-        res.status(200).json({ ok: true, cuenta: publica(c) });
+        res.status(200).json({ ok: true, cuenta: await conBienvenida(c) });
         return;
       }
 
@@ -90,12 +103,12 @@ export default async function handler(req, res) {
           return;
         }
         if (c.cuponUsado) {
-          res.status(409).json({ error: 'El cupón ya se usó', cuenta: publica(c) });
+          res.status(409).json({ error: 'El cupón ya se usó', cuenta: { ...publica(c), bienvenida: false } });
           return;
         }
         c.cuponUsado = true;
         await c.save();
-        res.status(200).json({ ok: true, cuenta: publica(c) });
+        res.status(200).json({ ok: true, cuenta: { ...publica(c), bienvenida: false } });
         return;
       }
 
@@ -146,7 +159,7 @@ export default async function handler(req, res) {
       } else {
         cuenta = (await Cuenta.create({ ...datos, puntos })).toObject();
       }
-      res.status(200).json({ ok: true, cuenta: publica(cuenta) });
+      res.status(200).json({ ok: true, cuenta: await conBienvenida(cuenta) });
       return;
     }
 

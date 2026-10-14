@@ -1,4 +1,6 @@
-/* Notch flotante: cápsula fija arriba, centrada, con desenfoque de fondo. */
+/* Notch flotante: cápsula fija arriba, centrada. Edición Halloween: vidrio
+   de noche con borde lila y sombra dura; el carrito, en el naranja de la
+   luna, es lo que más se ve. */
 .notch {
   position: fixed;
   top: 14px;
@@ -10,11 +12,11 @@
   gap: 22px;
   padding: 8px 14px 8px 20px;
   border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--border);
+  background: rgba(13, 10, 51, 0.8);
+  border: 1.5px solid var(--border-strong);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
 }
 
 .brand {
@@ -31,7 +33,7 @@
   width: 34px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 4px 10px -4px rgba(90, 55, 85, 0.5);
+  border: 2px solid var(--hw-tinta);
 }
 
 .brand-name {
@@ -66,8 +68,8 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--r-pill);
-  background: #ffffff;
-  box-shadow: 0 6px 16px -8px rgba(90, 55, 85, 0.4);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1.5px var(--border);
   text-decoration: none;
   overflow: visible;
   transition: width 500ms ease, box-shadow 500ms ease;
@@ -76,16 +78,16 @@
 .gitem:hover,
 .gitem.activa {
   width: 118px;
-  box-shadow: none;
+  box-shadow: inset 0 0 0 2px var(--hw-tinta);
 }
 
-/* Fondo degradado que aparece al expandir. */
+/* La tinta del ítem aparece al expandir: plana, como un sticker. */
 .gitem::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(45deg, var(--gf), var(--gt));
+  background: var(--gf);
   opacity: 0;
   transition: opacity 500ms ease;
 }
@@ -95,30 +97,13 @@
   opacity: 1;
 }
 
-/* Brillo desenfocado debajo (glow). */
-.gitem::after {
-  content: '';
-  position: absolute;
-  inset: 10px 0 -6px 0;
-  border-radius: inherit;
-  background: linear-gradient(45deg, var(--gf), var(--gt));
-  filter: blur(15px);
-  opacity: 0;
-  z-index: -1;
-  transition: opacity 500ms ease;
-}
-
-.gitem:hover::after,
-.gitem.activa::after {
-  opacity: 0.5;
-}
 
 .gicon {
   position: relative;
   z-index: 1;
   width: 20px;
   height: 20px;
-  color: #8d7a89;
+  color: var(--hw-lila);
   transition: transform 500ms ease;
 }
 
@@ -130,7 +115,7 @@
 .gtxt {
   position: absolute;
   z-index: 1;
-  color: #ffffff;
+  color: var(--hw-tinta);
   font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -168,12 +153,13 @@
   height: 44px;
   display: grid;
   place-items: center;
-  border: none;
+  border: 2px solid var(--hw-tinta);
   border-radius: 50%;
-  background: rgba(20, 14, 22, 0.94);
-  color: #f7d9ea;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
   cursor: pointer;
   margin-left: 2px;
+  box-shadow: 0 3px 0 var(--hw-tinta);
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
@@ -183,17 +169,17 @@
   height: 44px;
   display: grid;
   place-items: center;
-  border: none;
+  border: 2px solid var(--hw-tinta);
   border-radius: 50%;
-  background: linear-gradient(45deg, #f078b8, #e84e9c);
-  color: #ffffff;
+  background: var(--hw-lila);
+  color: var(--hw-tinta);
   cursor: pointer;
   margin-left: 2px;
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 .cuenta-notch:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px -6px rgba(232, 78, 156, 0.55);
+  box-shadow: 0 3px 0 var(--hw-tinta);
 }
 .cuenta-ini {
   font-family: var(--font-display, sans-serif);
@@ -209,23 +195,24 @@
   height: 44px;
   display: grid;
   place-items: center;
-  border: none;
+  border: 2px solid var(--hw-lila);
   border-radius: 50%;
-  background: rgba(20, 14, 22, 0.94);
-  color: #f7d9ea;
+  background: transparent;
+  color: var(--hw-lila);
   cursor: pointer;
   margin-left: 2px;
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  transition: transform 200ms ease, background-color 200ms ease, color 200ms ease;
 }
 .login-notch:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px -6px rgba(90, 55, 85, 0.5);
+  background: var(--hw-lila);
+  color: var(--hw-tinta);
 }
 .login-notch svg { width: 21px; height: 21px; }
 
 .carrito-notch:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px -6px rgba(90, 55, 85, 0.5);
+  box-shadow: 0 5px 0 var(--hw-tinta);
 }
 
 .carrito-notch svg {
@@ -242,8 +229,9 @@
   display: grid;
   place-items: center;
   padding: 0 5px;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
-  background: linear-gradient(45deg, #f078b8, #e84e9c);
+  background: var(--hw-rojo);
   color: #ffffff;
   font-size: 0.68rem;
   font-weight: 700;
@@ -294,9 +282,9 @@
   .gitem .gtxt {
     display: none;
   }
-  /* Sin rótulo, el ícono queda sobre el degradado: en blanco para que se lea. */
+  /* Sin rótulo, el ícono queda sobre la tinta del ítem: en tinta oscura. */
   .gitem.activa .gicon {
-    color: #ffffff;
+    color: var(--hw-tinta);
   }
 }
 

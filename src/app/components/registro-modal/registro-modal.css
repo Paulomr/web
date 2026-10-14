@@ -1,3 +1,10 @@
+/* ============ Cuenta: registro, sesión y resumen ============
+   Edición Halloween. La tarjeta es la noche (violeta con contorno de tinta y
+   sombra dura) y su panel lateral es el interior de la caja: el mismo cartón
+   lila con murciélagos que el carrito, para que "mi cuenta" y "mi caja" se
+   sientan la misma pieza. El rótulo va con la letra de la marca en el naranja
+   de la luna, contorneado como el saludo de la portada.
+   ------------------------------------------------------------------------- */
 :host {
   position: fixed;
   inset: 0;
@@ -8,9 +15,7 @@
 .velo {
   position: fixed;
   inset: 0;
-  background: rgba(120, 40, 85, 0.34);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
+  background: rgba(13, 10, 51, 0.66);
   pointer-events: auto;
   animation: velo-in 220ms ease both;
 }
@@ -28,11 +33,12 @@
   pointer-events: auto;
   display: flex;
   flex-direction: column;
-  background: #fff4f9;
-  border: 2px solid #f7b6d5;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--hw-tinta);
   border-radius: 26px;
-  box-shadow: 0 30px 60px -26px rgba(150, 40, 100, 0.55);
-  animation: reg-in 300ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  box-shadow: 0 8px 0 rgba(13, 10, 51, 0.72);
+  animation: reg-in 320ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
 }
 @keyframes reg-in {
   from { opacity: 0; transform: translate(-50%, -46%) scale(0.94); }
@@ -43,76 +49,51 @@
   top: 12px;
   right: 12px;
   z-index: 5;
-  width: 34px;
-  height: 34px;
-  border: none;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--hw-tinta);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  color: #fff;
-  font-size: 16px;
+  background: var(--hw-lila);
+  color: var(--hw-tinta);
   cursor: pointer;
-  transition: background 160ms ease, transform 160ms ease;
+  box-shadow: 0 3px 0 var(--hw-tinta);
+  transition: translate 140ms ease, box-shadow 140ms ease;
 }
-.reg-cerrar:hover { background: rgba(255, 255, 255, 0.6); transform: rotate(90deg); }
+.reg-cerrar svg { width: 15px; height: 15px; }
+.reg-cerrar:active { translate: 0 3px; box-shadow: 0 0 0 var(--hw-tinta); }
 
-/* ── Panel rosa (gancho + Bearnie) ── */
+/* ── Panel lateral: el interior de la caja ── */
 .reg-aside {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(158deg, #ff9fd1 0%, #f472b6 52%, #e0559f 100%);
-  color: #fff;
-  padding: 24px 22px 20px;
+  padding: 26px 22px 18px;
   text-align: center;
+  color: var(--hw-tinta);
+  /* El estampado no es un mosaico continuo (es un recorte del arte de la
+     caja): va como una franja arriba y abajo queda el cartón liso. */
+  background: url('/fotos/caja-murcielagos.webp') center top / 640px auto repeat-x #b9b8f4;
+  border-bottom: 2px solid var(--hw-tinta);
 }
-.reg-eyebrow {
-  display: block;
-  font-family: var(--font-body, sans-serif);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #fff;
-  margin-bottom: 10px;
-}
+
 .reg-titulo {
-  font-family: var(--font-display, "Unbounded", sans-serif);
-  font-weight: 700;
-  font-size: clamp(22px, 6.4vw, 30px);
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-weight: normal;
+  font-size: clamp(24px, 6.8vw, 32px);
   line-height: 1.02;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  text-shadow: 0 2px 0 rgba(180, 50, 120, 0.28);
-  margin-bottom: 8px;
+  color: var(--hw-naranja);
+  /* El contorno de tinta y la extrusión del saludo de la portada. */
+  text-shadow:
+    0.04em 0 0 var(--hw-tinta), -0.04em 0 0 var(--hw-tinta),
+    0 0.04em 0 var(--hw-tinta), 0 -0.04em 0 var(--hw-tinta),
+    0.03em 0.03em 0 var(--hw-tinta), -0.03em 0.03em 0 var(--hw-tinta),
+    0.03em -0.03em 0 var(--hw-tinta), -0.03em -0.03em 0 var(--hw-tinta),
+    -0.06em 0.07em 0 var(--hw-violeta), -0.08em 0.09em 0 var(--hw-violeta);
 }
-.reg-sub {
-  font-family: var(--font-body, sans-serif);
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.94);
-  max-width: 34ch;
-  margin: 0 auto;
-}
-.reg-perks {
-  list-style: none;
-  margin: 16px 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-}
-.reg-perks li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-body, sans-serif);
-  font-size: 13.5px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  padding: 9px 12px;
-}
-.reg-perks li span { font-size: 17px; line-height: 1; }
 
 .reg-bear {
   display: block;
@@ -120,7 +101,6 @@
   height: auto;
   margin: 6px auto -4px;
   pointer-events: none; /* decorativo: nunca bloquea clics del formulario */
-  filter: drop-shadow(0 10px 14px rgba(150, 40, 100, 0.35));
   animation: bear-float 4.2s ease-in-out infinite;
 }
 @keyframes bear-float {
@@ -136,32 +116,32 @@
 .reg-fila .reg-campo { flex: 1; min-width: 0; }
 .reg-fila .reg-edad { flex: 0 0 84px; }
 
-.reg-campo { display: flex; flex-direction: column; gap: 5px; }
+.reg-campo { display: flex; flex-direction: column; gap: 6px; }
 .reg-campo > span {
-  font-family: var(--font-body, sans-serif);
+  font-family: var(--font-body);
   font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 1.4px;
   text-transform: uppercase;
-  color: #b85a8a;
+  color: var(--text-muted);
   padding-left: 2px;
 }
 .reg-campo input {
   width: 100%;
-  font-family: var(--font-body, sans-serif);
+  font-family: var(--font-body);
   font-size: 15px;
-  color: var(--text, #4a3b47);
-  background: #fff;
-  border: 1.5px solid #f2c3da;
+  color: var(--text);
+  background: var(--hw-noche);
+  border: 2px solid var(--border-strong);
   border-radius: 13px;
   padding: 11px 13px;
   outline: none;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
-.reg-campo input::placeholder { color: #d9a9c2; }
+.reg-campo input::placeholder { color: var(--text-dim); }
 .reg-campo input:focus {
-  border-color: #ef73ac;
-  box-shadow: 0 0 0 3px rgba(239, 115, 172, 0.22);
+  border-color: var(--hw-naranja);
+  box-shadow: 0 0 0 3px rgba(246, 164, 71, 0.25);
 }
 .reg-campo input[type="number"]::-webkit-inner-spin-button,
 .reg-campo input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -173,8 +153,8 @@
   align-items: flex-start;
   gap: 10px;
   cursor: pointer;
-  background: #fde7f1;
-  border: 1.5px solid #f6c9de;
+  background: rgba(185, 184, 244, 0.08);
+  border: 1.5px solid var(--border);
   border-radius: 13px;
   padding: 10px 12px;
   margin-top: 2px;
@@ -186,109 +166,108 @@
   height: 20px;
   margin-top: 1px;
   border-radius: 6px;
-  border: 2px solid #ef73ac;
-  background: #fff;
+  border: 2px solid var(--hw-lila);
+  background: var(--hw-noche);
   position: relative;
   transition: background 150ms ease, border-color 150ms ease;
 }
 .reg-check::after {
   content: '';
   position: absolute;
-  left: 6px;
-  top: 2px;
+  left: 5px;
+  top: 1px;
   width: 5px;
   height: 10px;
-  border: solid #fff;
+  border: solid var(--hw-tinta);
   border-width: 0 2.5px 2.5px 0;
   transform: rotate(45deg) scale(0);
   transition: transform 160ms cubic-bezier(0.2, 1.6, 0.4, 1);
 }
-.reg-consent input:checked + .reg-check { background: #ef73ac; border-color: #ef73ac; }
+.reg-consent input:checked + .reg-check { background: var(--hw-naranja); border-color: var(--hw-naranja); }
 .reg-consent input:checked + .reg-check::after { transform: rotate(45deg) scale(1); }
-.reg-consent input:focus-visible + .reg-check { box-shadow: 0 0 0 3px rgba(239, 115, 172, 0.3); }
+.reg-consent input:focus-visible + .reg-check { box-shadow: 0 0 0 3px rgba(246, 164, 71, 0.35); }
 .reg-consent-txt {
-  font-family: var(--font-body, sans-serif);
+  font-family: var(--font-body);
   font-size: 11.5px;
   line-height: 1.45;
-  color: #8a6579;
+  color: var(--text-muted);
 }
-.reg-consent-txt a { color: #e0559f; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.reg-consent-txt a { color: var(--hw-naranja); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 
 .reg-error {
-  font-family: var(--font-body, sans-serif);
+  font-family: var(--font-body);
   font-size: 12.5px;
-  font-weight: 600;
-  color: #d0417a;
+  font-weight: 700;
+  color: #ff9a8a;
   margin: -2px 0;
 }
 
+/* El botón principal: el sticker naranja de toda la web (.hw-btn). */
 .reg-cta {
   margin-top: 4px;
-  font-family: var(--font-display, sans-serif);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.8px;
+  min-height: 48px;
+  padding: 0 18px;
+  font-family: var(--font-display);
+  font-weight: normal;
+  font-size: 15px;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #fff;
-  background: linear-gradient(135deg, #f472b6, #e0559f);
-  border: none;
+  color: var(--hw-tinta);
+  background: var(--hw-naranja);
+  border: 2px solid var(--hw-tinta);
   border-radius: 999px;
-  padding: 14px 18px;
   cursor: pointer;
-  box-shadow: 0 12px 26px -10px rgba(224, 85, 159, 0.7);
-  transition: transform 160ms ease, filter 160ms ease;
+  box-shadow: 0 4px 0 var(--hw-tinta);
+  transition: translate 160ms ease, box-shadow 160ms ease;
 }
-.reg-cta:hover { transform: translateY(-2px); filter: brightness(1.05); }
-.reg-cta:active { transform: translateY(0); }
+@media (hover: hover) {
+  .reg-cta:hover { translate: 0 -2px; box-shadow: 0 6px 0 var(--hw-tinta); }
+}
+.reg-cta:active { translate: 0 4px; box-shadow: 0 0 0 var(--hw-tinta); }
+.reg-cta:disabled { background: #6d6499; cursor: wait; }
 
 .reg-skip {
   align-self: center;
   margin-top: 2px;
-  font-family: var(--font-body, sans-serif);
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: #b06d8c;
+  color: var(--text-muted);
   background: none;
   border: none;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.reg-skip:hover { color: #8a4468; }
+@media (hover: hover) {
+  .reg-skip:hover { color: var(--text); }
+}
 
-/* ── vista de cuenta ── */
-.reg-datos {
-  list-style: none;
-  margin: 0 0 16px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
+/* Condiciones del 10 % (la ley pide decirlas junto a la oferta). */
+.reg-promo {
+  margin: 0 0 2px;
+  padding: 10px 12px;
+  border: 1.5px dashed var(--hw-naranja);
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-muted);
 }
-.reg-datos li {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: baseline;
-  background: #fde7f1;
-  border-radius: 13px;
-  padding: 10px 14px;
-}
-.reg-datos li span {
-  font-family: var(--font-body, sans-serif);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #b85a8a;
-}
-.reg-datos li strong {
-  font-family: var(--font-body, sans-serif);
-  font-size: 14px;
-  color: var(--text, #4a3b47);
-  text-align: right;
-  word-break: break-word;
+
+.reg-activo {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 2px solid var(--hw-tinta);
+  border-radius: 14px;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.45;
+  box-shadow: 0 4px 0 var(--hw-tinta);
 }
 
 /* ══════════ Resumen de cuenta (fidelidad + trofeos) ══════════ */
@@ -301,193 +280,42 @@
   gap: 2px;
   padding: 14px 8px;
   border-radius: 16px;
-  background: #fde7f1;
-  border: 1.5px solid #f6c9de;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-strong);
   text-decoration: none;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  box-shadow: 0 4px 0 rgba(13, 10, 51, 0.55);
+  transition: translate 160ms ease;
 }
-.acc-stat:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -12px rgba(224, 85, 159, 0.6); }
+@media (hover: hover) {
+  .acc-stat:hover { translate: 0 -2px; }
+}
 .acc-ico { font-size: 22px; line-height: 1; }
 .acc-val {
-  font-family: var(--font-display, sans-serif);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: normal;
   font-size: 20px;
-  color: #e0559f;
+  color: var(--hw-naranja);
 }
 .acc-lbl {
-  font-family: var(--font-body, sans-serif);
+  font-family: var(--font-body);
   font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: #b85a8a;
+  color: var(--text-muted);
 }
-.reg-cta-link { display: block; text-align: center; text-decoration: none; }
-
-/* ══════════ CRUNCHY CLUB: puntos, premios y ranking ══════════ */
-.cc-puntos { text-align: center; margin-bottom: 10px; }
-.cc-num {
-  display: block;
-  font-family: var(--font-display, sans-serif);
-  font-weight: 700;
-  font-size: 46px;
-  line-height: 1;
-  color: #e0559f;
-}
-.cc-lbl {
-  font-family: var(--font-body, sans-serif);
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #b85a8a;
-}
-
-.cc-bar {
-  height: 12px;
-  border-radius: 999px;
-  background: #fbdcec;
-  overflow: hidden;
-  border: 1.5px solid #f6c9de;
-}
-.cc-fill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #f472b6, #e0559f);
-  transition: width 500ms cubic-bezier(0.2, 0.9, 0.3, 1);
-}
-.cc-next {
-  font-family: var(--font-body, sans-serif);
-  font-size: 12px;
+.reg-cta-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  color: #8a6579;
-  margin: 8px 0 14px;
+  text-decoration: none;
 }
-.cc-next strong { color: #e0559f; }
-
-.cc-premios { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 16px; }
-.cc-premio {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: #fdeaf3;
-  border: 1.5px solid #f6d3e2;
-  border-radius: 12px;
-  padding: 7px 9px;
-  opacity: 0.55;
-  filter: grayscale(0.5);
-  transition: opacity 200ms ease, filter 200ms ease, transform 200ms ease;
-}
-.cc-premio.logrado {
-  opacity: 1;
-  filter: none;
-  background: linear-gradient(135deg, #fff2d6, #ffe1a8);
-  border-color: #f4c66a;
-}
-.cc-premio-ico { font-size: 17px; line-height: 1; }
-.cc-premio-nom {
-  flex: 1;
-  min-width: 0;
-  font-family: var(--font-body, sans-serif);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--text, #4a3b47);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.cc-premio-pts {
-  font-family: var(--font-body, sans-serif);
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #b85a8a;
-}
-
-.cc-rank-tit {
-  font-family: var(--font-body, sans-serif);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: #b85a8a;
-  margin-bottom: 8px;
-}
-.cc-ranking { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.cc-row {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  background: #fff;
-  border: 1.5px solid #f2d3e0;
-  border-radius: 12px;
-  padding: 7px 10px;
-}
-.cc-row.bernie {
-  background: linear-gradient(110deg, #fff6db, #ffe9ad);
-  border-color: #f0c04e;
-  box-shadow: 0 6px 16px -8px rgba(224, 163, 0, 0.6);
-}
-.cc-row.tu { border-color: #ef73ac; outline: 2px dashed #f7b6d5; outline-offset: 1px; }
-.cc-pos {
-  font-family: var(--font-display, sans-serif);
-  font-weight: 700;
-  font-size: 15px;
-  color: #c58a9f;
-  width: 18px;
-  text-align: center;
-  flex: none;
-}
-.cc-row.bernie .cc-pos { color: #d9a300; }
-.cc-rowinfo { flex: 1; min-width: 0; }
-.cc-name {
-  font-family: var(--font-body, sans-serif);
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--text, #4a3b47);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.cc-crown { font-size: 12px; }
-.cc-rbar {
-  height: 7px;
-  margin-top: 4px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-}
-.cc-rfill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: #f2a9cd;
-  transition: width 500ms ease;
-}
-/* Barra dorada brillante de Bearnie (#1, 98%) */
-.cc-rfill.oro {
-  background: linear-gradient(90deg, #f6c545, #ffe89a, #f4b52a, #ffe89a, #f6c545);
-  background-size: 220% 100%;
-  box-shadow: 0 0 10px rgba(244, 181, 42, 0.85), inset 0 0 4px rgba(255, 240, 190, 0.9);
-  animation: oro-brillo 2.2s linear infinite;
-}
-@keyframes oro-brillo {
-  to { background-position: 220% 0; }
-}
-.cc-rpts {
-  font-family: var(--font-display, sans-serif);
-  font-weight: 700;
-  font-size: 13px;
-  color: #e0559f;
-  flex: none;
-}
-.cc-row.bernie .cc-rpts { color: #c8920a; }
 
 /* Celular con poca altura: compacta para que el botón siempre quede a la vista. */
 @media (max-width: 799px) and (max-height: 780px) {
-  .reg-aside { padding: 18px 20px 14px; }
-  .reg-titulo { font-size: clamp(20px, 6vw, 25px); }
-  .reg-perks { display: none; }
+  .reg-aside { padding: 20px 20px 14px; }
+  .reg-titulo { font-size: clamp(21px, 6vw, 26px); }
   .reg-bear { width: 84px; margin: 4px auto -2px; }
   .reg-main { padding: 16px 20px 18px; }
   .reg-form { gap: 10px; }
@@ -503,7 +331,7 @@
     overflow: visible; /* deja que Bearnie sobresalga de la tarjeta */
     border-radius: 30px;
   }
-  /* esquinas: el panel rosa redondea a la izquierda; el form a la derecha */
+  /* esquinas: el cartón redondea a la izquierda; el formulario a la derecha */
   .reg-aside {
     flex: 0 0 46%;
     display: flex;
@@ -511,10 +339,13 @@
     justify-content: center;
     text-align: left;
     padding: 40px 34px 40px 38px;
+    border-bottom: none;
+    border-right: 2px solid var(--hw-tinta);
     border-radius: 28px 0 0 28px;
     overflow: visible;
   }
-  .reg-eyebrow { align-self: flex-start; }
+
+  .reg-titulo { font-size: clamp(30px, 3.6vw, 42px); }
 
   /* Bearnie grande, atraviesa el borde inferior-izquierdo hacia la pantalla */
   .reg-bear {
@@ -533,26 +364,8 @@
     justify-content: center;
     padding: 40px 38px;
   }
-  .reg-datos { margin-bottom: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .velo, .reg, .reg-bear, .cc-rfill.oro { animation: none; }
-  .reg-cerrar:hover { transform: none; }
+  .velo, .reg, .reg-bear { animation: none; }
 }
-
-/* Nota de promo 20% en el registro. */
-.reg-promo {
-  display: block;
-  text-align: center;
-  font-family: var(--font-body, sans-serif);
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #7a5b00;
-  background: linear-gradient(135deg, #fff2d6, #ffe1a8);
-  border: 1.5px solid #f4c66a;
-  border-radius: 12px;
-  padding: 9px 12px;
-  margin-bottom: 2px;
-}
-.reg-promo b { color: #b8860b; font-weight: 800; }

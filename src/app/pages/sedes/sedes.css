@@ -13,7 +13,7 @@
 .sp-osa {
   width: 96px;
   margin-bottom: 4px;
-  filter: drop-shadow(0 10px 18px rgba(90, 55, 85, 0.35));
+  filter: drop-shadow(0 4px 0 rgba(13, 10, 51, 0.6));
   animation: sp-flota 3.6s ease-in-out infinite;
 }
 
@@ -27,10 +27,13 @@
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 4.4vw, 2.4rem);
   font-weight: 700;
-  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--hw-naranja);
+  text-shadow:
+    0.035em 0 0 var(--hw-tinta), -0.035em 0 0 var(--hw-tinta),
+    0 0.035em 0 var(--hw-tinta), 0 -0.035em 0 var(--hw-tinta),
+    0.025em 0.025em 0 var(--hw-tinta), -0.025em 0.025em 0 var(--hw-tinta),
+    0.025em -0.025em 0 var(--hw-tinta), -0.025em -0.025em 0 var(--hw-tinta),
+    -0.05em 0.06em 0 var(--hw-violeta), -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 .sp-head p {
@@ -102,8 +105,9 @@
   right: 14px;
   padding: 7px 14px;
   border-radius: var(--r-pill);
-  background: linear-gradient(45deg, #f078b8, #a97fd6);
-  color: #ffffff;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
+  border: 2px solid var(--hw-tinta);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -160,10 +164,13 @@
   font-family: var(--font-display);
   font-size: clamp(1.2rem, 3vw, 1.6rem);
   line-height: 1.1;
-  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--hw-naranja);
+  text-shadow:
+    0.035em 0 0 var(--hw-tinta), -0.035em 0 0 var(--hw-tinta),
+    0 0.035em 0 var(--hw-tinta), 0 -0.035em 0 var(--hw-tinta),
+    0.025em 0.025em 0 var(--hw-tinta), -0.025em 0.025em 0 var(--hw-tinta),
+    0.025em -0.025em 0 var(--hw-tinta), -0.025em -0.025em 0 var(--hw-tinta),
+    -0.05em 0.06em 0 var(--hw-violeta), -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 .sc-ciudad {
@@ -179,7 +186,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #a95a86;
+  color: var(--hw-naranja);
   margin-bottom: 9px;
 }
 
@@ -218,7 +225,7 @@
   font-family: var(--font-display);
   font-size: 0.82rem;
   font-weight: 700;
-  color: #4a2f42;
+  color: var(--text);
   white-space: nowrap;
 }
 
@@ -233,7 +240,7 @@
   padding: 7px 14px;
   border-radius: var(--r-pill);
   background: var(--grad-soft);
-  color: #6a4a63;
+  color: var(--text-muted);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -262,8 +269,9 @@
   text-decoration: none;
   padding: 14px 20px;
   border-radius: var(--r-pill);
-  background: linear-gradient(45deg, #f078b8, #a97fd6);
-  color: #ffffff;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
+  border: 2px solid var(--hw-tinta);
   font-family: var(--font-display);
   font-size: 0.84rem;
   letter-spacing: 0.06em;
@@ -273,7 +281,7 @@
 
 .sc-btn:hover {
   transform: translateY(-2px);
-  box-shadow: var(--glow-pink), 0 12px 24px -10px rgba(160, 80, 130, 0.5);
+  box-shadow: 0 6px 0 var(--hw-tinta);
 }
 
 /* ---------- Volver ---------- */
@@ -294,7 +302,7 @@
 }
 
 .sp-volver:hover {
-  color: #a95a86;
+  color: var(--hw-naranja);
   border-color: var(--pink);
 }
 

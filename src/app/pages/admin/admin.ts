@@ -6,9 +6,6 @@ import { FOTOS } from '../../fotos';
 import { GAMES } from '../../games';
 import { ProductosService } from '../../productos.service';
 import { CAMPOS_TEXTO, DEFAULT_TEXTOS, DEFAULT_SEDES, SedeCfg } from '../../configuracion.service';
-// La forma de una postulación vive en el contrato compartido: si el panel se
-// definiera la suya, las dos copias se separarían al primer campo nuevo.
-import { PostulacionAdmin } from '../../postulaciones';
 
 // Producto en el panel: mismos campos que la base, pero 'fotos' como texto
 // (una foto por línea) para editarlo fácil. Los '_' son estado de la pantalla.
@@ -128,17 +125,6 @@ export class Admin {
     return [...this.resenas()].sort((a, b) => (orden[a.estado] ?? 9) - (orden[b.estado] ?? 9));
   });
   readonly revPendientes = computed(() => this.resenas().filter((r) => r.estado === 'pendiente').length);
-
-  // ---- Postulaciones de negocios (convocatoria cerrada) ----
-  // La convocatoria del carrito cerró: ya no hay nada que publicar ni votar.
-  // Queda la lista de lo que llegó, para poder escribirles a esos negocios.
-  readonly posAbierto = signal(false);
-  readonly postulaciones = signal<PostulacionAdmin[]>([]);
-  readonly posMsg = signal('');
-  /** Por votos: los que más apoyo juntaron, arriba. */
-  readonly postulacionesOrdenadas = computed(() =>
-    [...this.postulaciones()].sort((a, b) => b.votos - a.votos),
-  );
 
   // ---- Galería de fotos ----
   readonly galAbierto = signal(false);
@@ -410,48 +396,6 @@ export class Admin {
     }
     this.resenas.update((l) => l.filter((x) => x.instagram !== r.instagram));
     this.revMsg.set('✓ Borrada');
-  }
-
-  // ---- Postulaciones de negocios ----
-  async cargarPostulaciones(): Promise<void> {
-    try {
-      const r = await fetch('/api/postulaciones?admin=1', { headers: this.cabeceras() });
-      if (r.status === 401) {
-        this.salir();
-        return;
-      }
-      if (!r.ok) return;
-      const d = (await r.json()) as { postulaciones?: PostulacionAdmin[] };
-      this.postulaciones.set(d.postulaciones ?? []);
-    } catch {
-      /* sin conexión: se queda la lista que ya había */
-    }
-  }
-
-  /** Borra la postulación y sus votos. */
-  async borrarPostulacion(p: PostulacionAdmin): Promise<void> {
-    if (!confirm(`¿Borrar la postulación de ${p.negocio}? Se pierden sus ${p.votos} votos.`)) return;
-    this.posMsg.set('');
-    let res: Response;
-    try {
-      res = await fetch(`/api/postulaciones?id=${encodeURIComponent(p.id)}`, {
-        method: 'DELETE',
-        headers: this.cabeceras(),
-      });
-    } catch {
-      this.posMsg.set('⚠ Sin conexión');
-      return;
-    }
-    if (res.status === 401) {
-      this.salir();
-      return;
-    }
-    if (!res.ok) {
-      this.posMsg.set('⚠ Error');
-      return;
-    }
-    this.postulaciones.update((l) => l.filter((x) => x.id !== p.id));
-    this.posMsg.set('✓ Borrada');
   }
 
   // ---- Galería ----

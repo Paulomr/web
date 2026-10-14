@@ -268,13 +268,14 @@
   gap: 12px;
   margin-top: 4px;
   padding: 11px 40px 15px;
-  border: none;
+  /* Edición Halloween: el sticker naranja de toda la web, con el pincel. */
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
-  background: var(--dk-cream);
-  color: var(--dk-core);
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
   font-family: var(--font-brush);
   /* Sin ligaduras. Zerocalcare trae ligaduras de PALABRA ("el", "tu", "la"…)
-     que cambian esas sílabas por una cursiva enlazada: "Postula tu negocio"
+     que cambian esas sílabas por una cursiva enlazada: "tu nueva galleta"
      salía con el "tu" en otra letra. */
   font-variant-ligatures: none;
   font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
@@ -286,20 +287,20 @@
   line-height: 1;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.85);
-  /* `scale` va aparte de `transform` a propósito: son propiedades
+  box-shadow: 0 5px 0 var(--hw-tinta);
+  /* `translate` va aparte de `transform` a propósito: son propiedades
      independientes y se componen, así que nada de lo que escriba una
-     animación en `transform` pisa este hover. */
+     animación en `transform` pisa el hundido al presionar. */
   transition:
     padding 380ms ease,
-    scale 380ms ease,
-    background-color 380ms ease,
-    color 380ms ease,
-    box-shadow 380ms ease;
+    translate 140ms ease,
+    box-shadow 140ms ease;
 }
 
-/* Brillo desenfocado bajo la píldora, igual que en los botones de la portada. */
+/* El brillo desenfocado de la versión clara ya no va: de noche la píldora se
+   despega con su sombra dura. */
 .dk-cta::after {
+  display: none;
   content: '';
   position: absolute;
   inset: 10px 8px -10px 8px;
@@ -328,18 +329,14 @@
 @media (hover: hover) {
   .dk-cta:hover {
     padding: 11px 54px 15px;
-    scale: 1.02;
-    box-shadow: 0 22px 48px -18px rgba(0, 0, 0, 0.9);
-  }
-
-  .dk-cta:hover::after {
-    opacity: 0.75;
+    box-shadow: 0 7px 0 var(--hw-tinta);
   }
 
 }
 
 .dk-cta:active {
-  scale: 0.985;
+  translate: 0 5px;
+  box-shadow: 0 0 0 var(--hw-tinta);
 }
 
 /* El foco tiene que verse sobre el terciopelo, donde el violeta del sistema

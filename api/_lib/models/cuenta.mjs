@@ -26,7 +26,9 @@ const CuentaSchema = new mongoose.Schema(
     ultimoSello: { type: String, default: '' },
     // Premio de estrellas (todos los juegos al 100%) ya reclamado (una vez).
     premioEstrellas: { type: Boolean, default: false },
-    // Cupón de bienvenida (20% primera compra) ya usado (una vez por cuenta).
+    // Descuento de bienvenida ya usado (una vez por cuenta). Hoy es el 10 % de
+    // la edición Halloween; antes fue un 20 % y un 18 %. El porcentaje vive en
+    // la web (src/app/promos.ts).
     cuponUsado: { type: Boolean, default: false },
   },
   { timestamps: true },

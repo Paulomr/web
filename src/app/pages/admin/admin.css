@@ -1,3 +1,37 @@
+/* ---------- El panel sigue en la paleta clara ----------
+   La web pública es la noche de Halloween; el panel es una herramienta de
+   trabajo y se queda como siempre, legible bajo la luz de la tienda. Se
+   redeclaran aquí los tokens claros (guardados en styles.css como --claro-*)
+   para que todo lo de dentro los herede sin tocar una regla más. */
+:host {
+  --bg: var(--claro-bg);
+  --bg-elevated: var(--claro-bg-elevated);
+  --surface: var(--claro-surface);
+  --surface-2: var(--claro-surface-2);
+  --border: var(--claro-border);
+  --border-strong: var(--claro-border-strong);
+  --text: var(--claro-text);
+  --text-muted: var(--claro-text-muted);
+  --text-dim: var(--claro-text-dim);
+  --pink-soft: #f9d1e5;
+  --cyan-soft: #cdeef5;
+  --violet: #c9aee8;
+  --violet-soft: #e6d9f6;
+  --amber: #f6d8a8;
+  --grad-brand: linear-gradient(135deg, #f2a9cd 0%, #c9aee8 50%, #9adbe8 100%);
+  --grad-pink: linear-gradient(135deg, #f2a9cd 0%, #c9aee8 100%);
+  --grad-soft: linear-gradient(135deg, #f9d1e5 0%, #e6d9f6 50%, #cdeef5 100%);
+  --shadow-card: 0 16px 36px -20px rgba(120, 80, 110, 0.28);
+  --shadow-float: 0 24px 48px -24px rgba(120, 80, 110, 0.35);
+  --glow-pink: 0 10px 28px -8px rgba(242, 169, 205, 0.65);
+  --glow-cyan: 0 10px 28px -8px rgba(154, 219, 232, 0.65);
+  display: block;
+  min-height: 100vh;
+  background: var(--claro-bg);
+  color: var(--claro-text);
+  color-scheme: light;
+}
+
 /* ---------- Ingreso ---------- */
 .login {
   width: min(420px, 92vw);

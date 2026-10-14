@@ -16,13 +16,12 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.45;
-  /* El relleno es el gradiente de marca (rosa → lila → celeste), y la
-     imagen del doodle actúa de máscara: así los trazos siguen los mismos
-     tonos que los gradientes de la página y de las tarjetas. */
-  background: var(--grad-brand);
-  -webkit-mask-image: url("/fotos/doodles-rosa.webp");
-  mask-image: url("/fotos/doodles-rosa.webp");
+  opacity: 0.1;
+  /* Edición Halloween: las líneas de los doodles (doodles-noche, que sí
+     trae transparencia) hacen de máscara sobre el lila de la caja. */
+  background: var(--hw-lila);
+  -webkit-mask-image: url("/fotos/doodles-noche.webp");
+  mask-image: url("/fotos/doodles-noche.webp");
   -webkit-mask-size: 460px auto;
   mask-size: 460px auto;
   -webkit-mask-repeat: repeat;
@@ -84,9 +83,16 @@
 .list-bar h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 3vw, 1.6rem);
-  font-weight: 700;
+  font-size: clamp(1.3rem, 3.4vw, 1.9rem);
+  font-weight: normal;
   flex: 1;
+  color: var(--hw-naranja);
+  text-shadow:
+    0.035em 0 0 var(--hw-tinta), -0.035em 0 0 var(--hw-tinta),
+    0 0.035em 0 var(--hw-tinta), 0 -0.035em 0 var(--hw-tinta),
+    0.025em 0.025em 0 var(--hw-tinta), -0.025em 0.025em 0 var(--hw-tinta),
+    0.025em -0.025em 0 var(--hw-tinta), -0.025em -0.025em 0 var(--hw-tinta),
+    -0.05em 0.06em 0 var(--hw-violeta), -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 .count {
@@ -133,15 +139,15 @@
   flex-direction: column;
   border-radius: var(--r-lg);
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border-strong);
   overflow: hidden;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 6px 0 var(--hw-tinta);
   transition: transform 200ms ease, box-shadow 200ms ease, background-color 120ms linear;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-float);
+  box-shadow: 0 10px 0 var(--hw-tinta);
 }
 
 .card-cover {
@@ -473,8 +479,8 @@
   flex-shrink: 0;
   padding: 4px 10px;
   border-radius: var(--r-pill);
-  background: var(--cyan-soft);
-  color: #3e6e7a;
+  background: var(--hw-tinta);
+  color: var(--hw-lila);
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -482,8 +488,8 @@
 }
 
 .badge-server {
-  background: var(--violet-soft);
-  color: #6a4e93;
+  background: var(--hw-lila);
+  color: var(--hw-tinta);
 }
 
 .desc {
@@ -496,21 +502,23 @@
 
 .play {
   align-self: flex-start;
-  padding: 10px 22px;
-  border: none;
+  padding: 9px 22px 8px;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
-  background: var(--grad-pink);
-  color: #5c3a52;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 600;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
+  box-shadow: 0 3px 0 var(--hw-tinta);
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .play:hover {
   transform: translateY(-2px);
-  box-shadow: var(--glow-pink);
+  box-shadow: 0 5px 0 var(--hw-tinta);
 }
 
 /* ============ Reproductor ============ */
@@ -628,8 +636,8 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--pink-soft);
-  color: #935d7c;
+  background: var(--surface-2);
+  color: var(--hw-lila);
   font-weight: 700;
   font-size: 0.8rem;
 }
@@ -638,17 +646,17 @@
 .scores li:first-child {
   padding: 8px 10px;
   border-radius: var(--r-md);
-  background: linear-gradient(90deg, #fdf3d8, #fbe7ae);
-  box-shadow: inset 0 0 0 1px #ecc94b44, 0 8px 18px -12px #b7791f66;
+  background: rgba(246, 197, 69, 0.12);
+  box-shadow: inset 0 0 0 1.5px rgba(246, 197, 69, 0.55);
 }
 
 .scores li:first-child .pos {
-  background: linear-gradient(135deg, #f6d365, #d4a017);
-  color: #ffffff;
+  background: #f6c545;
+  color: var(--hw-tinta);
 }
 
 .scores li:first-child .pts {
-  color: #b7791f;
+  color: #f6c545;
 }
 
 .scores .who {
@@ -673,7 +681,7 @@
 .scores .barra {
   height: 7px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(185, 184, 244, 0.18);
   overflow: hidden;
 }
 .scores .fill {
@@ -698,15 +706,15 @@
 .scores li.tu {
   padding: 6px 10px;
   border-radius: var(--r-md);
-  background: var(--pink-soft);
-  outline: 2px dashed var(--pink);
+  background: rgba(246, 164, 71, 0.12);
+  outline: 2px dashed var(--hw-naranja);
   outline-offset: 1px;
 }
 
 .scores .pts {
   font-family: var(--font-display);
   font-size: 0.85rem;
-  color: #a97fd6;
+  color: var(--hw-naranja);
   flex: none;
 }
 
@@ -722,9 +730,9 @@
   font-family: var(--font-display);
   font-size: 0.8rem;
   font-weight: 700;
-  color: #b7791f;
-  background: linear-gradient(90deg, #fdf3d8, #fbe7ae);
-  border: 1px solid #ecc94b66;
+  color: var(--hw-tinta);
+  background: #f6c545;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
   padding: 4px 12px;
   animation: aviso-pop 300ms ease both;
@@ -748,8 +756,8 @@
   font-weight: 800;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #fff;
-  background: var(--pink, #f2a9cd);
+  color: var(--hw-tinta);
+  background: var(--hw-naranja);
   border-radius: 999px;
   padding: 1px 6px;
 }

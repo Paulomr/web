@@ -1,0 +1,22 @@
+@if (visible()) {
+  <aside class="av" role="dialog" aria-modal="false" aria-labelledby="av-num" aria-describedby="av-frase">
+    <div class="av-ticket">
+      <!-- El talón del ticket: el número es la pieza. -->
+      <div class="av-talon">
+        <p class="av-num" id="av-num"><span class="av-sr">Descuento de </span>−{{ pct }}%</p>
+      </div>
+
+      <div class="av-cuerpo">
+        <p class="av-frase" id="av-frase">en tu primer pedido</p>
+        <p class="av-como">Crea tu cuenta y queda guardado en tu carrito.</p>
+        <div class="av-acciones">
+          <button type="button" class="av-crear" (click)="crear()">Crear mi cuenta</button>
+          <button type="button" class="av-no" (click)="ahoraNo()">Ahora no</button>
+        </div>
+        <!-- Las condiciones van impresas en el ticket: fuera de él quedaban
+             flotando encima del texto de la página. -->
+        <p class="av-chica">{{ condiciones }}</p>
+      </div>
+    </div>
+  </aside>
+}

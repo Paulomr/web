@@ -2,6 +2,7 @@ import { Component, HostListener, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CuentaService } from '../../cuenta.service';
+import { BIENVENIDA_PCT, CONDICIONES_BIENVENIDA, promosActivas } from '../../promos';
 
 // Modal global de sesión: registrar (con código de 4 dígitos) o iniciar sesión
 // (@instagram + código). Se abre al agregar la primera galleta, desde el botón
@@ -14,6 +15,11 @@ import { CuentaService } from '../../cuenta.service';
 })
 export class RegistroModal {
   readonly cuenta = inject(CuentaService);
+
+  /** El 10 % de bienvenida de la edición Halloween (promos.ts). */
+  readonly promos = promosActivas;
+  readonly pct = BIENVENIDA_PCT;
+  readonly condiciones = CONDICIONES_BIENVENIDA;
 
   readonly modo = signal<'registro' | 'login' | 'recuperar'>('registro');
 

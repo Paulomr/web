@@ -1,4 +1,5 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
+import { promosActivas } from './promos';
 
 // Cuenta del cliente (sesión ligera). Se guarda en el dispositivo (localStorage)
 // y, si el backend está disponible, también se sincroniza con la base de datos
@@ -20,6 +21,13 @@ export interface Cuenta {
   ultimoSello: string;
   /** Premio de estrellas (todos los juegos al 100%) ya reclamado. */
   premioEstrellas: boolean;
+  /**
+   * ¿Le toca el descuento de bienvenida? Lo responde el servidor (nunca lo
+   * usó y no tiene pedidos guardados); el porcentaje y la fecha, promos.ts.
+   * Opcional porque las sesiones guardadas antes de Halloween no lo traen:
+   * hasta que la sincronización lo confirme, se toma como que no.
+   */
+  bienvenida?: boolean;
 }
 
 /** Estrellas para el premio maestro: todos los niveles al 100% (30+30+15+3+3). */
@@ -57,6 +65,11 @@ export class CuentaService {
   readonly modoSolicitado = signal<'registro' | 'login'>('registro');
 
   readonly registrado = computed(() => this.cuenta() !== null);
+
+  /** El 10 % de bienvenida aplica a esta cuenta en este momento. */
+  readonly bienvenidaDisponible = computed(
+    () => this.registrado() && this.cuenta()?.bienvenida === true && promosActivas(),
+  );
 
   /** Primer nombre en mayúsculas para el saludo del hero ("HOLA PAULO"). */
   readonly primerNombre = computed(() => {
@@ -134,6 +147,7 @@ export class CuentaService {
       tarjetas: Number(c.tarjetas) || 0,
       ultimoSello: (c.ultimoSello ?? '').toString(),
       premioEstrellas: !!c.premioEstrellas,
+      bienvenida: c.bienvenida === true,
     });
   }
 
@@ -182,8 +196,9 @@ export class CuentaService {
       void this.sincronizarFidelidad();
       return { ok: true };
     } catch {
-      // Sin conexión: crea sesión local para no bloquear (el código se guarda al reconectar).
-      this.setSesion({ ...cuerpo, puntos: 0, sellos: 0, tarjetas: 0, ultimoSello: '' });
+      // Sin conexión: crea sesión local para no bloquear (el código se guarda al
+      // reconectar). Una cuenta recién creada no tiene pedidos: le toca el 10 %.
+      this.setSesion({ ...cuerpo, puntos: 0, sellos: 0, tarjetas: 0, ultimoSello: '', bienvenida: true });
       return { ok: true };
     }
   }
@@ -293,7 +308,7 @@ export class CuentaService {
       if (!r.ok) return;
       const d = (await r.json()) as {
         sellos?: number; tarjetas?: number; estrellas?: number; premioEstrellas?: boolean;
-        meta?: number; umbral?: number;
+        meta?: number; umbral?: number; bienvenida?: boolean;
       };
       if (typeof d.meta === 'number') this.metaSellos.set(d.meta);
       if (typeof d.umbral === 'number') this.umbralCompra.set(d.umbral);
@@ -305,10 +320,32 @@ export class CuentaService {
           tarjetas: d.tarjetas ?? actual.tarjetas,
           puntos: d.estrellas ?? actual.puntos,
           premioEstrellas: d.premioEstrellas ?? actual.premioEstrellas,
+          bienvenida: d.bienvenida ?? actual.bienvenida,
         });
       }
     } catch {
       /* sin conexión: se quedan los valores locales */
+    }
+  }
+
+  /**
+   * Gasta el descuento de bienvenida: se llama al enviar un pedido que lo
+   * llevaba. Se marca usado aquí mismo primero (el cliente ya vio su total
+   * con el 10 %) y luego se avisa al servidor, que no deja usarlo dos veces.
+   */
+  async usarBienvenida(): Promise<void> {
+    const c = this.cuenta();
+    if (!c) return;
+    this.cuenta.set({ ...c, bienvenida: false });
+    if (!c.instagram) return;
+    try {
+      await fetch('/api/cuentas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accion: 'usar-cupon', instagram: c.instagram }),
+      });
+    } catch {
+      /* sin conexión: el pedido ya salió con su descuento y quedó guardado */
     }
   }
 

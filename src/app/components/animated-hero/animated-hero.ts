@@ -4,13 +4,14 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 // La lógica de canvas 2D (Pong + texto en píxeles) es idéntica; solo cambian
 // los hooks de React (useEffect/useRef) por el ciclo de vida de Angular.
 
-const COLOR = '#4a3b47';
-// Título "MINIJUEGOS" en rosa fucsia de la marca.
-const TITLE_COLOR = '#f5379c';
-const HIT_COLOR = '#f7bcdd';
-const BACKGROUND_COLOR = '#fdf9f7';
-const BALL_COLOR = '#e78ab8';
-const PADDLE_COLOR = '#8fcfe0';
+// Edición Halloween: los colores de la noche de la portada.
+const COLOR = '#b9b8f4';
+// Título "MINIJUEGOS" en el naranja de la luna-galleta.
+const TITLE_COLOR = '#f6a447';
+const HIT_COLOR = '#3b1f8a';
+const BACKGROUND_COLOR = '#1b145c';
+const BALL_COLOR = '#f6a447';
+const PADDLE_COLOR = '#b9b8f4';
 /** Logo (solo la cabeza) que reemplaza a la pelota que rebota. */
 const BALL_LOGO_SRC = 'fotos/bearnie-logo.webp';
 const LETTER_SPACING = 1;

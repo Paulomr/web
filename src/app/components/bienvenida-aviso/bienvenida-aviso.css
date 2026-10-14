@@ -1,0 +1,201 @@
+/* ============ El 10 % de bienvenida: un ticket de la caja ============
+   No es una ventana emergente con antetítulo, título y botón: es un objeto.
+   Un ticket naranja troquelado (talón y cuerpo separados por una línea de
+   puntos con sus dos muescas), un poco torcido, como si acabara de salir de
+   la caja de Halloween. El número es la imagen; el resto, lo mínimo.
+   ------------------------------------------------------------------------- */
+.av {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  /* El ticket nunca tapa a los botones fijos de abajo (WhatsApp, la barra
+     de secciones del catálogo): en pantallas medianas sube por encima. */
+  z-index: 160; /* por debajo del velo del carrito (170) y del registro */
+  width: min(380px, calc(100vw - 24px));
+  /* La sombra dura va aquí y no en el ticket: el ticket lleva máscara (las
+     muescas) y una máscara recorta también su propia sombra. */
+  filter: drop-shadow(0 6px 0 var(--hw-tinta));
+  animation: despega 620ms cubic-bezier(0.22, 1.25, 0.36, 1) both;
+}
+
+/* Sube y se asienta torcido, como un ticket que se suelta. */
+@keyframes despega {
+  from {
+    opacity: 0;
+    translate: 0 40px;
+    rotate: 7deg;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+
+.av-ticket {
+  --av-talon: 112px;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--av-talon) 1fr;
+  rotate: -2deg;
+  border: 2px solid var(--hw-tinta);
+  border-radius: 18px;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
+  /* Las dos muescas del troquel, arriba y abajo de la línea de puntos: un
+     recorte de verdad, así se ve bien encima de cualquier sección. */
+  -webkit-mask:
+    radial-gradient(circle 11px at var(--av-talon) 0, transparent 97%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle 11px at var(--av-talon) 100%, transparent 97%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle 11px at var(--av-talon) 0, transparent 97%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle 11px at var(--av-talon) 100%, transparent 97%, #000) bottom / 100% 51% no-repeat;
+}
+
+.av-talon {
+  display: grid;
+  place-items: center;
+  padding: 14px 8px;
+  border-right: 2px dashed rgba(13, 10, 51, 0.55);
+}
+
+.av-num {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2.35rem;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-align: center;
+  rotate: -6deg;
+  color: var(--hw-tinta);
+  /* Sombra dura en el violeta de los murciélagos: el número "salta" del papel. */
+  text-shadow: -2px 3px 0 rgba(59, 31, 138, 0.45);
+}
+
+.av-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.av-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px 14px 18px;
+}
+
+/* La frase en el pincel de la marca: minúsculas (sus mayúsculas son otra
+   letra) y sin ligaduras (cambian sílabas enteras, "tu" incluida). */
+.av-frase {
+  margin: 0;
+  font-family: var(--font-brush);
+  text-transform: none;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.av-como {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+}
+
+.av-acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.av-crear {
+  padding: 9px 16px 8px;
+  border: 2px solid var(--hw-tinta);
+  border-radius: var(--r-pill);
+  background: var(--hw-tinta);
+  color: var(--hw-naranja);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(13, 10, 51, 0.45);
+  transition: translate 140ms ease, box-shadow 140ms ease;
+}
+
+.av-crear:active {
+  translate: 0 3px;
+  box-shadow: 0 0 0 transparent;
+}
+
+.av-no {
+  padding: 6px 2px;
+  border: none;
+  background: none;
+  color: var(--hw-tinta);
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.av-crear:focus-visible,
+.av-no:focus-visible {
+  outline: 2px solid var(--hw-tinta);
+  outline-offset: 3px;
+}
+
+/* Las condiciones, impresas en el ticket en letra chica. */
+.av-chica {
+  margin: 4px 0 0;
+  font-size: 0.56rem;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: rgba(13, 10, 51, 0.75);
+}
+
+@media (max-width: 1100px) {
+  .av {
+    bottom: 96px;
+  }
+}
+
+@media (max-width: 560px) {
+  .av {
+    right: 12px;
+    left: 12px;
+    bottom: 96px;
+    width: auto;
+  }
+
+  .av-ticket {
+    --av-talon: 96px;
+  }
+
+  .av-num {
+    font-size: 2rem;
+  }
+
+  .av-frase {
+    font-size: 1.35rem;
+  }
+
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .av {
+    animation: none;
+  }
+}

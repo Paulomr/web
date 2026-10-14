@@ -1,123 +1,256 @@
 @if (carrito.abierto()) {
-  <div class="velo" (click)="carrito.abierto.set(false)"></div>
+  <div class="velo" (click)="cerrar()"></div>
 
-  <aside class="panel" aria-label="Carrito de pedidos">
-    <header class="panel-top">
-      <h2>TU PEDIDO</h2>
-      <button type="button" class="cerrar" (click)="carrito.abierto.set(false)" aria-label="Cerrar">✕</button>
+  <!-- El pedido va dentro de la caja de Halloween: el panel es su cartón lila,
+       y arriba asoma el estampado de murciélagos del interior real. -->
+  <aside class="panel" role="dialog" aria-modal="true" aria-labelledby="cp-titulo">
+    <header class="tapa">
+      <button type="button" class="cerrar" (click)="cerrar()" aria-label="Cerrar el carrito">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M5.5 5.5l9 9M14.5 5.5l-9 9" />
+        </svg>
+      </button>
+      @if (cuentaRegresiva(); as quedan) {
+        <p class="tapa-reloj">{{ quedan }}</p>
+      }
+      <h2 class="tapa-etiqueta" id="cp-titulo">Tu caja</h2>
     </header>
 
     @if (carrito.items().length === 0) {
       <div class="vacio">
-        <img src="fotos/bernie-bandeja.webp" alt="" />
-        <p>TU CARRITO ESTÁ VACÍO. AGREGA ALGO DELICIOSO DEL CATÁLOGO.</p>
+        <img src="fotos/bernie-bandeja.webp" alt="" width="150" height="150" />
+        <p>Tu caja está vacía. Lo que agregues del menú cae aquí.</p>
+        <a class="hw-btn" routerLink="/catalogo" (click)="cerrar()">Ver el menú</a>
       </div>
     } @else {
+      <!-- ============ Dulce o truco: las metas de regalo ============ -->
+      @if (carrito.metas().length > 0) {
+        <section class="metas" aria-label="Regalos por tu pedido">
+          <p class="metas-msg">
+            @if (carrito.siguienteMeta(); as sig) {
+              @if (carrito.metasCumplidas().length === 0) {
+                Te faltan <strong>{{ cop(carrito.faltaMeta()) }}</strong> para {{ sig.premio }} de regalo.
+              } @else {
+                Ya tienes tu regalo. Con <strong>{{ cop(carrito.faltaMeta()) }}</strong> más te llevas {{ sig.premio }}.
+              }
+            } @else {
+              Te llevas los dos regalos de Halloween.
+            }
+          </p>
+
+          <div
+            class="barra"
+            role="progressbar"
+            aria-label="Avance hacia los regalos"
+            aria-valuemin="0"
+            [attr.aria-valuemax]="topeBarra()"
+            [attr.aria-valuenow]="min(carrito.total(), topeBarra())"
+            [attr.aria-valuetext]="cop(carrito.total()) + ' de ' + cop(topeBarra())"
+          >
+            <div class="barra-relleno" [style.width.%]="avance()"></div>
+            @for (m of carrito.metas(); track m.id) {
+              <span class="hito" [class.ok]="carrito.total() >= m.monto" [style.left.%]="posicion(m)">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 10h16v10H4z M2.5 6.5h19v3.5h-19z M12 6.5V20" />
+                  <path d="M12 6.5C10.2 3 6.5 3.4 7.3 5.6c.5 1.2 2.8.9 4.7.9 1.9 0 4.2.3 4.7-.9.8-2.2-2.9-2.6-4.7.9" />
+                </svg>
+              </span>
+            }
+          </div>
+          <div class="hitos">
+            @for (m of carrito.metas(); track m.id; let ultimo = $last) {
+              <span class="hito-txt" [class.ultimo]="ultimo" [style.left.%]="posicion(m)" [class.ok]="carrito.total() >= m.monto">
+                <b>{{ m.nombre }}</b> {{ cop(m.monto) }}
+              </span>
+            }
+          </div>
+
+          <!-- Al cumplir una meta: el cliente ELIGE su regalo (no hay azar). -->
+          @for (m of carrito.regalosPorElegir(); track m.id) {
+            <div class="elige" role="radiogroup" [attr.aria-label]="'Elige ' + m.premio + ' de regalo'">
+              <p class="elige-txt">Ganaste {{ m.premio }}. ¿Cuál quieres?</p>
+              <div class="elige-ops">
+                @for (p of carrito.opcionesDe(m); track p.id) {
+                  <button type="button" class="elige-op" role="radio" aria-checked="false" (click)="carrito.elegirRegalo(m, p.id)">
+                    {{ p.nombre }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Cuando falta poco: lo que cierra la diferencia, a un toque. -->
+          @if (sugerencias().length > 0) {
+            <div class="sugiere">
+              <p class="sugiere-txt">Con uno de estos llegas:</p>
+              <ul class="sugiere-lista">
+                @for (p of sugerencias(); track p.id) {
+                  <li>
+                    <button type="button" class="sugiere-op" (click)="agregarSugerido(p)" [attr.aria-label]="'Agregar ' + p.nombre">
+                      <img [src]="urlFoto(p.fotos[0])" alt="" width="44" height="44" />
+                      <span class="sugiere-nombre">{{ p.nombre }}</span>
+                      <span class="sugiere-precio">{{ precioDe(p) }}</span>
+                      <span class="sugiere-mas" aria-hidden="true">+</span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          <p class="letra-chica">{{ condicionesMetas }}</p>
+        </section>
+      }
+
+      <!-- ============ Lo que va en la caja ============ -->
       <ul class="lista">
         @for (item of carrito.items(); track lineaId(item)) {
           @if (carrito.producto(item.id); as p) {
             <li class="item">
-              @if (p.fotos.length > 0) {
-                <img class="mini" [src]="urlFoto(p.fotos[0])" [alt]="p.nombre" />
-              } @else {
-                <img class="mini" src="fotos/bearnie-logo.webp" [alt]="p.nombre" />
-              }
+              <img class="mini" [src]="p.fotos.length > 0 ? urlFoto(p.fotos[0]) : 'fotos/bearnie-logo.webp'" [alt]="p.nombre" width="56" height="56" />
               <div class="item-info">
                 <strong>{{ p.nombre }}</strong>
                 @if (item.sabor) {
-                  <span class="item-sabor">SABOR: {{ item.sabor }}</span>
+                  <span class="item-sabor">Sabor: {{ item.sabor }}</span>
                 }
                 <span class="item-precio">{{ precioLinea(item) }}</span>
               </div>
               <div class="cantidad">
-                <button type="button" (click)="carrito.restar(item.id, item.sabor)" aria-label="Quitar uno">−</button>
-                <span>{{ item.cantidad }}</span>
-                <button type="button" (click)="carrito.agregar(item.id, item.sabor)" aria-label="Agregar uno">+</button>
+                <button type="button" (click)="carrito.restar(item.id, item.sabor)" [attr.aria-label]="'Quitar un ' + p.nombre">−</button>
+                <span aria-live="polite">{{ item.cantidad }}</span>
+                <button type="button" (click)="carrito.agregar(item.id, item.sabor)" [attr.aria-label]="'Agregar un ' + p.nombre">+</button>
               </div>
             </li>
           }
         }
+        @for (r of carrito.regalosVigentes(); track r.meta.id) {
+          <li class="item item-regalo">
+            <span class="sello" aria-hidden="true">Regalo</span>
+            <div class="item-info">
+              <strong>{{ r.producto.nombre }}</strong>
+              <span class="item-sabor">Meta {{ r.meta.nombre }}</span>
+              <span class="item-precio">$ 0</span>
+            </div>
+            <button type="button" class="cambiar" (click)="cambiarRegalo(r.meta)">Cambiar</button>
+          </li>
+        }
       </ul>
 
-      <div class="total">
-        <span>TOTAL</span>
-        <strong>{{ totalTexto() }}@if (carrito.hayConsultar()) { <em>+ ÍTEMS POR CONSULTAR</em> }</strong>
-      </div>
+      <!-- ============ Las cuentas ============ -->
+      <dl class="cuentas">
+        <div class="cuenta-fila">
+          <dt>Productos</dt>
+          <dd>{{ cop(carrito.total()) }}</dd>
+        </div>
+        @if (carrito.descuento() > 0) {
+          <div class="cuenta-fila cuenta-bienvenida">
+            <dt>Bienvenida −{{ pct }} %</dt>
+            <dd>− {{ cop(carrito.descuento()) }}</dd>
+          </div>
+        }
+        @if (carrito.regalosVigentes().length > 0) {
+          <div class="cuenta-fila">
+            <dt>Regalos</dt>
+            <dd>$ 0</dd>
+          </div>
+        }
+        <div class="cuenta-fila cuenta-total">
+          <dt>Total</dt>
+          <dd>
+            {{ cop(carrito.totalFinal()) }}
+            @if (carrito.hayConsultar()) {
+              <em>+ ítems por consultar</em>
+            }
+          </dd>
+        </div>
+      </dl>
 
-      <!-- Datos del pedido -->
+      <!-- Sin cuenta: el 10 % se ve sobre ESTE pedido, en pesos. -->
+      @if (!cuenta.registrado() && bienvenidaVigente()) {
+        <div class="ticket">
+          <div class="ticket-num" aria-hidden="true">−{{ pct }}%</div>
+          <div class="ticket-txt">
+            <p>Crea tu cuenta y este pedido queda en <strong>{{ cop(conBienvenida()) }}</strong>.</p>
+            <button type="button" class="ticket-btn" (click)="crearCuenta()">Crear mi cuenta</button>
+          </div>
+          <p class="letra-chica ticket-chica">{{ condicionesBienvenida }}</p>
+        </div>
+      }
+
+      <!-- ============ Datos del pedido ============ -->
       <form class="datos" (submit)="$event.preventDefault(); enviar()">
         <fieldset>
-          <legend>ENTREGA</legend>
+          <legend>Entrega</legend>
           <div class="opciones">
-            <button type="button" [class.on]="carrito.datos().entrega === 'domicilio'"
-              (click)="carrito.actualizarDatos({ entrega: 'domicilio' })">A DOMICILIO</button>
-            <button type="button" [class.on]="carrito.datos().entrega === 'recoger'"
-              (click)="carrito.actualizarDatos({ entrega: 'recoger' })">RECOGER EN TIENDA</button>
+            <button type="button" [class.on]="carrito.datos().entrega === 'domicilio'" [attr.aria-pressed]="carrito.datos().entrega === 'domicilio'"
+              (click)="carrito.actualizarDatos({ entrega: 'domicilio' })">A domicilio</button>
+            <button type="button" [class.on]="carrito.datos().entrega === 'recoger'" [attr.aria-pressed]="carrito.datos().entrega === 'recoger'"
+              (click)="carrito.actualizarDatos({ entrega: 'recoger' })">Recoger en tienda</button>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend>SEDE (¿A QUÉ TIENDA LE PIDES?)</legend>
+          <legend>¿A qué sede le pides?</legend>
           <div class="opciones">
-            <button type="button" [class.on]="carrito.datos().sede === 'san-antonio'"
-              (click)="carrito.actualizarDatos({ sede: 'san-antonio' })">SAN ANTONIO</button>
-            <button type="button" [class.on]="carrito.datos().sede === 'marinilla'"
-              (click)="carrito.actualizarDatos({ sede: 'marinilla' })">MARINILLA</button>
+            <button type="button" [class.on]="carrito.datos().sede === 'san-antonio'" [attr.aria-pressed]="carrito.datos().sede === 'san-antonio'"
+              (click)="carrito.actualizarDatos({ sede: 'san-antonio' })">San Antonio</button>
+            <button type="button" [class.on]="carrito.datos().sede === 'marinilla'" [attr.aria-pressed]="carrito.datos().sede === 'marinilla'"
+              (click)="carrito.actualizarDatos({ sede: 'marinilla' })">Marinilla</button>
           </div>
         </fieldset>
 
         @if (carrito.datos().entrega === 'domicilio') {
           <label>
-            DIRECCIÓN DE ENTREGA
+            Dirección de entrega
             <input type="text" [value]="carrito.datos().direccion" (input)="onInput('direccion', $event)"
-              placeholder="CALLE, NÚMERO, BARRIO, CIUDAD" />
+              placeholder="Calle, número, barrio, ciudad" autocomplete="street-address" />
           </label>
           <label>
-            PUNTO DE REFERENCIA / SECTOR
+            Punto de referencia
             <input type="text" [value]="carrito.datos().referencia" (input)="onInput('referencia', $event)"
-              placeholder="NOMBRE DEL LUGAR, SECTOR, CERCA DE…" />
+              placeholder="Nombre del lugar, sector, cerca de…" />
           </label>
         }
 
         <fieldset>
-          <legend>PAGO</legend>
+          <legend>Pago</legend>
           <div class="opciones">
-            <button type="button" [class.on]="carrito.datos().pago === 'efectivo'"
-              (click)="carrito.actualizarDatos({ pago: 'efectivo' })">EFECTIVO</button>
-            <button type="button" [class.on]="carrito.datos().pago === 'transferencia'"
-              (click)="carrito.actualizarDatos({ pago: 'transferencia' })">TRANSFERENCIA</button>
+            <button type="button" [class.on]="carrito.datos().pago === 'efectivo'" [attr.aria-pressed]="carrito.datos().pago === 'efectivo'"
+              (click)="carrito.actualizarDatos({ pago: 'efectivo' })">Efectivo</button>
+            <button type="button" [class.on]="carrito.datos().pago === 'transferencia'" [attr.aria-pressed]="carrito.datos().pago === 'transferencia'"
+              (click)="carrito.actualizarDatos({ pago: 'transferencia' })">Transferencia</button>
           </div>
         </fieldset>
 
         <div class="fila-2">
           <label>
-            NOMBRE
-            <input type="text" [value]="carrito.datos().nombre" (input)="onInput('nombre', $event)" placeholder="TU NOMBRE" />
+            Nombre
+            <input type="text" [value]="carrito.datos().nombre" (input)="onInput('nombre', $event)" placeholder="Tu nombre" autocomplete="name" />
           </label>
           <label>
-            TELÉFONO
-            <input type="tel" [value]="carrito.datos().telefono" (input)="onInput('telefono', $event)" placeholder="300 000 0000" />
+            Teléfono
+            <input type="tel" [value]="carrito.datos().telefono" (input)="onInput('telefono', $event)" placeholder="300 000 0000" autocomplete="tel" />
           </label>
         </div>
 
         <label>
-          NOTAS (OPCIONAL)
+          Notas (opcional)
           <input type="text" [value]="carrito.datos().notas" (input)="onInput('notas', $event)"
-            placeholder="SIN MANÍ, VELITAS, DEDICATORIA…" />
+            placeholder="Sin maní, velitas, dedicatoria…" />
         </label>
 
         @if (!cuenta.registrado()) {
           <div class="sesion-aviso">
-            <p>🔒 INICIA SESIÓN PARA HACER TU PEDIDO.</p>
-            <button type="button" class="enviar" (click)="pedirSesion()">INICIAR SESIÓN / CREAR CUENTA</button>
+            <p>Para pedir hace falta tu cuenta: así te reconocemos en WhatsApp.</p>
+            <button type="button" class="hw-btn enviar" (click)="pedirSesion()">Entrar o crear cuenta</button>
           </div>
         } @else {
-          <button type="submit" class="enviar" [disabled]="!carrito.puedeEnviar()">
-            ENVIAR PEDIDO POR WHATSAPP
+          <button type="submit" class="hw-btn enviar" [disabled]="!carrito.puedeEnviar()">
+            Enviar pedido por WhatsApp
           </button>
-          <p class="aviso">AL ENVIAR SE ABRE WHATSAPP CON TU PEDIDO LISTO: SOLO CONFIRMAS Y LISTO.</p>
+          <p class="aviso">Se abre WhatsApp con tu pedido escrito: solo lo confirmas.</p>
         }
-        <button type="button" class="vaciar" (click)="carrito.vaciar()">VACIAR CARRITO</button>
+        <button type="button" class="vaciar" (click)="carrito.vaciar()">Vaciar la caja</button>
       </form>
     }
   </aside>

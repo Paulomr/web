@@ -54,13 +54,14 @@ export class Minijuegos {
   /** Referencia al hero para teñir su canvas según el scroll. */
   @ViewChild(AnimatedHero) private hero?: AnimatedHero;
 
-  // Página: crema -> rosa pastel suave.
-  private readonly PAGE_FROM: Rgb = [253, 249, 247];
-  private readonly PAGE_TO: Rgb = [249, 209, 229];
-  // Cards: blanco -> rosa muy pálido
-  // (claro siempre, para mantener legible el texto oscuro encima).
-  private readonly CARD_FROM: Rgb = [255, 255, 255];
-  private readonly CARD_TO: Rgb = [252, 236, 244];
+  // Edición Halloween: la página va del índigo del cielo al ciruela de abajo
+  // (los dos del video de la portada) mientras se baja.
+  private readonly PAGE_FROM: Rgb = [27, 20, 92];
+  private readonly PAGE_TO: Rgb = [52, 24, 107];
+  // Cards: el violeta de las tarjetas de la web, un paso más claro abajo
+  // (siempre oscuras, para mantener legible el texto claro encima).
+  private readonly CARD_FROM: Rgb = [40, 28, 102];
+  private readonly CARD_TO: Rgb = [49, 34, 122];
 
   constructor(private readonly sanitizer: DomSanitizer) {}
 

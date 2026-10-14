@@ -36,31 +36,25 @@
   margin: 0 auto;
 }
 
-/* Chip de vidrio: el titular sobre una lámina traslúcida en vez de suelto. */
+/* El titular va suelto sobre la noche: el lettering ya lleva su contorno. */
 .tira-chip {
   display: inline-flex;
-  padding: 9px 18px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(14px) saturate(1.4);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-    0 8px 22px -14px rgba(90, 55, 85, 0.5);
 }
 
 .tira-chip h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-weight: normal;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
   line-height: 1;
   letter-spacing: 0.04em;
-  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--hw-naranja);
+  text-shadow:
+    0.035em 0 0 var(--hw-tinta), -0.035em 0 0 var(--hw-tinta),
+    0 0.035em 0 var(--hw-tinta), 0 -0.035em 0 var(--hw-tinta),
+    0.025em 0.025em 0 var(--hw-tinta), -0.025em 0.025em 0 var(--hw-tinta),
+    0.025em -0.025em 0 var(--hw-tinta), -0.025em -0.025em 0 var(--hw-tinta),
+    -0.05em 0.06em 0 var(--hw-violeta), -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 .tira-link {
@@ -78,7 +72,7 @@
 }
 
 .tira-link:hover {
-  color: #e0559f;
+  color: var(--hw-naranja);
   gap: 11px;
 }
 
@@ -119,11 +113,9 @@
   border-radius: clamp(16px, 1.6vw, 26px);
   overflow: hidden;
   background: var(--surface-2);
-  /* Sombra en capas: una de contacto corta y otra ambiental larga. Una sola
-     sombra grande se ve como una mancha; dos dan volumen real. */
-  box-shadow:
-    0 2px 6px -2px rgba(90, 55, 85, 0.28),
-    0 26px 54px -26px rgba(90, 55, 85, 0.55);
+  /* Como un póster pegado en la noche: contorno de tinta y sombra dura. */
+  border: 2px solid var(--hw-tinta);
+  box-shadow: 0 8px 0 var(--hw-tinta);
 }
 
 .tira-pieza img {
@@ -134,25 +126,10 @@
   -webkit-user-drag: none;
 }
 
-/* El filo de vidrio: un aro interior de 1px más un brillo arriba. Va en un
-   span aparte y no en un ::after del figure para que quede por encima de la
-   imagen sin que el overflow del marco lo recorte. */
+/* El filo de vidrio de la versión clara sobra de noche: el contorno de
+   tinta del marco ya separa la pieza del fondo. */
 .tira-vidrio {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.75),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.16);
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0) 26%,
-    rgba(255, 255, 255, 0) 74%,
-    rgba(255, 255, 255, 0.07) 100%
-  );
+  display: none;
 }
 
 /* ---------- Cuánto queda de fila ---------- */
@@ -163,8 +140,7 @@
   margin: 0 auto;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(120, 80, 110, 0.13);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  background: rgba(185, 184, 244, 0.18);
 }
 
 .tira-barra {
@@ -174,7 +150,7 @@
   border-radius: inherit;
   transform: scaleX(0);
   transform-origin: left center;
-  background: linear-gradient(90deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
+  background: var(--hw-naranja);
 }
 
 /* ---------- Sin movimiento: se recorre a dedo ----------

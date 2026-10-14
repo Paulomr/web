@@ -4,9 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background:
-    radial-gradient(120% 50% at 50% -10%, rgba(242, 169, 205, 0.22), rgba(242, 169, 205, 0) 55%),
-    var(--bg, #fdf9f7);
+  /* Sin fondo propio: la noche de la web corre detrás. */
 }
 
 .pol-inicio {
@@ -49,7 +47,7 @@
   font-family: var(--font-display, sans-serif);
   font-size: 1.02rem;
   font-weight: 700;
-  color: #e0559f;
+  color: var(--hw-naranja);
   margin: 26px 0 8px;
 }
 
@@ -66,11 +64,12 @@
   font-size: 0.85rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #fff;
-  background: linear-gradient(135deg, #f472b6, #e0559f);
+  color: var(--hw-tinta);
+  background: var(--hw-naranja);
+  border: 2px solid var(--hw-tinta);
   border-radius: 999px;
   padding: 12px 22px;
   text-decoration: none;
-  box-shadow: 0 12px 26px -12px rgba(224, 85, 159, 0.7);
+  box-shadow: 0 4px 0 var(--hw-tinta);
 }
 .pol-volver:hover { filter: brightness(1.05); }

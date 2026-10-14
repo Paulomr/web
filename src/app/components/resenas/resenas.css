@@ -11,7 +11,7 @@
   flex-direction: column;
   align-items: center;
   gap: 28px;
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 100%);
+  /* Sin fondo propio: la noche de la web corre detrás. */
 }
 
 /* ---- Encabezado ---- */
@@ -25,16 +25,17 @@
   align-items: center;
   gap: 8px;
   padding: 7px 16px;
+  border: 1.5px solid var(--border-strong);
   border-radius: var(--r-pill);
-  background: #fff;
-  box-shadow: var(--shadow-card);
+  background: var(--surface-2);
+  box-shadow: 0 4px 0 var(--hw-tinta);
   font-family: var(--font-display);
   font-size: 0.86rem;
   color: var(--text);
 }
 
 .rev-stars-mini {
-  color: #f6b73c;
+  color: var(--hw-naranja);
   letter-spacing: 1px;
 }
 
@@ -43,10 +44,14 @@
   font-family: var(--font-display);
   font-size: clamp(1.7rem, 5.5vw, 2.6rem);
   line-height: 1.05;
-  background: var(--grad-pink);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* El lettering de la edición: naranja, contorno de tinta, extrusión violeta. */
+  color: var(--hw-naranja);
+  text-shadow:
+    0.035em 0 0 var(--hw-tinta), -0.035em 0 0 var(--hw-tinta),
+    0 0.035em 0 var(--hw-tinta), 0 -0.035em 0 var(--hw-tinta),
+    0.025em 0.025em 0 var(--hw-tinta), -0.025em 0.025em 0 var(--hw-tinta),
+    0.025em -0.025em 0 var(--hw-tinta), -0.025em -0.025em 0 var(--hw-tinta),
+    -0.05em 0.06em 0 var(--hw-violeta), -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 /* ============ Dejar una opinión ============ */
@@ -73,9 +78,9 @@
 }
 
 .rev-aviso.ok {
-  border-color: #a8e0c0;
-  background: #eefaf3;
-  color: #17805a;
+  border-color: rgba(132, 224, 168, 0.6);
+  background: rgba(132, 224, 168, 0.12);
+  color: #9be8bb;
 }
 
 /* Botón de entrada (mismo lenguaje que el resto de píldoras de la marca). */
@@ -84,15 +89,16 @@
   align-items: center;
   gap: 9px;
   padding: 13px 28px;
-  border: none;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
-  background: var(--grad-pink);
-  color: #ffffff;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
   font-family: var(--font-display);
   font-size: 0.88rem;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: var(--glow-pink);
+  box-shadow: 0 4px 0 var(--hw-tinta);
   transition: transform 200ms ease;
 }
 
@@ -102,7 +108,7 @@
 
 .rev-nota {
   margin: 0;
-  color: var(--text-dim);
+  color: var(--text-muted);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -116,9 +122,9 @@
   width: 100%;
   padding: 24px;
   border-radius: var(--r-lg);
-  background: #fff;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  box-shadow: 0 5px 0 var(--hw-tinta);
   text-align: left;
 }
 
@@ -157,7 +163,7 @@
 
 .rev-form textarea:focus,
 .rev-form input:focus {
-  outline: 2px solid var(--violet);
+  outline: 2px solid var(--hw-naranja);
   outline-offset: 1px;
 }
 
@@ -182,7 +188,7 @@
 }
 
 .rev-contador.poco {
-  color: #c96a9a;
+  color: var(--hw-naranja);
 }
 
 .rev-ayuda {
@@ -198,9 +204,9 @@
   margin: 0;
   padding: 9px 13px;
   border-radius: var(--r-md);
-  background: #fdeaf2;
-  border: 1px solid #f4b6d5;
-  color: #b83a77;
+  background: rgba(255, 120, 120, 0.12);
+  border: 1px solid rgba(255, 150, 150, 0.5);
+  color: #ffb3b3;
   font-size: 0.74rem;
   font-weight: 700;
   line-height: 1.5;
@@ -227,7 +233,7 @@
 }
 
 .rev-star.on {
-  color: #f6b73c;
+  color: var(--hw-naranja);
 }
 
 .rev-star:hover {
@@ -256,15 +262,16 @@
 
 .rev-enviar {
   padding: 13px 26px;
-  border: none;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
-  background: linear-gradient(45deg, #f078b8, #a97fd6);
-  color: #ffffff;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
   font-family: var(--font-display);
   font-size: 0.82rem;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: var(--glow-pink);
+  box-shadow: 0 4px 0 var(--hw-tinta);
   transition: transform 180ms ease;
 }
 
@@ -294,16 +301,16 @@
   flex-direction: column;
   gap: 12px;
   padding: 22px;
-  background: #fff;
-  border: 1px solid var(--border);
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
   border-radius: var(--r-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 5px 0 var(--hw-tinta);
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .rev-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-float);
+  box-shadow: 0 9px 0 var(--hw-tinta);
 }
 
 .rev-top {
@@ -321,15 +328,15 @@
   border-radius: 50%;
   font-family: var(--font-display);
   font-size: 1.1rem;
-  color: #fff;
-  background: var(--grad-pink);
+  color: var(--hw-tinta);
+  background: var(--hw-naranja);
+  border: 2px solid var(--hw-tinta);
 }
 
 /* Variedad de color en los avatares (paleta de marca). */
-.rev-card:nth-child(2) .rev-avatar { background: linear-gradient(135deg, #9adbe8, #c9aee8); }
-.rev-card:nth-child(3) .rev-avatar { background: linear-gradient(135deg, #f6d8a8, #f2a9cd); }
-.rev-card:nth-child(4) .rev-avatar { background: linear-gradient(135deg, #c9aee8, #9adbe8); }
-.rev-card:nth-child(5) .rev-avatar { background: linear-gradient(135deg, #f2a9cd, #f6d8a8); }
+/* Tintas planas de la edición, una por tarjeta: naranja, lila, rosa Bearnie. */
+.rev-card:nth-child(3n + 2) .rev-avatar { background: var(--hw-lila); }
+.rev-card:nth-child(3n) .rev-avatar { background: var(--pink); }
 
 .rev-quien {
   display: flex;
@@ -372,7 +379,7 @@
 }
 
 .rev-stars {
-  color: #f6b73c;
+  color: var(--hw-naranja);
   letter-spacing: 2px;
   font-size: 1rem;
 }
@@ -396,14 +403,15 @@
   align-items: center;
   gap: 8px;
   padding: 13px 26px;
+  border: 2px solid var(--hw-lila);
   border-radius: var(--r-pill);
-  background: #fff;
-  color: var(--text);
+  background: transparent;
+  color: var(--hw-lila);
   font-family: var(--font-display);
   font-size: 0.9rem;
   letter-spacing: 0.03em;
   text-decoration: none;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 0 rgba(13, 10, 51, 0.7);
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 

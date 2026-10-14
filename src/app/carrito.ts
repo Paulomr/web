@@ -2,12 +2,18 @@ import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { PRODUCTOS, Producto, WHATSAPP_SEDES, extraSabor } from './productos';
 import { ProductosService } from './productos.service';
 import { conTemporada } from './temporada';
+import { BIENVENIDA_PCT, METAS, Meta, promosActivas } from './promos';
 import { CuentaService } from './cuenta.service';
 import { PixelService } from './pixel.service';
 
 // Carrito de pedidos: estado global con signals, persistido en localStorage.
 // El "checkout" no cobra: arma el pedido completo y lo envía por WhatsApp,
 // que es el canal real de ventas del negocio.
+//
+// Edición Halloween: el carrito lleva además las promociones de promos.ts.
+// El 10 % de bienvenida (si a la cuenta le toca) y dos metas que, al pasar
+// su monto en productos, dejan ELEGIR un regalo del menú. El regalo elegido
+// se recuerda aunque el pedido baje de la meta: si vuelve a pasarla, vuelve.
 
 export interface ItemCarrito {
   id: string;
@@ -33,6 +39,13 @@ export interface DatosPedido {
 }
 
 const KEY = 'crunchy-carrito-v1';
+const KEY_REGALOS = 'crunchy-regalos-v1';
+
+/** Un regalo que sí va en el pedido: su meta está cumplida y el producto existe. */
+export interface RegaloVigente {
+  meta: Meta;
+  producto: Producto;
+}
 
 const SEDES: Record<Sede, string> = {
   'san-antonio': 'SEDE SAN ANTONIO (SAN ANTONIO DE PEREIRA, RIONEGRO)',
@@ -42,6 +55,9 @@ const SEDES: Record<Sede, string> = {
 @Injectable({ providedIn: 'root' })
 export class Carrito {
   readonly items = signal<ItemCarrito[]>(this.cargar());
+
+  /** Regalo elegido por meta (id del producto). Puede estar elegido y no vigente. */
+  readonly regalos = signal<Partial<Record<Meta['id'], string>>>(this.cargarRegalos());
   readonly abierto = signal(false);
 
   /** Último aviso "añadido al carrito" (lo escucha el toast global). */
@@ -69,6 +85,59 @@ export class Carrito {
     this.items().reduce((s, i) => s + this.precioUnit(i) * i.cantidad, 0),
   );
 
+  // ---------- Promociones (promos.ts) ----------
+
+  /** Las metas de la edición, mientras duren. */
+  readonly metas = computed<Meta[]>(() => (promosActivas() ? METAS : []));
+
+  /** Metas cumplidas con lo que hay en el carrito. */
+  readonly metasCumplidas = computed(() => this.metas().filter((m) => this.total() >= m.monto));
+
+  /** La próxima meta por cumplir, o null si ya están todas (o no hay). */
+  readonly siguienteMeta = computed(() => this.metas().find((m) => this.total() < m.monto) ?? null);
+
+  /** Pesos que faltan para la próxima meta. */
+  readonly faltaMeta = computed(() => {
+    const m = this.siguienteMeta();
+    return m ? m.monto - this.total() : 0;
+  });
+
+  /** Los regalos que van en el pedido: meta cumplida + elegido + en el menú. */
+  readonly regalosVigentes = computed<RegaloVigente[]>(() =>
+    this.metasCumplidas()
+      .map((meta) => {
+        const id = this.regalos()[meta.id];
+        const producto = id && meta.opciones.includes(id) ? this.producto(id) : undefined;
+        return producto ? { meta, producto } : null;
+      })
+      .filter((x): x is RegaloVigente => x !== null),
+  );
+
+  /** Metas cumplidas a las que todavía les falta elegir regalo. */
+  readonly regalosPorElegir = computed(() =>
+    this.metasCumplidas().filter((m) => !this.regalosVigentes().some((r) => r.meta.id === m.id)),
+  );
+
+  /** Las opciones de regalo de una meta que de verdad están en el menú. */
+  opcionesDe(meta: Meta): Producto[] {
+    return meta.opciones.map((id) => this.producto(id)).filter((p): p is Producto => !!p);
+  }
+
+  elegirRegalo(meta: Meta, id: string): void {
+    this.regalos.update((r) => ({ ...r, [meta.id]: id }));
+  }
+
+  /** ¿Aplica el 10 % de bienvenida en este pedido? */
+  readonly bienvenidaAplica = computed(() => this.cuenta.bienvenidaDisponible() && this.total() > 0);
+
+  /** Descuento en pesos, sobre los productos con precio. */
+  readonly descuento = computed(() =>
+    this.bienvenidaAplica() ? Math.round((this.total() * BIENVENIDA_PCT) / 100) : 0,
+  );
+
+  /** Lo que se paga: productos menos el descuento (los regalos van en $0). */
+  readonly totalFinal = computed(() => Math.max(0, this.total() - this.descuento()));
+
   /** ¿Hay ítems sin precio definido (se cotizan por WhatsApp)? */
   readonly hayConsultar = computed(() =>
     this.items().some((i) => this.precioUnit(i) === 0),
@@ -88,6 +157,13 @@ export class Carrito {
         /* almacenamiento bloqueado: el carrito vive solo en memoria */
       }
     });
+    effect(() => {
+      try {
+        localStorage.setItem(KEY_REGALOS, JSON.stringify(this.regalos()));
+      } catch {
+        /* sin almacenamiento: el regalo elegido vive solo en memoria */
+      }
+    });
   }
 
   private readonly productosSvc = inject(ProductosService);
@@ -100,6 +176,7 @@ export class Carrito {
 
   agregar(id: string, sabor?: string): void {
     const eraVacio = this.items().length === 0;
+    const cumplidasAntes = this.metasCumplidas().length;
     this.items.update((lista) => {
       const existe = lista.find((i) => this.esLinea(i, id, sabor));
       return existe
@@ -108,7 +185,13 @@ export class Carrito {
     });
     // Dispara el aviso flotante (nonce único para reactivarlo aunque el texto
     // se repita al agregar varias veces seguidas).
-    this.notificacion.set({ nonce: Date.now(), texto: 'AÑADIDO AL CARRITO' });
+    // Si con este producto se cruzó una meta, el aviso lo dice: es el momento
+    // en que el cliente se entera de que se ganó algo.
+    const nueva = this.metasCumplidas()[cumplidasAntes];
+    this.notificacion.set({
+      nonce: Date.now(),
+      texto: nueva ? `¡GANASTE ${nueva.premio.toUpperCase()} DE REGALO!` : 'AÑADIDO AL CARRITO',
+    });
     // Con la PRIMERA galleta del carrito, invita a crear cuenta (una sola vez).
     if (eraVacio && !this.cuenta.registrado()) this.cuenta.abrir();
     const p = this.producto(id);
@@ -134,6 +217,7 @@ export class Carrito {
 
   vaciar(): void {
     this.items.set([]);
+    this.regalos.set({});
   }
 
   actualizarDatos(parte: Partial<DatosPedido>): void {
@@ -175,8 +259,16 @@ export class Carrito {
       const sub = precio > 0 ? `— ${formatoCOP(precio * i.cantidad)}` : '— (a consultar)';
       L.push(`• ${i.cantidad}×  ${nombre}  ${sub}`);
     }
+    for (const r of this.regalosVigentes()) {
+      L.push(`• 1×  ${r.producto.nombre}  — 🎁 REGALO meta ${r.meta.nombre} (${formatoCOP(r.meta.monto)})`);
+    }
     L.push('');
-    L.push(`💰 *TOTAL: ${formatoCOP(this.total())}*${this.hayConsultar() ? ' + ítems a consultar' : ''}`);
+    const consultar = this.hayConsultar() ? ' + ítems a consultar' : '';
+    if (this.descuento() > 0) {
+      L.push(`💵 Subtotal: ${formatoCOP(this.total())}`);
+      L.push(`🎃 Bienvenida −${BIENVENIDA_PCT}% (primer pedido): -${formatoCOP(this.descuento())}`);
+    }
+    L.push(`💰 *TOTAL: ${formatoCOP(this.totalFinal())}*${consultar}`);
 
     // ── Bloque 2: datos del cliente + fidelidad ──
     L.push(barra);
@@ -216,17 +308,21 @@ export class Carrito {
     return `CM-${fecha}-${r}`;
   }
 
-  /** Tras enviar el pedido: registra el pedido en la base. */
+  /** Tras enviar el pedido: lo registra en la base y gasta la bienvenida. */
   confirmarEnvio(): void {
+    // La foto del pedido se toma ANTES de gastar la bienvenida: lo que se
+    // guarda tiene que ser lo que el cliente vio y envió.
+    const conBienvenida = this.bienvenidaAplica();
     this.pixel.pedidoEnviado(
       this.items().map((i) => i.id),
-      this.total(),
+      this.totalFinal(),
     );
-    void this.registrarPedido();
+    void this.registrarPedido(conBienvenida);
+    if (conBienvenida) void this.cuenta.usarBienvenida();
   }
 
   /** Guarda el pedido en la base para el panel (buscar por código, historial). */
-  private async registrarPedido(): Promise<void> {
+  private async registrarPedido(conBienvenida: boolean): Promise<void> {
     const codigo = this.codigoActual;
     if (!codigo) return;
     const d = this.datos();
@@ -243,6 +339,17 @@ export class Carrito {
         };
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);
+    // Los regalos van como líneas de $0, con la meta en el nombre: en el panel
+    // se ve qué se regaló y por qué.
+    for (const r of this.regalosVigentes()) {
+      items.push({
+        id: r.producto.id,
+        nombre: `REGALO ${r.meta.nombre.toUpperCase()}: ${r.producto.nombre}`,
+        cantidad: 1,
+        precioUnit: 0,
+      });
+    }
+    const descuento = conBienvenida ? Math.round((this.total() * BIENVENIDA_PCT) / 100) : 0;
     const cuerpo = {
       codigo,
       instagram: c?.instagram ?? '',
@@ -256,9 +363,9 @@ export class Carrito {
       notas: d.notas.trim(),
       items,
       subtotal: this.total(),
-      descuento: 0,
-      total: this.total(),
-      cupon: false,
+      descuento,
+      total: Math.max(0, this.total() - descuento),
+      cupon: conBienvenida,
       hayConsultar: this.hayConsultar(),
     };
     try {
@@ -269,6 +376,15 @@ export class Carrito {
       });
     } catch {
       /* sin conexión: el pedido igual se envió por WhatsApp */
+    }
+  }
+
+  private cargarRegalos(): Partial<Record<Meta['id'], string>> {
+    try {
+      const r = JSON.parse(localStorage.getItem(KEY_REGALOS) || '{}');
+      return r && typeof r === 'object' ? r : {};
+    } catch {
+      return {};
     }
   }
 

@@ -21,24 +21,20 @@ api/
       pedido.mjs        <- pedidos enviados por WhatsApp (código, cliente, ítems)
       visita.mjs        <- pageviews para las estadísticas de tráfico
       resena.mjs        <- opiniones de clientes
-      postulacion.mjs   <- negocios postulados + votos de la convocatoria
   productos/
     index.mjs           <- GET lista | POST crear (admin)
     [id].mjs            <- GET uno | PUT editar | DELETE ocultar (admin)
   pedidos.mjs           <- POST registra pedido | GET admin busca por código
   estadisticas.mjs      <- POST registra visita | GET admin métricas del negocio
   resenas.mjs           <- opiniones de clientes (POST envía, PUT/DELETE modera)
-  postulaciones.mjs     <- "Postula tu negocio", ya cerrada: solo GET y DELETE de admin
 scripts/                <- utilidades (semilla de datos, etc.)
 ```
 
 > ⚠️ **Nota Vercel:** cada archivo de `api/*.mjs` es una función serverless, y el
-> plan Hobby permite **12**. Están **las 12 ocupadas**: `postulaciones.mjs` entró
-> en el hueco que dejó `chat.mjs` (la IA de Bearnie, que ya no estaba en la web).
-> Para meter algo nuevo **no basta con crear otro archivo**: hay que agrupar la
-> acción dentro de un endpoint que ya exista, como hace `cuentas.mjs` con su
-> campo `accion`. La convocatoria cerró y `postulaciones.mjs` quedó solo para
-> el panel: es el primer hueco a reutilizar cuando ya no haga falta ese archivo.
+> plan Hobby permite **12**. Hoy hay **11**: `postulaciones.mjs` (la convocatoria
+> del carrito, cerrada el 2026-10-14) se borró con sus votos y dejó un hueco. Aun
+> así, antes de crear otro archivo conviene agrupar la acción dentro de un
+> endpoint que ya exista, como hace `cuentas.mjs` con su campo `accion`.
 
 ## Fases
 
@@ -64,17 +60,18 @@ scripts/                <- utilidades (semilla de datos, etc.)
       portada. Para escribir hace falta @instagram + el código de 4 dígitos, así
       nadie opina en nombre de otro. Toda opinión entra como *pendiente* y solo
       se publica cuando se aprueba en `/admin` → "Opiniones de clientes".
-- [x] **Fase 3.7 — Postula tu negocio** ✅
-      Convocatoria para llevar un carrito a locales de otra gente. Postular NO
-      pide cuenta (el negocio llega de fuera; el spam lo frena la moderación),
-      pero votar SÍ: @instagram + código de 4 dígitos, un voto por cuenta en
-      toda la convocatoria, y votar otra vez mueve el voto en vez de sumarlo.
-      Se modera en `/admin` → "Postulaciones de negocios"; los 4 más votados
-      salen en la portada. Los votos se cuentan agregando la colección `Voto`,
-      nunca con un contador guardado (se desincroniza).
-      **Cerrada el 2026-10-14:** fuera la página `/postula` y el marcador del
-      hero. La API responde 410 a postular y votar; el panel conserva la lista
-      de lo que llegó (solo lectura y borrar) para poder escribirles.
+- [x] **Fase 3.8 — Promociones de Halloween** ✅ (hasta el 31 de octubre de 2026)
+      Todo vive en `src/app/promos.ts`: la fecha de fin, el % de bienvenida y
+      las dos metas de regalo (Dulce y Truco). Al pasar la fecha se apagan solas.
+      · **−10 % de bienvenida**: primer pedido por la web, una vez por cuenta.
+        El servidor responde `bienvenida: true` si la cuenta no ha usado el
+        cupón (`cuponUsado`) y no tiene pedidos guardados; al enviar el pedido
+        se marca con `accion: 'usar-cupon'` en `/api/cuentas`.
+      · **Metas de regalo**: el cliente *elige* su regalo (bebida o galleta).
+        No hay rueda ni sorteo a propósito: un premio al azar es un juego
+        promocional y en Colombia necesita permiso de Coljuegos.
+      · El pedido guardado lleva `cupon`, `descuento`, `subtotal` y los regalos
+        como productos a $0 (`REGALO DULCE: …`).
 - [ ] **Fase 4 — Pagos en línea**
       Cobro con tarjeta/PSE (proveedor colombiano: Wompi o MercadoPago).
 - [ ] **Fase 5 — Cuentas y fidelidad**

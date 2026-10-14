@@ -1,8 +1,8 @@
 /* ============ Cartel de aviso: la galleta nueva ============
    Cápsula horizontal fija bajo el notch. Mismo lenguaje que la barra de
-   navegación (vidrio esmerilado, píldora, sombra baja) porque es la misma
-   familia de piezas flotantes; lo único que la distingue es el filete de
-   gradiente de marca y la miniatura del producto.
+   navegación (vidrio de noche, borde lila, sombra dura) porque es la misma
+   familia de piezas flotantes; la distinguen la miniatura del producto con
+   su aro naranja y el botón naranja de la edición Halloween.
    ------------------------------------------------------------------------- */
 
 .cn {
@@ -21,26 +21,11 @@
   width: min(92vw, 540px);
   padding: 6px;
   border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.74);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(16px) saturate(1.5);
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 18px 40px -22px rgba(90, 55, 85, 0.65);
-}
-
-/* Halo rosa por debajo: despega la cápsula del video del hero, que es azul
-   cielo y muy claro — sin esto el vidrio se pierde sobre las nubes. */
-.cn::after {
-  content: '';
-  position: absolute;
-  inset: 10px 16px -6px 16px;
-  z-index: -1;
-  border-radius: inherit;
-  background: var(--grad-pink);
-  filter: blur(14px);
-  opacity: 0.32;
+  background: rgba(13, 10, 51, 0.86);
+  border: 1.5px solid var(--border-strong);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
 }
 
 /* ---------- Cuerpo pulsable ---------- */
@@ -67,7 +52,7 @@
   scale: 0.985;
 }
 
-/* Miniatura con anillo de gradiente: el producto se ve antes de leerlo. */
+/* Miniatura con aro naranja: el producto se ve antes de leerlo. */
 .cn-foto {
   flex-shrink: 0;
   display: block;
@@ -75,8 +60,8 @@
   height: 46px;
   padding: 2px;
   border-radius: 50%;
-  background: var(--grad-brand);
-  box-shadow: 0 6px 14px -8px rgba(90, 55, 85, 0.7);
+  background: var(--hw-naranja);
+  box-shadow: 0 0 0 2px var(--hw-tinta);
 }
 
 .cn-foto img {
@@ -103,11 +88,7 @@
   font-size: 0.7rem;
   line-height: 1.1;
   letter-spacing: 0.13em;
-  /* Gradiente de marca sobre la letra, como el chip de la tira de arte. */
-  background: linear-gradient(135deg, #e2559f 0%, #a05fd0 62%, #4aa9c0 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--hw-naranja);
 }
 
 /* El punto late: es el dato de que la novedad es de ahora. */
@@ -116,18 +97,18 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #e84e9c;
-  box-shadow: 0 0 0 0 rgba(232, 78, 156, 0.55);
+  background: var(--hw-naranja);
+  box-shadow: 0 0 0 0 rgba(246, 164, 71, 0.55);
   animation: cn-pulso 2.4s ease-out infinite;
 }
 
 @keyframes cn-pulso {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(232, 78, 156, 0.55);
+    box-shadow: 0 0 0 0 rgba(246, 164, 71, 0.55);
   }
   60% {
-    box-shadow: 0 0 0 8px rgba(232, 78, 156, 0);
+    box-shadow: 0 0 0 8px rgba(246, 164, 71, 0);
   }
 }
 
@@ -152,14 +133,15 @@
   align-items: center;
   gap: 6px;
   padding: 9px 18px;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
-  background: linear-gradient(45deg, #f078b8, #a97fd6);
-  color: #ffffff;
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
   font-family: var(--font-display);
   font-size: 0.78rem;
   letter-spacing: 0.08em;
-  box-shadow: 0 8px 18px -10px rgba(224, 96, 168, 0.9);
-  transition: box-shadow 300ms ease;
+  box-shadow: 0 3px 0 var(--hw-tinta);
+  transition: translate 160ms ease, box-shadow 160ms ease;
 }
 
 .cn-flecha {
@@ -169,7 +151,8 @@
 
 @media (hover: hover) {
   .cn-ir:hover .cn-ver {
-    box-shadow: 0 12px 24px -10px rgba(224, 96, 168, 1);
+    translate: 0 -1px;
+    box-shadow: 0 4px 0 var(--hw-tinta);
   }
 }
 
@@ -186,7 +169,7 @@
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: var(--text-dim);
+  color: var(--text-muted);
   cursor: pointer;
   transition:
     color 220ms ease,

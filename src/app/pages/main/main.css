@@ -12,63 +12,39 @@
   padding: 28px 24px 0;
 }
 
-/* Botón estilo notch: píldora blanca que se amplía lateralmente al pasar
-   el mouse, con gradiente y brillo desenfocado (como los ítems del menú). */
+/* Botón de la portada: el sticker naranja de la edición Halloween (el mismo
+   cuerpo que .hw-btn): contorno de tinta y una sombra dura que se hunde al
+   presionar. Sin brillos ni degradados. */
 .btn-notch {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 16px 54px;
-  border: none;
+  padding: 15px 44px;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-pill);
-  background: #ffffff;
-  color: var(--text);
+  background: var(--hw-naranja);
+  color: var(--hw-tinta);
   font-family: var(--font-display);
   font-size: 1rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 14px 30px -14px rgba(90, 55, 85, 0.45);
-  transition: padding 450ms ease, color 450ms ease, box-shadow 450ms ease;
+  box-shadow: 0 5px 0 var(--hw-tinta);
+  transition: translate 160ms ease, box-shadow 160ms ease;
 }
 
-.btn-notch::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(45deg, #f078b8, #a97fd6);
-  opacity: 0;
-  transition: opacity 450ms ease;
+@media (hover: hover) {
+  .btn-notch:hover {
+    translate: 0 -2px;
+    box-shadow: 0 7px 0 var(--hw-tinta);
+  }
 }
 
-.btn-notch::after {
-  content: '';
-  position: absolute;
-  inset: 12px 6px -8px 6px;
-  border-radius: inherit;
-  background: linear-gradient(45deg, #f078b8, #a97fd6);
-  filter: blur(16px);
-  opacity: 0;
-  z-index: -1;
-  transition: opacity 450ms ease;
-}
-
-.btn-notch:hover {
-  padding: 16px 78px;
-  color: #ffffff;
-  box-shadow: none;
-}
-
-.btn-notch:hover::before,
-.btn-notch:hover::after {
-  opacity: 1;
-}
-
-.btn-notch:hover::after {
-  opacity: 0.55;
+.btn-notch:active {
+  translate: 0 5px;
+  box-shadow: 0 0 0 var(--hw-tinta);
 }
 
 .btn-notch span {
@@ -93,41 +69,34 @@
 }
 
 .btn-primary {
-  color: #5c3a52;
-  background: linear-gradient(45deg, #f2a9cd, #c9aee8);
-  box-shadow: var(--glow-pink);
-}
-
-/* Brillo desenfocado inferior (estilo gradient-menu). */
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 12px 4px -8px 4px;
-  border-radius: inherit;
-  background: linear-gradient(45deg, #f078b8, #a97fd6);
-  filter: blur(15px);
-  opacity: 0;
-  z-index: -1;
-  transition: opacity 400ms ease;
+  color: var(--hw-tinta);
+  background: var(--hw-naranja);
+  border: 2px solid var(--hw-tinta);
+  box-shadow: 0 4px 0 var(--hw-tinta);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
 }
 
-.btn-primary:hover::after {
-  opacity: 0.55;
-}
-
+/* El secundario: contorno lila, se rellena al pasar. */
 .btn-ghost {
-  color: var(--text);
-  background: var(--surface);
-  border-color: var(--border-strong);
+  color: var(--hw-lila);
+  background: transparent;
+  border: 2px solid var(--hw-lila);
+  font-family: var(--font-display);
+  font-weight: normal;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 0 rgba(13, 10, 51, 0.7);
 }
 
-.btn-ghost:hover {
-  border-color: var(--cyan);
-  box-shadow: var(--glow-cyan);
+@media (hover: hover) {
+  .btn-ghost:hover {
+    color: var(--hw-tinta);
+    background: var(--hw-lila);
+    border-color: var(--hw-tinta);
+  }
 }
 
 .btn-arrow {
@@ -168,22 +137,34 @@
   font-weight: 700;
   font-size: clamp(2.75rem, 13vw, 16rem);
   line-height: 0.95;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   white-space: nowrap;
-  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* El lettering del saludo: naranja de la luna, contorno de tinta y
+     extrusión violeta hacia abajo a la izquierda (ver .hw-titulo). */
+  color: var(--hw-naranja);
+  text-shadow:
+    0.03em 0 0 var(--hw-tinta), -0.03em 0 0 var(--hw-tinta),
+    0 0.03em 0 var(--hw-tinta), 0 -0.03em 0 var(--hw-tinta),
+    0.022em 0.022em 0 var(--hw-tinta), -0.022em 0.022em 0 var(--hw-tinta),
+    0.022em -0.022em 0 var(--hw-tinta), -0.022em -0.022em 0 var(--hw-tinta),
+    -0.04em 0.05em 0 var(--hw-violeta), -0.055em 0.065em 0 var(--hw-violeta),
+    -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 .sedes h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.2rem, 3.4vw, 1.8rem);
-  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* El lettering del saludo: naranja de la luna, contorno de tinta y
+     extrusión violeta hacia abajo a la izquierda (ver .hw-titulo). */
+  color: var(--hw-naranja);
+  text-shadow:
+    0.03em 0 0 var(--hw-tinta), -0.03em 0 0 var(--hw-tinta),
+    0 0.03em 0 var(--hw-tinta), 0 -0.03em 0 var(--hw-tinta),
+    0.022em 0.022em 0 var(--hw-tinta), -0.022em 0.022em 0 var(--hw-tinta),
+    0.022em -0.022em 0 var(--hw-tinta), -0.022em -0.022em 0 var(--hw-tinta),
+    -0.04em 0.05em 0 var(--hw-violeta), -0.055em 0.065em 0 var(--hw-violeta),
+    -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 .fila {
@@ -253,7 +234,7 @@
   flex-direction: column;
   gap: 1px;
   padding: 22px 12px 10px;
-  background: linear-gradient(to top, rgba(64, 34, 55, 0.72), transparent);
+  background: linear-gradient(to top, rgba(13, 10, 51, 0.82), transparent);
   text-align: left;
 }
 
@@ -292,10 +273,16 @@
   font-size: clamp(1.35rem, 3.4vw, 2rem);
   line-height: 1;
   letter-spacing: 0.02em;
-  background: linear-gradient(135deg, #e78ab8 0%, #a97fd6 60%, #6cc4d8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* El lettering del saludo: naranja de la luna, contorno de tinta y
+     extrusión violeta hacia abajo a la izquierda (ver .hw-titulo). */
+  color: var(--hw-naranja);
+  text-shadow:
+    0.03em 0 0 var(--hw-tinta), -0.03em 0 0 var(--hw-tinta),
+    0 0.03em 0 var(--hw-tinta), 0 -0.03em 0 var(--hw-tinta),
+    0.022em 0.022em 0 var(--hw-tinta), -0.022em 0.022em 0 var(--hw-tinta),
+    0.022em -0.022em 0 var(--hw-tinta), -0.022em -0.022em 0 var(--hw-tinta),
+    -0.04em 0.05em 0 var(--hw-violeta), -0.055em 0.065em 0 var(--hw-violeta),
+    -0.07em 0.08em 0 var(--hw-violeta);
 }
 
 .sedes-cta-botones {
@@ -306,50 +293,37 @@
   width: min(760px, 94vw);
 }
 
-/* Píldora grande estilo notch (gradiente + brillo desenfocado). */
+/* Píldora de sede: cartón violeta de la noche con el pin en naranja,
+   contorno lila y sombra dura. Las dos iguales: ninguna sede manda. */
 .sede-pill {
   position: relative;
   flex: 1 1 260px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 20px;
+  gap: 12px;
+  padding: 12px 22px;
+  border: 2px solid var(--border-strong);
   border-radius: var(--r-pill);
+  background: var(--surface-2);
   text-decoration: none;
-  color: #ffffff;
-  box-shadow: var(--glow-pink);
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  color: var(--text);
+  box-shadow: 0 5px 0 var(--hw-tinta);
+  transition: translate 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
-.sede-pill.marinilla {
-  background: linear-gradient(45deg, #f078b8, #c9aee8);
-}
-
-.sede-pill.sanantonio {
-  background: linear-gradient(45deg, #7cd4ea, #a97fd6);
-  box-shadow: var(--glow-cyan);
-}
-
-/* Brillo desenfocado inferior, hereda el mismo gradiente de la píldora. */
-.sede-pill::after {
-  content: '';
-  position: absolute;
-  inset: 12px 10px -8px 10px;
-  border-radius: inherit;
-  background: inherit;
-  filter: blur(16px);
-  opacity: 0.45;
-  z-index: -1;
-}
-
-.sede-pill:hover {
-  transform: translateY(-4px);
+@media (hover: hover) {
+  .sede-pill:hover {
+    translate: 0 -3px;
+    border-color: var(--hw-naranja);
+    box-shadow: 0 8px 0 var(--hw-tinta);
+  }
 }
 
 .sede-pill svg {
   width: 26px;
   height: 26px;
   flex-shrink: 0;
+  color: var(--hw-naranja);
 }
 
 .sede-pill-txt {
@@ -361,8 +335,10 @@
 
 .sede-pill-txt strong {
   font-family: var(--font-display);
+  font-weight: normal;
   font-size: 1.15rem;
   letter-spacing: 0.04em;
+  color: var(--hw-naranja);
 }
 
 .sede-pill-txt em {
@@ -370,7 +346,7 @@
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.07em;
-  opacity: 0.92;
+  color: var(--text-muted);
 }
 
 /* ---------- Sedes ---------- */
@@ -468,8 +444,9 @@
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
+  border: 2px solid var(--hw-tinta);
   border-radius: var(--r-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 6px 0 var(--hw-tinta);
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
@@ -485,7 +462,7 @@
 /* ---------- Osas decorativas ---------- */
 .osa-deco {
   width: 92px;
-  filter: drop-shadow(0 10px 18px rgba(90, 55, 85, 0.32));
+  filter: drop-shadow(0 4px 0 rgba(13, 10, 51, 0.6));
   animation: osa-flota 3.8s ease-in-out infinite;
 }
 
@@ -513,13 +490,13 @@
 /* ---------- Guiño a los minijuegos ---------- */
 .guinio {
   margin: 56px 0 64px;
-  color: var(--text-dim);
+  color: var(--text-muted);
   font-size: 0.92rem;
   text-align: center;
 }
 
 .guinio a {
-  color: #a97fd6;
+  color: var(--hw-naranja);
   font-weight: 600;
   text-decoration: none;
 }
@@ -540,14 +517,7 @@
   .mundo-fotos img:nth-child(2):hover {
     transform: translateY(14px);
   }
-  .btn-notch:hover {
-    padding: 16px 54px;
-    color: var(--text);
-  }
-  .btn-notch:hover::before,
-  .btn-notch:hover::after {
-    opacity: 0;
-  }
+
 }
 
 /* ---------- Tablet ---------- */
