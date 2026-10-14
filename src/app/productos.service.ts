@@ -1,7 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 import { PRODUCTOS, Producto } from './productos';
+import { conTemporada } from './temporada';
 
 // Fuente del menú para toda la web.
+//
+// Al menú (local o de la base) se le suma el producto de temporada mientras
+// dure: ver temporada.ts.
 //
 // Red de seguridad: arranca SIEMPRE con el menú local (PRODUCTOS), así hay datos
 // al instante y la web nunca queda en blanco. En segundo plano pregunta a la
@@ -10,7 +14,7 @@ import { PRODUCTOS, Producto } from './productos';
 @Injectable({ providedIn: 'root' })
 export class ProductosService {
   /** Menú vigente (local al inicio; se actualiza con el de la base si llega). */
-  readonly productos = signal<Producto[]>(PRODUCTOS);
+  readonly productos = signal<Producto[]>(conTemporada(PRODUCTOS));
 
   /** true cuando el menú ya viene de la base de datos. */
   readonly desdeBase = signal(false);
@@ -42,7 +46,7 @@ export class ProductosService {
         nuevo: d.nuevo ? true : undefined,
       }));
 
-      this.productos.set(mapeados);
+      this.productos.set(conTemporada(mapeados));
       this.desdeBase.set(true);
     } catch {
       /* sin conexión con la base: se mantiene el menú local */

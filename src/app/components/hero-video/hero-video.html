@@ -1,4 +1,4 @@
-<section class="hv" #seccion [class.reducido]="reducido" aria-label="Bearnie abre la caja">
+<section class="hv" #seccion [class.reducido]="reducido" aria-label="Bearnie abre la caja de Halloween">
   <div class="hv-pegado" #pegado>
     <video
       #video
@@ -13,34 +13,41 @@
       aria-hidden="true"
     ></video>
 
-    <!-- Resplandor blanco que se abre bajo el saludo para que el texto se lea
-         sobre el cielo (y que hereda del destello de sol del propio video). -->
-    <div class="hv-velo" aria-hidden="true"></div>
-
     <!-- 1 · Dentro de la caja: la invitación a bajar. -->
     <p class="hv-pista" aria-hidden="true">
       <span class="hv-pista-txt">Desliza</span>
       <span class="hv-flecha">▾</span>
     </p>
 
-    <!-- Marcador de la convocatoria. Va dentro del bloque pegado para heredar
-         `--p` y desvanecerse al ritmo del video. Si no hay negocios aprobados
-         no pinta nada. -->
-    <app-votados [class.oculto]="!votadosActivo()" />
+    <!-- 2 · Bearnie se asoma y abre la capa. Es lo que dice el interior de la
+         caja de verdad: "Triki Triki Halloween". -->
+    <p class="hv-susurro" aria-hidden="true">triki triki halloween</p>
 
-    <!-- 2 · Bearnie se asoma. -->
-    <p class="hv-susurro" aria-hidden="true">Alguien se está asomando</p>
-
-    <!-- 3 · El cielo abierto: la bienvenida. -->
+    <!-- 3 · La noche y la luna-galleta: la bienvenida. -->
     <div class="hv-final" [class.activo]="finalActivo()">
       <h1 class="hv-titulo">
-        @if (cuenta.registrado()) {
-          <span class="hv-hola">Bienvenido</span>
-          <span class="hv-nombre">{{ cuenta.primerNombre() }}</span>
-        } @else {
-          <span class="hv-hola">Bienvenido a</span>
-          <span class="hv-nombre">Crunchy Munch</span>
-        }
+        <!-- Lo que leen los lectores de pantalla: la frase entera, de corrido.
+             Lo dibujado va aparte y escondido, porque letra por letra se
+             leería deletreado. -->
+        <span class="hv-sr">
+          @if (cuenta.registrado()) {
+            Bienvenido {{ cuenta.primerNombre() }}
+          } @else {
+            Bienvenido a Crunchy Munch
+          }
+        </span>
+
+        <span class="hv-hola" aria-hidden="true">{{ cuenta.registrado() ? 'bienvenido' : 'bienvenido a' }}</span>
+
+        <span class="hv-nombre" aria-hidden="true" [style.--largo]="largo()" [style.--total]="total()">
+          @for (palabra of letras(); track $index) {
+            <span class="hv-palabra">
+              @for (x of palabra; track x.i) {
+                <span class="hv-lw" [style.--i]="x.i"><span class="hv-l" [attr.data-l]="x.l">{{ x.l }}</span></span>
+              }
+            </span>
+          }
+        </span>
       </h1>
 
       @if (!cuenta.registrado()) {

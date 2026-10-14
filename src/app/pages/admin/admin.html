@@ -237,7 +237,8 @@
       }
     </div>
 
-    <!-- Negocios que se postulan para alojar un carrito (moderación) -->
+    <!-- Negocios que se postularon para alojar un carrito. La convocatoria ya
+         cerró: esto es solo el archivo, para poder escribirles. -->
     <div class="modulo">
       <button
         type="button"
@@ -245,21 +246,17 @@
         (click)="posAbierto.set(!posAbierto()); cargarPostulaciones()"
       >
         <span class="modulo-nombre">POSTULACIONES DE NEGOCIOS</span>
-        @if (posPendientes() > 0) {
-          <span class="rev-pend">{{ posPendientes() }}</span>
-        }
         <span class="chev" [class.rot]="posAbierto()" aria-hidden="true">⌄</span>
       </button>
       @if (posAbierto()) {
         <div class="modulo-cuerpo cfg-cuerpo">
           <p class="fid-admin-ayuda">
-            Los negocios que quieren un carrito de Crunchy Munch llegan aquí en revisión: nadie los
-            ve ni los puede votar hasta que les des "Publicar". Los cuatro más votados salen en la
-            portada. "Ocultar" los saca de la convocatoria sin borrarlos; "Borrar" se lleva también
-            sus votos.
+            La convocatoria del carrito ya cerró: la página y el marcador de la portada se
+            retiraron. Aquí quedan los negocios que alcanzaron a postularse, de más a menos votados,
+            para que puedas escribirles. "Borrar" se lleva también sus votos.
           </p>
           @if (postulaciones().length === 0) {
-            <p class="vacio-cat">Todavía no se ha postulado ningún negocio.</p>
+            <p class="vacio-cat">No alcanzó a postularse ningún negocio.</p>
           } @else {
             <div class="revs">
               @for (p of postulacionesOrdenadas(); track p.id) {
@@ -274,12 +271,6 @@
                     {{ p.ciudad }} · {{ p.direccion }}@if (p.otraRed) { · {{ p.otraRed }} }
                   </p>
                   <div class="rev-fila-btns">
-                    @if (p.estado !== 'aprobada') {
-                      <button class="guardar" (click)="moderarPostulacion(p, 'aprobada')">Publicar</button>
-                    }
-                    @if (p.estado !== 'oculta') {
-                      <button class="del-txt" (click)="moderarPostulacion(p, 'oculta')">Ocultar</button>
-                    }
                     <button class="del-txt" (click)="borrarPostulacion(p)">Borrar</button>
                   </div>
                 </div>

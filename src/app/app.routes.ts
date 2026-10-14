@@ -17,11 +17,6 @@ export const routes: Routes = [
   { path: 'minijuegos', component: Minijuegos },
   { path: 'fidelidad', component: Fidelidad },
   { path: 'privacidad', component: Privacidad },
-  // Diferida: arrastra el MP4 del carrito (5 MB) y no puede pesar en la portada.
-  {
-    path: 'postula',
-    loadComponent: () => import('./pages/postula/postula').then((m) => m.Postula),
-  },
   { path: 'admin', component: Admin },
   {
     path: 'admin/estadisticas',

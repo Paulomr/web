@@ -7,7 +7,7 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { animate, inView } from 'motion';
 import { formatoCOP, precioNumero } from '../../carrito';
 import { DetalleProducto } from '../../detalle-producto';
@@ -19,27 +19,36 @@ import {
   LANZAMIENTO_RESPALDO,
   buscarLanzamiento,
 } from '../../lanzamiento';
-import { RUTA_POSTULA } from '../../postulaciones';
+import {
+  AURA_TEMPORADA,
+  FOTO_TEMPORADA,
+  HASTA_TEMPORADA,
+  INGREDIENTES_TEMPORADA,
+  enTemporada,
+  esDeTemporada,
+} from '../../temporada';
+import { Producto } from '../../productos';
 
-// Sección de terciopelo: dos ventanas del mismo tamaño sobre tela roja.
+// Sección de terciopelo: dos pósters del mismo tamaño sobre tela roja.
 //
 // Es un paréntesis a propósito. Toda la web es crema y pastel; aquí la página
 // se apaga durante una pantalla para que solo brillen las dos novedades, y
 // vuelve al crema enseguida. Es el recurso de una vitrina forrada.
 //
-// Las dos ventanas son gemelas y cada una se explica sola: la de la izquierda
-// es un póster impreso (la galleta nueva), la de la derecha es el mismo marco
-// pero con el carrito en movimiento (la convocatoria). Misma medida, mismo
-// halo, mismo canto: lo único que cambia es que una se mueve.
+// Las dos ventanas son gemelas: a la izquierda la galleta nueva, a la derecha
+// el producto de temporada (el Dracula Milkshake, hasta el 31 de octubre).
+// Misma medida, mismo halo, mismo canto. Pasada la temporada la segunda se va
+// sola y la galleta se queda en el centro.
 //
 // El rojo no es un rojo cualquiera: sale del esmalte de uñas de la propia foto
 // (#8d120c, muestreado del original), así que el terciopelo y el póster son la
-// misma paleta y no dos piezas pegadas. Y los halos tampoco están dibujados:
-// son copias diminutas de cada imagen, desenfocadas detrás — la luz que tira
-// cada ventana sobre la tela.
+// misma paleta y no dos piezas pegadas. Para el Drácula el terciopelo rojo es,
+// además, el forro de la capa. Y los halos tampoco están dibujados: son copias
+// diminutas de cada póster, desenfocadas detrás — la luz que tira cada ventana
+// sobre la tela.
 @Component({
   selector: 'app-producto-nuevo',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './producto-nuevo.html',
   styleUrl: './producto-nuevo.css',
 })
@@ -52,14 +61,17 @@ export class ProductoNuevo {
 
   private readonly marco = viewChild.required<ElementRef<HTMLElement>>('marco');
   private readonly texto = viewChild.required<ElementRef<HTMLElement>>('texto');
-  private readonly marcoDos = viewChild.required<ElementRef<HTMLElement>>('marcoDos');
-  private readonly textoDos = viewChild.required<ElementRef<HTMLElement>>('textoDos');
-  private readonly video = viewChild.required<ElementRef<HTMLVideoElement>>('video');
+  // La segunda ventana va dentro de un @if (solo existe en temporada).
+  private readonly marcoDos = viewChild<ElementRef<HTMLElement>>('marcoDos');
+  private readonly textoDos = viewChild<ElementRef<HTMLElement>>('textoDos');
 
   readonly ancla = ANCLA_LANZAMIENTO;
   readonly foto = FOTO_LANZAMIENTO;
   readonly aura = AURA_LANZAMIENTO;
-  readonly rutaPostula = RUTA_POSTULA;
+  readonly fotoTemporada = FOTO_TEMPORADA;
+  readonly auraTemporada = AURA_TEMPORADA;
+  readonly ingredientesTemporada = INGREDIENTES_TEMPORADA;
+  readonly hastaTemporada = HASTA_TEMPORADA;
 
   readonly reducido =
     typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -73,18 +85,20 @@ export class ProductoNuevo {
   );
   readonly detalleCorto = computed(() => this.producto()?.detalle || LANZAMIENTO_RESPALDO.detalle);
 
+  /** El panel guardó este producto con el precio en crudo ("16000"). */
+  readonly precio = computed(() => precioBonito(this.producto(), LANZAMIENTO_RESPALDO.precio));
+
   /**
-   * Precio ya formateado. El panel guardó este producto como "16000" en crudo,
-   * sin separadores ni signo, y así se pinta hoy en el catálogo. Aquí se
-   * normaliza con el mismo helper que usa el carrito, de modo que tanto
-   * "16000" como "$ 15.000" salgan iguales.
+   * El producto de temporada, mientras dure. Sale del menú vigente, que ya lo
+   * trae metido (ver temporada.ts): así la ventana, el catálogo y el carrito
+   * hablan del mismo producto, y si el panel lo crea con otro precio, manda el
+   * del panel.
    */
-  readonly precio = computed(() => {
-    const p = this.producto();
-    const valor = precioNumero(p);
-    if (valor > 0) return formatoCOP(valor);
-    return p?.precio || LANZAMIENTO_RESPALDO.precio;
-  });
+  readonly temporada = computed(() =>
+    enTemporada() ? this.productosSvc.productos().find(esDeTemporada) : undefined,
+  );
+
+  readonly precioTemporada = computed(() => precioBonito(this.temporada(), ''));
 
   constructor() {
     afterNextRender(() => this.arrancar());
@@ -101,8 +115,13 @@ export class ProductoNuevo {
     void this.router.navigate(['/catalogo']);
   }
 
+  /** Abre la tarjeta del de temporada. Su sabor es fijo: se agrega directo. */
+  ordenarTemporada(): void {
+    const p = this.temporada();
+    if (p) this.detalle.abrir(p);
+  }
+
   private arrancar(): void {
-    this.prepararVideo();
     if (this.reducido) return;
 
     // La clase se pone desde el código, nunca desde el CSS: si este bloque no
@@ -112,10 +131,10 @@ export class ProductoNuevo {
 
     // Cada ventana entra por su cuenta al asomarse, así que bajando despacio
     // la segunda no aparece ya puesta antes de llegar a ella.
-    const parar = [
-      this.entrada(this.marco().nativeElement, this.texto().nativeElement),
-      this.entrada(this.marcoDos().nativeElement, this.textoDos().nativeElement),
-    ];
+    const parar = [this.entrada(this.marco().nativeElement, this.texto().nativeElement)];
+    const marcoDos = this.marcoDos()?.nativeElement;
+    const textoDos = this.textoDos()?.nativeElement;
+    if (marcoDos && textoDos) parar.push(this.entrada(marcoDos, textoDos));
     this.destroyRef.onDestroy(() => parar.forEach((p) => p()));
   }
 
@@ -148,36 +167,15 @@ export class ProductoNuevo {
       { amount: 0.3 },
     );
   }
+}
 
-  /**
-   * El bucle del carrito solo corre mientras se ve. Es decoración: dejarlo
-   * girando fuera de pantalla gasta batería sin que nadie lo mire. Y con
-   * `preload="none"` sus 545 kB no se descargan hasta que hace falta, que es
-   * lo que mantiene ligera la portada.
-   */
-  private prepararVideo(): void {
-    const v = this.video().nativeElement;
-    // El atributo `muted` del HTML no fija la propiedad cuando Angular crea el
-    // elemento: hay que ponerla a mano o el navegador no deja reproducir solo.
-    v.muted = true;
-
-    if (this.reducido) {
-      // Con menos movimiento se queda el póster quieto: ni se descarga.
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) void v.play().catch(() => {});
-        else v.pause();
-      },
-      { threshold: 0.25 },
-    );
-    io.observe(v);
-
-    this.destroyRef.onDestroy(() => {
-      io.disconnect();
-      v.pause();
-    });
-  }
+/**
+ * Precio ya formateado. El panel guarda a veces el precio en crudo ("16000",
+ * sin separadores ni signo); aquí se normaliza con el mismo helper del carrito,
+ * de modo que "16000" y "$ 15.000" salgan iguales.
+ */
+function precioBonito(p: Producto | undefined, respaldo: string): string {
+  const valor = precioNumero(p);
+  if (valor > 0) return formatoCOP(valor);
+  return p?.precio || respaldo;
 }

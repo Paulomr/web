@@ -1,6 +1,7 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { PRODUCTOS, Producto, WHATSAPP_SEDES, extraSabor } from './productos';
 import { ProductosService } from './productos.service';
+import { conTemporada } from './temporada';
 import { CuentaService } from './cuenta.service';
 import { PixelService } from './pixel.service';
 
@@ -277,7 +278,8 @@ export class Carrito {
       if (!crudo) return [];
       const lista = JSON.parse(crudo) as ItemCarrito[];
       // Solo ítems que sigan existiendo en el catálogo.
-      return lista.filter((i) => PRODUCTOS.some((p) => p.id === i.id) && i.cantidad > 0);
+      const menu = conTemporada(PRODUCTOS);
+      return lista.filter((i) => menu.some((p) => p.id === i.id) && i.cantidad > 0);
     } catch {
       return [];
     }

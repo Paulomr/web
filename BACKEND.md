@@ -28,7 +28,7 @@ api/
   pedidos.mjs           <- POST registra pedido | GET admin busca por código
   estadisticas.mjs      <- POST registra visita | GET admin métricas del negocio
   resenas.mjs           <- opiniones de clientes (POST envía, PUT/DELETE modera)
-  postulaciones.mjs     <- "Postula tu negocio" (POST postula/vota, PUT/DELETE modera)
+  postulaciones.mjs     <- "Postula tu negocio", ya cerrada: solo GET y DELETE de admin
 scripts/                <- utilidades (semilla de datos, etc.)
 ```
 
@@ -37,7 +37,8 @@ scripts/                <- utilidades (semilla de datos, etc.)
 > en el hueco que dejó `chat.mjs` (la IA de Bearnie, que ya no estaba en la web).
 > Para meter algo nuevo **no basta con crear otro archivo**: hay que agrupar la
 > acción dentro de un endpoint que ya exista, como hace `cuentas.mjs` con su
-> campo `accion` (y `postulaciones.mjs` con `accion:'votar'`).
+> campo `accion`. La convocatoria cerró y `postulaciones.mjs` quedó solo para
+> el panel: es el primer hueco a reutilizar cuando ya no haga falta ese archivo.
 
 ## Fases
 
@@ -71,6 +72,9 @@ scripts/                <- utilidades (semilla de datos, etc.)
       Se modera en `/admin` → "Postulaciones de negocios"; los 4 más votados
       salen en la portada. Los votos se cuentan agregando la colección `Voto`,
       nunca con un contador guardado (se desincroniza).
+      **Cerrada el 2026-10-14:** fuera la página `/postula` y el marcador del
+      hero. La API responde 410 a postular y votar; el panel conserva la lista
+      de lo que llegó (solo lectura y borrar) para poder escribirles.
 - [ ] **Fase 4 — Pagos en línea**
       Cobro con tarjeta/PSE (proveedor colombiano: Wompi o MercadoPago).
 - [ ] **Fase 5 — Cuentas y fidelidad**

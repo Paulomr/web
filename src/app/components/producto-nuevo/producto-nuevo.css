@@ -1,7 +1,8 @@
-/* ============ Terciopelo: las dos ventanas ============
+/* ============ Terciopelo: los dos pósters ============
    Un paréntesis oscuro en una web de crema. La página se apaga durante una
    pantalla, las dos novedades quedan como lo único iluminado, y el crema
-   vuelve.
+   vuelve. Sin antetítulos: cada póster lleva su nombre impreso y se explica
+   solo; lo que hay que saber (precio, fecha) va al pie.
 
    La paleta NO es un rojo de catálogo: sale de la propia foto. El #8d120c es
    el esmalte de uñas del póster, muestreado; el tono claro es el brillo de esa
@@ -28,7 +29,7 @@
   isolation: isolate;
   overflow: hidden;
   padding: clamp(52px, 8vh, 92px) 20px clamp(48px, 7vh, 84px);
-  /* El notch fijo no puede tapar el antetítulo al saltar aquí desde el cartel. */
+  /* El notch fijo no puede tapar los pósters al saltar aquí desde el cartel. */
   scroll-margin-top: 92px;
   background:
     /* Dos pliegues blandos, uno a cada lado y a distinta altura. Son lo que
@@ -90,10 +91,9 @@
 }
 
 /* ---------- Las dos ventanas ----------
-   Gemelas: misma medida, mismo halo, mismo canto. Lo único que cambia es que
-   una está impresa y la otra se mueve. Se alinean por arriba (`start`) para
-   que los dos marcos empiecen a la misma altura aunque sus pies midan
-   distinto. */
+   Gemelas: misma medida, mismo halo, mismo canto. Se alinean por arriba
+   (`start`) para que los dos marcos empiecen a la misma altura aunque sus
+   pies midan distinto. */
 .dk-puertas {
   display: grid;
   grid-template-columns: repeat(2, auto);
@@ -102,60 +102,17 @@
   gap: clamp(30px, 5vw, 62px);
 }
 
+/* Fuera de temporada queda solo la galleta, en el centro. */
+.dk-puertas.sola {
+  grid-template-columns: auto;
+}
+
 .dk-puerta {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: clamp(20px, 3vh, 32px);
   text-align: center;
-}
-
-/* Toda la ventana de la convocatoria es un enlace: un solo destino que tocar
-   y un solo foco de teclado, en vez de tres controles al mismo sitio. */
-.dk-puerta-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(20px, 3vh, 32px);
-  text-decoration: none;
-  color: inherit;
-  /* Chrome no hereda `text-transform` dentro de controles; en un <a> sí, pero
-     lo dejamos explícito porque el pie mezcla <span> con el pincel. */
-  text-transform: uppercase;
-}
-
-/* ---------- Antetítulo ---------- */
-.dk-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: clamp(0.68rem, 1.5vw, 0.78rem);
-  font-weight: 600;
-  letter-spacing: 0.24em;
-  color: var(--dk-gold);
-}
-
-/* Punto vivo: dice "esto acaba de pasar" sin gastar una palabra más. */
-.dk-punto {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--dk-glow);
-  box-shadow: 0 0 0 0 rgba(255, 95, 176, 0.55);
-  animation: dk-pulso 2.6s ease-out infinite;
-}
-
-@keyframes dk-pulso {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 95, 176, 0.55);
-  }
-  60% {
-    box-shadow: 0 0 0 9px rgba(255, 95, 176, 0);
-  }
 }
 
 /* El nombre ya está rotulado dentro del póster; aquí solo titula el bloque
@@ -199,10 +156,10 @@
   animation: dk-latido 7s ease-in-out infinite;
 }
 
-/* La ventana del carrito respira con su propio compás y su propio color: el
-   filete tira a lila, que es el toldo del carrito. Desfasada para que las dos
-   no latan a la vez como un semáforo. */
-.dk-marco-video::before {
+/* El póster del Drácula respira con su propio compás y su propio color: el
+   filete tira a lila, que es la franja diagonal del propio póster. Desfasado
+   para que los dos no latan a la vez como un semáforo. */
+.dk-marco-temporada::before {
   background: linear-gradient(150deg, var(--dk-glow) 0%, #b98ce8 44%, #e6d9f6 72%, var(--dk-glow) 100%);
   animation-duration: 8.5s;
   animation-delay: -3s;
@@ -239,9 +196,9 @@
 
 /* En absoluto, no en flujo. Es lo que iguala las dos ventanas: el marco es un
    flex item, y un flex item en columna tiene `min-height: auto`, así que el
-   alto natural de su contenido gana al `aspect-ratio`. Con el video (9:16)
-   dentro, la ventana de la convocatoria salía 360×640 en vez de 360×480.
-   Sacando la media del flujo, el marco solo obedece a su proporción. */
+   alto natural de su contenido gana al `aspect-ratio`. Sacando la imagen del
+   flujo, el marco solo obedece a su proporción aunque los dos pósters no
+   midan exactamente lo mismo (1100×1467 y 1100×1474). */
 .dk-foto {
   position: absolute;
   inset: 0;
@@ -255,58 +212,6 @@
   box-shadow:
     0 0 0 1px rgba(255, 236, 214, 0.34),
     0 46px 90px -34px rgba(10, 0, 2, 0.9);
-}
-
-/* El video es 9:16 y el marco 3:4: `cover` recorta arriba y abajo, que es
-   donde el plano tiene aire de sobra. El fondo evita el destello blanco
-   mientras no ha cargado (con `preload="none"` puede tardar). */
-.dk-video {
-  background: #2a1330;
-}
-
-/* ---------- El rótulo de la ventana en movimiento ----------
-   El póster de la galleta lleva su título impreso dentro. Este se lo ponemos
-   nosotros, con el mismo pincel, para que las dos ventanas sean gemelas. */
-.dk-rotulo {
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 30% 14px 20px;
-  border-radius: clamp(14px, 2.4vw, 22px);
-  /* Velo hacia abajo: el pincel blanco tiene que leerse sobre un plano de
-     noche que a ratos se aclara. Sin él, el rótulo desaparece en los cortes
-     con el letrero de neón encendido. */
-  background: linear-gradient(
-    to top,
-    rgba(12, 2, 16, 0.86) 0%,
-    rgba(12, 2, 16, 0.55) 42%,
-    rgba(12, 2, 16, 0) 100%
-  );
-  pointer-events: none;
-}
-
-.dk-rotulo-txt {
-  font-family: var(--font-brush);
-  /* Sin ligaduras. Zerocalcare trae ligaduras de PALABRA ("el", "tu", "la"…)
-     que cambian esas sílabas por una cursiva enlazada: "Postula tu negocio"
-     salía con el "tu" en otra letra. Ver también text-transform arriba. */
-  font-variant-ligatures: none;
-  font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
-  /* En caja mixta y SIN mayúsculas forzadas. En esta fuente las minúsculas son
-     el pincel en bloque (lo que está rotulado en el póster) y las MAYÚSCULAS
-     son una cursiva enlazada, otra letra distinta. Con el todo-mayúsculas de
-     la marca encima, el rótulo salía en cursiva y no pegaba con nada. */
-  text-transform: none;
-  font-size: clamp(1.5rem, 4.6vw, 2.1rem);
-  line-height: 1.05;
-  letter-spacing: 0.01em;
-  color: #ffffff;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
 }
 
 /* ---------- Pie de cada ventana ---------- */
@@ -354,7 +259,8 @@
 
 /* ---------- Las llamadas ----------
    Píldora crema (como los botones de la marca) rotulada con el pincel del
-   póster. Es el único sitio de la web con esta letra. */
+   póster de la Doble Kinder. Las dos son iguales a propósito: son dos
+   productos, ninguno es la puerta de al lado del otro. */
 .dk-cta {
   position: relative;
   display: inline-flex;
@@ -369,12 +275,12 @@
   font-family: var(--font-brush);
   /* Sin ligaduras. Zerocalcare trae ligaduras de PALABRA ("el", "tu", "la"…)
      que cambian esas sílabas por una cursiva enlazada: "Postula tu negocio"
-     salía con el "tu" en otra letra. Ver también text-transform arriba. */
+     salía con el "tu" en otra letra. */
   font-variant-ligatures: none;
   font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
-  /* Igual que el rótulo: caja mixta, que es donde esta fuente da el pincel.
-     El <button> se libraba por casualidad (Chrome no hereda text-transform
-     dentro de un control); el <span> del enlace no, y salía en cursiva. */
+  /* En caja mixta y SIN mayúsculas forzadas: en esta fuente las minúsculas
+     son el pincel en bloque y las MAYÚSCULAS una cursiva enlazada. Un
+     <button> no hereda text-transform en Chrome, pero se deja explícito. */
   text-transform: none;
   font-size: clamp(1.5rem, 4.4vw, 2.1rem);
   line-height: 1;
@@ -405,15 +311,6 @@
   transition: opacity 380ms ease;
 }
 
-/* La segunda llamada va en contorno, no rellena: en una sección con dos
-   ventanas, dos píldoras crema idénticas competirían y ninguna sería la
-   principal. Pedir la galleta manda; postular es la puerta de al lado. */
-.dk-cta-fantasma {
-  background: transparent;
-  color: var(--dk-cream);
-  box-shadow: inset 0 0 0 1.5px rgba(253, 241, 231, 0.45);
-}
-
 .dk-cta-txt {
   position: relative;
   z-index: 1;
@@ -439,29 +336,17 @@
     opacity: 0.75;
   }
 
-  /* La fantasma se rellena al pasar por encima: pasa a ser sólida solo
-     mientras se apunta a ella, sin robarle protagonismo el resto del tiempo. */
-  .dk-puerta-link:hover .dk-cta-fantasma {
-    background: var(--dk-cream);
-    color: var(--dk-core);
-    box-shadow: inset 0 0 0 1.5px transparent;
-  }
-
-  .dk-puerta-link:hover .dk-marco-video::before {
-    opacity: 0.85;
-  }
 }
 
 .dk-cta:active {
   scale: 0.985;
 }
 
-/* El foco del enlace tiene que verse sobre el terciopelo, donde el violeta
-   del sistema se pierde. */
-.dk-puerta-link:focus-visible {
+/* El foco tiene que verse sobre el terciopelo, donde el violeta del sistema
+   se pierde. */
+.dk-cta:focus-visible {
   outline: 2px solid var(--dk-gold);
-  outline-offset: 8px;
-  border-radius: var(--r-lg);
+  outline-offset: 5px;
 }
 
 /* ---------- Entrada al llegar con el scroll ----------
@@ -471,6 +356,27 @@
 :host(.anima) .dk-marco,
 :host(.anima) .dk-texto {
   opacity: 0;
+}
+
+/* ---------- Lado a lado: pies alineados ----------
+   Las descripciones no miden lo mismo (la de la galleta sale del panel y
+   puede ocupar cuatro líneas; la del Drácula, dos), y con cada ventana a su
+   aire el precio y el botón quedaban a alturas distintas: dejaban de ser
+   gemelas. Las dos ventanas se estiran al alto de la más alta y la
+   descripción ocupa lo que sobre, así precio y botón se apoyan abajo, a la
+   misma altura en las dos. */
+@media (min-width: 901px) {
+  .dk-puertas {
+    align-items: stretch;
+  }
+
+  .dk-texto {
+    flex: 1;
+  }
+
+  .dk-desc {
+    flex: 1;
+  }
 }
 
 /* ---------- Una sola columna ----------
@@ -495,10 +401,6 @@
 
   .dk-marco {
     width: min(86vw, calc(54svh * 0.75));
-  }
-
-  .dk-eyebrow {
-    letter-spacing: 0.18em;
   }
 
   .dk-cta {

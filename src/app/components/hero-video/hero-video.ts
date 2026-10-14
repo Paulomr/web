@@ -3,26 +3,28 @@ import {
   DestroyRef,
   ElementRef,
   afterNextRender,
+  computed,
   inject,
   signal,
   viewChild,
 } from '@angular/core';
 import { CuentaService } from '../../cuenta.service';
-import { Votados } from '../votados/votados';
 
-// Hero de la portada: el video de la caja, contado con el scroll.
+// Hero de la portada: el video de Halloween, contado con el scroll.
 //
 // La sección mide varias pantallas de alto y dentro lleva un bloque `sticky`
 // que se queda pegado ocupando la ventana. Lo que el visitante avanza en esa
-// sección se traduce a un instante del video (0 → 8 s): dentro de la caja,
-// Bearnie asomándose, la caja saliendo volando, el destello y el cielo.
+// sección se traduce a un instante del video (0 → 5 s): desde el fondo de la
+// caja de Halloween, Bearnie vestida de Drácula se asoma, abre la capa y los
+// murciélagos estampados en la caja salen volando; la cámara sale con ellos
+// a la noche, donde la luna es una galleta.
 //
 // El progreso (0–1) se publica como variable CSS `--p` sobre el componente, y
 // las capas de texto se muestran/ocultan con `clamp()` en el CSS. Así el
 // recorrido se pinta sin pasar por la detección de cambios de Angular.
 @Component({
   selector: 'app-hero-video',
-  imports: [Votados],
+  imports: [],
   templateUrl: './hero-video.html',
   styleUrl: './hero-video.css',
 })
@@ -35,35 +37,52 @@ export class HeroVideo {
   private readonly pegado = viewChild.required<ElementRef<HTMLElement>>('pegado');
   private readonly video = viewChild.required<ElementRef<HTMLVideoElement>>('video');
 
-  /** Pantalla más alta que ancha: usa el recorte vertical (9:16), que además
-      pesa la tercera parte y encuadra a Bearnie mucho mejor en el teléfono. */
+  /** Pantalla más alta que ancha: usa la toma vertical (9:16), que encuadra a
+      Bearnie y la luna para el teléfono. */
   private readonly vertical = window.matchMedia('(max-aspect-ratio: 1/1)').matches;
 
   /** Quien pide menos movimiento no recibe un video que se mueve al scroll:
-      se le deja el fotograma final (el cielo) con el saludo ya visible. */
+      se le deja el fotograma final (la luna) con el saludo ya visible. */
   readonly reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  readonly fuente = this.vertical ? 'video/hero-caja-alto.mp4' : 'video/hero-caja-ancho.mp4';
-  readonly poster = this.vertical ? 'video/hero-caja-alto.webp' : 'video/hero-caja-ancho.webp';
+  readonly fuente = this.vertical ? 'video/hero-halloween-alto.mp4' : 'video/hero-halloween-ancho.mp4';
+  readonly poster = this.vertical ? 'video/hero-halloween-alto.webp' : 'video/hero-halloween-ancho.webp';
 
-  /** Ritmo del video que se cargó. Son dos tomas distintas y cada una cuenta a
-      su tiempo, así que los textos no pueden entrar en los mismos puntos:
-      el vertical dura 6,7 s y los ositos se quedan asomados más rato; el ancho
-      dura 8 s, los ositos se asoman enseguida (p 0.03) y se hunden fuera de
-      cuadro hacia p 0.38, y el destello llega mucho más tarde (blanco pleno en
-      p 0.64, cielo limpio desde p 0.74). Valores en fracción del recorrido (0–1). */
+  /** Ritmo del video que se cargó, en fracción del recorrido (0–1). Son dos
+      tomas distintas (Wan 3.0 Prime, 5 s cada una) y no van al mismo paso:
+      en la ancha Bearnie abre la capa hacia el segundo 1,2 y sale de cuadro en
+      el 2,9; en la vertical todo pasa medio segundo antes. El saludo entra
+      cuando ella ya se fue y solo quedan la noche y la luna. */
   private readonly ritmo = this.vertical
-    ? { pistaFin: 0.13, susurroIni: 0.13, susurroFin: 0.5, veloIni: 0.6, finalIni: 0.63 }
-    : { pistaFin: 0.1, susurroIni: 0.11, susurroFin: 0.37, veloIni: 0.6, finalIni: 0.66 };
+    ? { pistaFin: 0.1, susurroIni: 0.1, susurroFin: 0.34, finalIni: 0.56 }
+    : { pistaFin: 0.1, susurroIni: 0.1, susurroFin: 0.36, finalIni: 0.6 };
 
   /** El bloque final (saludo) ya es visible: solo entonces se puede tocar. */
   readonly finalActivo = signal(false);
 
-  /** El marcador de la convocatoria sigue en juego (al principio del
-      recorrido). El CSS ya lo desvanece con `--p`; esta señal es la que
-      además lo saca del alcance del ratón y de los lectores de pantalla, que
-      con opacidad 0 seguirían pudiendo tocarlo y leerlo. */
-  readonly votadosActivo = signal(true);
+  /**
+   * El nombre partido en palabras y letras. Cada letra es una pieza suelta
+   * porque flota por su cuenta (ver `.hv-l` en el CSS), y las palabras van
+   * enteras para que un nombre largo se parta entre palabras y nunca a mitad.
+   * `i` es la posición de la letra en todo el nombre: decide su giro, su
+   * desfase al flotar y el orden en que aparece.
+   */
+  readonly letras = computed(() => {
+    const nombre = this.cuenta.registrado() ? this.cuenta.primerNombre() : 'Crunchy Munch';
+    let i = 0;
+    return nombre
+      .toUpperCase()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((palabra) => [...palabra].map((l) => ({ l, i: i++ })));
+  });
+
+  /** Cuántas letras tiene la palabra más larga: con eso el CSS calcula el
+      tamaño para que ningún nombre se salga de la pantalla. */
+  readonly largo = computed(() => Math.max(1, ...this.letras().map((p) => p.length)));
+
+  /** Total de letras, para repartir la aparición de 0 a 1. */
+  readonly total = computed(() => this.letras().reduce((n, p) => n + p.length, 0));
 
   /** Progreso del scroll (0–1) y su versión suavizada, que es la que manda. */
   private objetivo = 0;
@@ -134,8 +153,7 @@ export class HeroVideo {
    * El hero se fue de la pantalla: antes de parar el bucle, se pinta una vez
    * el avance real. Sin esto, un salto instantáneo (un ancla, o el navegador
    * restaurando la posición al recargar) deja congelado el último valor que
-   * alcanzó a verse — y el marcador de la convocatoria se quedaba visible y
-   * pulsable aunque el hero ya no estuviera.
+   * alcanzó a verse, y el saludo podía quedarse a medio aparecer.
    */
   private salirDeCuadro(): void {
     this.medir();
@@ -180,11 +198,5 @@ export class HeroVideo {
     (this.host.nativeElement as HTMLElement).style.setProperty('--p', p.toFixed(4));
     const activo = p > this.ritmo.finalIni;
     if (activo !== this.finalActivo()) this.finalActivo.set(activo);
-
-    // Con menos movimiento el hero se pinta de una vez en su último fotograma:
-    // si el marcador dependiera solo del avance, esas personas no lo verían
-    // nunca. Ahí se queda puesto.
-    const vot = this.reducido || p < 0.2;
-    if (vot !== this.votadosActivo()) this.votadosActivo.set(vot);
   }
 }

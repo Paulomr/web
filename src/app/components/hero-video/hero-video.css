@@ -1,4 +1,4 @@
-/* ============ Hero: el video de la caja, contado con el scroll ============
+/* ============ Hero: el video de Halloween, contado con el scroll ============
    El componente publica el progreso (0–1) en la variable `--p`. Cada capa se
    revela con `clamp()` sobre ese número, de modo que el texto entra y sale en
    el momento exacto del video.
@@ -8,20 +8,31 @@
    distintas y no coinciden. Los `fallback` de cada `clamp()` son los de la
    ancha, que va así:
 
-       p 0.00 – 0.38   POV dentro de la caja / los ositos se asoman y se hunden
-       p 0.38 – 0.74   destello de sol (blanco pleno en ~0.64)
-       p 0.74 – 1.00   cielo abierto  → aquí aterriza la bienvenida
+       p 0.00 – 0.24   Bearnie vampiro se asoma a la caja y guiña
+       p 0.24 – 0.58   abre la capa, salen los murciélagos y la cámara sale
+       p 0.58 – 1.00   la noche con la luna-galleta → aquí aterriza la bienvenida
+
+   La paleta sale del propio video, muestreada del último fotograma: el naranja
+   es el halo de la luna-galleta, la tinta es el cielo de arriba y el violeta
+   es el de los murciélagos. El lila es el interior impreso de la caja real.
    ------------------------------------------------------------------------- */
 :host {
   display: block;
   width: 100%;
+
+  --hv-naranja: #f6a447; /* halo de la luna-galleta */
+  --hv-tinta: #0a0a42; /* el cielo, arriba */
+  --hv-violeta: #3b1f8a; /* los murciélagos, un punto más claros */
+  --hv-lila: #b9b8f4; /* el interior de la caja de Halloween */
 }
 
 .hv {
   position: relative;
   width: 100%;
-  /* Recorrido de scroll: lo que sobra de 100svh es lo que dura la película. */
-  height: 340svh;
+  /* Recorrido de scroll: lo que sobra de 100svh es lo que dura la película.
+     El video dura 5 s y va a 30 fps: 130svh dan unos 8 px de scroll por
+     fotograma en un portátil, que es lo que se siente fluido sin interpolar. */
+  height: 230svh;
 }
 
 .hv-pegado {
@@ -29,8 +40,8 @@
   top: 0;
   height: 100svh;
   overflow: hidden;
-  /* Azul cielo del propio video: si tarda en pintar, no hay salto en blanco. */
-  background: #79c2ea;
+  /* El cielo del propio video: si tarda en pintar, no hay salto en blanco. */
+  background: #1b145c;
 }
 
 .hv-video {
@@ -44,34 +55,8 @@
   object-fit: cover;
 }
 
-/* Al final, el cielo se funde con el crema de la página: sin costura dura. */
-.hv-pegado::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 24%;
-  pointer-events: none;
-  background: linear-gradient(to top, var(--bg), rgba(253, 249, 247, 0));
-  opacity: clamp(0, calc((var(--p, 0) - 0.78) / 0.18), 1);
-}
-
-/* Resplandor blanco bajo el saludo. */
-.hv-velo {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    120% 78% at 50% 58%,
-    rgba(255, 255, 255, 0.94),
-    rgba(255, 255, 255, 0.42) 40%,
-    rgba(255, 255, 255, 0) 72%
-  );
-  opacity: clamp(0, calc((var(--p, 0) - var(--r-veloini, 0.6)) / 0.16), 1);
-}
-
-/* ---- 1 · "Desliza" (dentro de la caja) ---- */
+/* ---- 1 · "Desliza" (dentro de la caja) ----
+   Va sobre el piso lila de la caja: en blanco se perdía, así que es tinta. */
 .hv-pista {
   position: absolute;
   left: 0;
@@ -88,7 +73,9 @@
   font-weight: 700;
   letter-spacing: 0.34em;
   text-indent: 0.34em;
-  text-shadow: 0 2px 14px rgba(60, 30, 70, 0.55);
+  text-shadow:
+    0 1px 0 var(--hv-tinta),
+    0 2px 12px rgba(10, 10, 66, 0.85);
   opacity: clamp(0, calc((var(--r-pistafin, 0.1) - var(--p, 0)) / 0.08), 1);
 }
 
@@ -112,44 +99,57 @@
   }
 }
 
-/* ---- 2 · El susurro, mientras Bearnie se asoma ---- */
+/* ---- 2 · El susurro, mientras Bearnie abre la capa ----
+   El pincel de la marca, en minúsculas (en esta fuente las mayúsculas son
+   otra letra, una cursiva) y sin ligaduras (cambia sílabas enteras). Sombra
+   dura en la tinta del cielo, no un difuminado: así se lee igual sobre el
+   rojo de las solapas que sobre el lila de la caja.
+
+   Va abajo, en el sitio de "Desliza", y entra cuando ese ya se fue: arriba
+   lo tapaba la cápsula fija del producto nuevo. */
 .hv-susurro {
-  --ent: clamp(0, calc((var(--p, 0) - var(--r-susurroini, 0.11)) / 0.09), 1);
-  --sal: clamp(0, calc((var(--r-susurrofin, 0.37) - var(--p, 0)) / 0.06), 1);
+  --ent: clamp(0, calc((var(--p, 0) - var(--r-susurroini, 0.1)) / 0.06), 1);
+  --sal: clamp(0, calc((var(--r-susurrofin, 0.34) - var(--p, 0)) / 0.06), 1);
   position: absolute;
   left: 0;
   right: 0;
-  /* Bajo el notch fijo (14px + ~52px de alto). */
-  top: clamp(88px, 13vh, 150px);
+  bottom: clamp(30px, 8vh, 72px);
   margin: 0;
   padding: 0 24px;
   text-align: center;
   pointer-events: none;
+  font-family: var(--font-brush);
+  text-transform: none;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
+  font-size: clamp(1.7rem, 4.6vw, 2.8rem);
+  line-height: 1;
   color: #fff;
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 3.4vw, 1.7rem);
-  letter-spacing: 0.08em;
-  text-shadow: 0 3px 18px rgba(40, 20, 60, 0.6);
+  text-shadow:
+    0.05em 0.06em 0 var(--hv-tinta),
+    0.08em 0.1em 0 var(--hv-tinta);
   opacity: min(var(--ent), var(--sal));
-  transform: translateY(calc((1 - var(--ent)) * 18px));
+  rotate: -3deg;
+  translate: 0 calc((1 - var(--ent)) * 14px);
 }
 
-/* ---- 3 · La bienvenida sobre el cielo ---- */
+/* ---- 3 · La bienvenida bajo la luna ---- */
 .hv-final {
-  --ent: clamp(0, calc((var(--p, 0) - var(--r-finalini, 0.66)) / 0.16), 1);
+  --ent: clamp(0, calc((var(--p, 0) - var(--r-finalini, 0.6)) / 0.16), 1);
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
-  padding: 0 22px;
+  gap: clamp(18px, 3.4vh, 30px);
+  /* Arriba se reserva lo que ocupan el notch y la cápsula fija del producto
+     nuevo (hasta 152 px): con el teléfono acostado el saludo, centrado en
+     390 px de alto, caía justo debajo de la cápsula. */
+  padding: 160px 22px 40px;
   text-align: center;
   /* Hasta que no está a la vista no se puede tocar nada de aquí dentro. */
   pointer-events: none;
-  opacity: var(--ent);
-  transform: translateY(calc((1 - var(--ent)) * 34px));
 }
 
 .hv-final.activo {
@@ -161,63 +161,158 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(2px, 1vw, 8px);
-  /* Sin esto los hijos se miden por su contenido y un nombre largo
-     ("CRUNCHY MUNCH") se sale de la pantalla en vez de partirse en dos. */
+  /* Aire entre el pincel y el nombre: no se tocan nunca, por largo que sea. */
+  gap: clamp(8px, 1.6vh, 16px);
   max-width: 100%;
   letter-spacing: normal;
 }
 
-.hv-hola {
-  font-family: var(--font-body);
-  font-size: clamp(0.78rem, 2.6vw, 1.05rem);
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-indent: 0.3em;
-  color: var(--text);
-  /* Halo blanco: sobre el cielo el tono apagado se perdía. */
-  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.95);
+/* Solo para lectores de pantalla. */
+.hv-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
+/* "bienvenido": el pincel de la marca en el lila de la caja, ladeado como
+   escrito a mano. Entra primero y el nombre detrás. */
+.hv-hola {
+  font-family: var(--font-brush);
+  text-transform: none;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'clig' 0, 'calt' 0, 'dlig' 0;
+  font-size: clamp(1.7rem, 5vw, 2.9rem);
+  line-height: 1;
+  color: var(--hv-lila);
+  text-shadow: 0.05em 0.06em 0 var(--hv-tinta);
+  rotate: -4deg;
+  opacity: clamp(0, calc(var(--ent) / 0.4), 1);
+  translate: 0 calc((1 - var(--ent)) * 20px);
+}
+
+/* ---- El nombre: letras embrujadas ----
+   Super Corn, la letra gorda de la marca, en el naranja de la luna. Cada letra
+   lleva tres capas: el relleno naranja, un contorno de tinta por fuera y una
+   extrusión violeta que cae hacia abajo y a la izquierda, porque la luz viene
+   de la luna, que está arriba a la derecha. Y cada letra flota por su cuenta,
+   con su propio giro y su propio compás: es lo que la vuelve embrujada sin
+   tener que pintarle ni una gota ni una telaraña.
+
+   El tamaño sale de la palabra más larga (`--largo`, lo pone el componente):
+   Super Corn mide unos 0,72 em por mayúscula, así que 84vw / (largo × 0,72)
+   es lo máximo que cabe sin salirse. "PAULO" sale enorme y "MAXIMILIANO"
+   cabe entero en un teléfono de 360 px. */
 .hv-nombre {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.3em;
+  row-gap: 0.12em;
   max-width: 100%;
   font-family: var(--font-display);
-  font-size: clamp(2.3rem, 11.5vw, 7rem);
-  line-height: 0.95;
-  letter-spacing: 0.02em;
-  overflow-wrap: anywhere;
-  /* Rosa → violeta: el extremo cian del degradado de marca se apagaba
-     demasiado contra el azul del cielo. */
-  background: var(--grad-pink);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  /* Con `background-clip: text` no sirve `text-shadow`: la sombra se dibuja
-     sobre las letras. El halo va sobre la forma del glifo. */
-  filter: drop-shadow(0 8px 22px rgba(255, 255, 255, 0.95));
+  font-size: min(8.4rem, calc(84vw / (var(--largo, 6) * 0.72)), 17svh);
+  line-height: 1.02;
 }
 
+.hv-palabra {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+/* El envoltorio gira, flota y aparece. El giro es fijo por letra (sale de su
+   posición con un seno, así nunca dos vecinas se inclinan igual); la entrada
+   va escalonada: cada letra sale un poco después que la anterior. */
+.hv-lw {
+  --e: clamp(0, calc((var(--ent) - var(--i) / max(var(--total, 1), 1) * 0.45) / 0.55), 1);
+  display: inline-block;
+  margin: 0 0.012em;
+  rotate: calc(sin(var(--i) * 2.3) * 4deg);
+  opacity: var(--e);
+  translate: 0 calc((1 - var(--e)) * 0.4em);
+  animation: hv-flota 3.8s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.53s);
+}
+
+@keyframes hv-flota {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-0.06em) rotate(1.6deg);
+  }
+}
+
+.hv-l {
+  position: relative;
+  display: inline-block;
+  color: var(--hv-naranja);
+}
+
+/* Contorno y extrusión: la misma letra repetida detrás, con trazo. El trazo
+   va centrado en el borde del glifo, así que la mitad interior la tapa el
+   relleno y por fuera queda un contorno limpio. */
+.hv-l::before,
+.hv-l::after {
+  content: attr(data-l);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: var(--hv-tinta);
+  -webkit-text-stroke: 0.15em var(--hv-tinta);
+}
+
+.hv-l::before {
+  color: var(--hv-violeta);
+  -webkit-text-stroke-color: var(--hv-violeta);
+  /* Sombra dura en escalones, sin desenfoque: una extrusión de imprenta. */
+  text-shadow:
+    -0.012em 0.012em 0 var(--hv-violeta),
+    -0.024em 0.024em 0 var(--hv-violeta),
+    -0.036em 0.036em 0 var(--hv-violeta),
+    -0.048em 0.048em 0 var(--hv-violeta),
+    -0.06em 0.06em 0 var(--hv-violeta),
+    -0.072em 0.072em 0 var(--hv-violeta),
+    -0.084em 0.084em 0 var(--hv-violeta);
+}
+
+/* Registro: vidrio de noche con el borde lila de la caja. */
 .hv-registro {
   padding: 12px 26px;
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  border: 1.5px solid rgba(185, 184, 244, 0.7);
   border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(10, 10, 66, 0.55);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  color: var(--text);
+  color: #ecebff;
   font-family: var(--font-display);
   font-size: 0.82rem;
   letter-spacing: 0.06em;
+  /* Un <button> no hereda text-transform en Chrome. */
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: var(--shadow-card);
+  opacity: clamp(0, calc((var(--ent) - 0.5) / 0.5), 1);
   transition:
-    transform 300ms ease,
-    box-shadow 300ms ease;
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
 }
 
 .hv-registro:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glow-pink);
+  background: var(--hv-lila);
+  border-color: var(--hv-lila);
+  color: var(--hv-tinta);
+}
+
+.hv-registro:focus-visible {
+  outline: 2px solid var(--hv-naranja);
+  outline-offset: 4px;
 }
 
 /* ---- Teléfono: el botón de registro no puede ocupar todo el ancho ---- */
@@ -227,26 +322,22 @@
     font-size: 0.72rem;
     letter-spacing: 0.04em;
   }
-  .hv-susurro {
-    font-size: 1.05rem;
-  }
 }
 
-/* ---- Pantallas bajas en horizontal: el saludo sube y encoge ---- */
+/* ---- Pantallas bajas en horizontal: el saludo encoge ---- */
 @media (max-height: 520px) and (orientation: landscape) {
   .hv-susurro {
-    top: 74px;
-    font-size: 1.05rem;
+    font-size: 1.5rem;
   }
   .hv-final {
-    gap: 14px;
+    gap: 12px;
   }
-  .hv-nombre {
-    font-size: clamp(2rem, 8vh, 3.4rem);
+  .hv-hola {
+    font-size: 1.5rem;
   }
 }
 
-/* ---- Sin movimiento: el hero es una sola pantalla, ya en el cielo ---- */
+/* ---- Sin movimiento: el hero es una sola pantalla, ya bajo la luna ---- */
 .hv.reducido {
   height: 100svh;
 }
@@ -271,12 +362,11 @@
   .hv-susurro {
     display: none;
   }
-  .hv-velo,
   .hv-final {
-    opacity: 1;
-    transform: none;
-  }
-  .hv-final {
+    --ent: 1;
     pointer-events: auto;
+  }
+  .hv-lw {
+    animation: none;
   }
 }

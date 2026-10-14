@@ -129,20 +129,15 @@ export class Admin {
   });
   readonly revPendientes = computed(() => this.resenas().filter((r) => r.estado === 'pendiente').length);
 
-  // ---- Postulaciones de negocios (moderación) ----
+  // ---- Postulaciones de negocios (convocatoria cerrada) ----
+  // La convocatoria del carrito cerró: ya no hay nada que publicar ni votar.
+  // Queda la lista de lo que llegó, para poder escribirles a esos negocios.
   readonly posAbierto = signal(false);
   readonly postulaciones = signal<PostulacionAdmin[]>([]);
   readonly posMsg = signal('');
-  /** Las pendientes arriba (hay que atenderlas) y el resto por votos: así el
-   *  panel muestra el mismo ranking que ve la gente en la portada. */
-  readonly postulacionesOrdenadas = computed(() => {
-    const orden = { pendiente: 0, aprobada: 1, oculta: 2 } as Record<string, number>;
-    return [...this.postulaciones()].sort(
-      (a, b) => (orden[a.estado] ?? 9) - (orden[b.estado] ?? 9) || b.votos - a.votos,
-    );
-  });
-  readonly posPendientes = computed(
-    () => this.postulaciones().filter((p) => p.estado === 'pendiente').length,
+  /** Por votos: los que más apoyo juntaron, arriba. */
+  readonly postulacionesOrdenadas = computed(() =>
+    [...this.postulaciones()].sort((a, b) => b.votos - a.votos),
   );
 
   // ---- Galería de fotos ----
@@ -172,7 +167,6 @@ export class Admin {
       // Al entrar, no al abrir el módulo: el contador de pendientes existe
       // justamente para avisar sin tener que ir a mirar.
       void this.cargarResenas();
-      void this.cargarPostulaciones();
     }
   }
 
@@ -434,33 +428,7 @@ export class Admin {
     }
   }
 
-  /** Aprueba (la publica y la deja votable) u oculta una postulación. */
-  async moderarPostulacion(p: PostulacionAdmin, estado: PostulacionAdmin['estado']): Promise<void> {
-    this.posMsg.set('');
-    let res: Response;
-    try {
-      res = await fetch('/api/postulaciones', {
-        method: 'PUT',
-        headers: this.cabeceras({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ id: p.id, estado }),
-      });
-    } catch {
-      this.posMsg.set('⚠ Sin conexión');
-      return;
-    }
-    if (res.status === 401) {
-      this.salir();
-      return;
-    }
-    if (!res.ok) {
-      this.posMsg.set('⚠ Error');
-      return;
-    }
-    this.postulaciones.update((l) => l.map((x) => (x.id === p.id ? { ...x, estado } : x)));
-    this.posMsg.set(estado === 'aprobada' ? '✓ Publicada' : '✓ Oculta');
-  }
-
-  /** Borra la postulación y sus votos. El negocio podrá volver a postularse. */
+  /** Borra la postulación y sus votos. */
   async borrarPostulacion(p: PostulacionAdmin): Promise<void> {
     if (!confirm(`¿Borrar la postulación de ${p.negocio}? Se pierden sus ${p.votos} votos.`)) return;
     this.posMsg.set('');
@@ -721,7 +689,6 @@ export class Admin {
     void this.cargarFidelidad();
     void this.cargarCanjes();
     void this.cargarResenas();
-    void this.cargarPostulaciones();
   }
 
   salir(): void {

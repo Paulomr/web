@@ -1,3 +1,5 @@
+import { esDeTemporada } from './temporada';
+
 // Catálogo real de Crunchy Munch (Rionegro y Marinilla), tomado del
 // catálogo de WhatsApp Business. Precios en pesos colombianos.
 //
@@ -301,9 +303,12 @@ export const PRODUCTOS: Producto[] = [
   },
 ];
 
-/** ¿El producto es un milkshake? (necesita elegir sabor obligatorio al pedir). */
+/**
+ * ¿El producto es un milkshake de sabor a elegir? (necesita elegir sabor
+ * obligatorio al pedir). El de temporada no: su sabor es él mismo.
+ */
 export function esMilkshake(p: Producto | undefined): boolean {
-  return p?.categoria === 'milkshakes';
+  return p?.categoria === 'milkshakes' && !esDeTemporada(p);
 }
 
 /**

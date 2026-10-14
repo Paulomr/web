@@ -1,18 +1,11 @@
 <section class="dk" [id]="ancla" aria-label="Novedades de Crunchy Munch">
   <div class="dk-inner">
-    <!-- Dos ventanas del mismo tamaño: una impresa y una en movimiento. La
-         galleta que acaba de salir, y la convocatoria del carrito. -->
-    <div class="dk-puertas">
+    <!-- Dos pósters del mismo tamaño: la galleta nueva y el producto de
+         temporada. Cada póster lleva su nombre impreso, así que aquí no se
+         repite: el <h2> de cada uno va oculto y solo titula la ventana. -->
+    <div class="dk-puertas" [class.sola]="!temporada()">
       <!-- ================= 1 · La galleta nueva ================= -->
       <article class="dk-puerta" aria-labelledby="dk-nombre">
-        <p class="dk-eyebrow">
-          <!-- El punto late porque el dato es "acaba de salir". -->
-          <span class="dk-punto" aria-hidden="true"></span>
-          Recién salida del horno
-        </p>
-
-        <!-- El póster ya lleva rotulado el nombre, así que aquí no se repite
-             en grande: el <h2> va oculto y solo titula el bloque. -->
         <h2 class="dk-oculto" id="dk-nombre">{{ nombre() }}</h2>
 
         <figure class="dk-marco" #marco>
@@ -39,68 +32,57 @@
             <span class="dk-gramos">{{ detalleCorto() }}</span>
           </p>
 
-          <button type="button" class="dk-cta" (click)="ordenar()">
+          <button
+            type="button"
+            class="dk-cta"
+            [attr.aria-label]="'Ordena ya: ' + nombre()"
+            (click)="ordenar()"
+          >
             <span class="dk-cta-txt">Ordena ya</span>
             <span class="dk-cta-flecha" aria-hidden="true">▸</span>
           </button>
         </div>
       </article>
 
-      <!-- ================= 2 · La convocatoria del carrito ================= -->
-      <article class="dk-puerta">
-        <p class="dk-eyebrow">
-          <span class="dk-punto" aria-hidden="true"></span>
-          Convocatoria abierta
-        </p>
+      <!-- ================= 2 · El de temporada ================= -->
+      @if (temporada(); as t) {
+        <article class="dk-puerta" aria-labelledby="dk-temporada">
+          <h2 class="dk-oculto" id="dk-temporada">{{ t.nombre }}</h2>
 
-        <!-- Toda la ventana es UN enlace: el video, el rótulo y el pie. Así
-             hay un solo destino que tocar y un solo foco de teclado, en vez
-             de tres controles que llevan al mismo sitio. -->
-        <a class="dk-puerta-link" [routerLink]="rutaPostula">
-          <span class="dk-marco dk-marco-video" #marcoDos>
+          <figure class="dk-marco dk-marco-temporada" #marcoDos>
+            <img class="dk-aura" [src]="auraTemporada" alt="" aria-hidden="true" width="64" height="86" />
             <img
-              class="dk-aura"
-              src="video/carrito-glow.webp"
-              alt=""
-              aria-hidden="true"
-              width="64"
-              height="114"
+              class="dk-foto"
+              [src]="fotoTemporada"
+              alt="Póster del Dracula Milkshake: el vaso con helado de fresa, chocolate y mermelada que chorrea"
+              width="1100"
+              height="1474"
+              loading="lazy"
+              decoding="async"
             />
-            <video
-              class="dk-foto dk-video"
-              #video
-              src="video/carrito-preview.mp4"
-              poster="video/carrito-preview.webp"
-              preload="none"
-              muted
-              loop
-              playsinline
-              disablepictureinpicture
-              disableremoteplayback
-              aria-hidden="true"
-            ></video>
+          </figure>
 
-            <!-- El póster de la galleta lleva su título impreso dentro; este
-                 se lo ponemos nosotros, para que las dos ventanas sean
-                 gemelas y cada una se explique sola. -->
-            <span class="dk-rotulo">
-              <span class="dk-rotulo-txt">Postula tu negocio</span>
-            </span>
-          </span>
+          <div class="dk-texto" #textoDos>
+            <p class="dk-desc">{{ ingredientesTemporada }}</p>
 
-          <span class="dk-texto" #textoDos>
-            <span class="dk-desc">
-              Un carrito de Crunchy Munch, montado en tu local. Tú pones el espacio; nosotros
-              ponemos el carrito, las galletas y la marca.
-            </span>
+            <p class="dk-datos">
+              <span class="dk-precio">{{ precioTemporada() }}</span>
+              <span class="dk-sep" aria-hidden="true">·</span>
+              <span class="dk-gramos">{{ hastaTemporada }}</span>
+            </p>
 
-            <span class="dk-cta dk-cta-fantasma">
-              <span class="dk-cta-txt">Ver cómo funciona</span>
+            <button
+              type="button"
+              class="dk-cta"
+              [attr.aria-label]="'Ordena ya: ' + t.nombre"
+              (click)="ordenarTemporada()"
+            >
+              <span class="dk-cta-txt">Ordena ya</span>
               <span class="dk-cta-flecha" aria-hidden="true">▸</span>
-            </span>
-          </span>
-        </a>
-      </article>
+            </button>
+          </div>
+        </article>
+      }
     </div>
   </div>
 </section>
